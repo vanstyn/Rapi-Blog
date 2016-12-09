@@ -1,0 +1,75 @@
+
+DROP TABLE IF EXISTS [user];
+CREATE TABLE [user] (
+  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [username] varchar(32) UNIQUE NOT NULL,
+  [full_name] varchar(64) UNIQUE NOT NULL
+);
+
+DROP TABLE IF EXISTS [preprocessor];
+CREATE TABLE [preprocessor] (
+  [code] varchar(8) PRIMARY KEY NOT NULL,
+  [name] varchar(32) UNIQUE NOT NULL
+);
+INSERT INTO [preprocessor] VALUES('tt',  'Template Toolkit');
+
+
+DROP TABLE IF EXISTS [format];
+CREATE TABLE [format] (
+  [code] varchar(8) PRIMARY KEY NOT NULL,
+  [name] varchar(32) UNIQUE NOT NULL
+  
+);
+INSERT INTO [format] VALUES('txt',  'Plain Text');
+INSERT INTO [format] VALUES('md',   'Markdown');
+INSERT INTO [format] VALUES('html', 'HTML');
+
+
+DROP TABLE IF EXISTS [content];
+CREATE TABLE [content] (
+  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [create_ts] datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  [update_ts] datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  [create_user_id] INTEGER NOT NULL,
+  [update_user_id] INTEGER NOT NULL,
+  [pp_code] varchar(8) DEFAULT NULL,
+  [format_code] varchar(8) NOT NULL,
+  
+  
+  FOREIGN KEY ([create_user_id]) REFERENCES [user]         ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY ([update_user_id]) REFERENCES [user]         ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY ([pp_code])        REFERENCES [preprocessor] ([code]) ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY ([format_code])    REFERENCES [format]       ([code]) ON DELETE RESTRICT ON UPDATE CASCADE
+  
+);
+
+DROP TABLE IF EXISTS [content_name];
+CREATE TABLE [content_name] (
+  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [content_id] INTEGER NOT NULL,
+  [name] varchar(255) UNIQUE NOT NULL,
+  [prio] INTEGER NOT NULL DEFAULT 0,
+  
+  FOREIGN KEY ([content_id]) REFERENCES [content] ([id]) ON DELETE CASCADE ON UPDATE CASCADE
+  
+);
+
+
+DROP TABLE IF EXISTS [keyword];
+CREATE TABLE [keyword] (
+  [name] varchar(64) PRIMARY KEY NOT NULL
+);
+
+DROP TABLE IF EXISTS [content_keyword];
+CREATE TABLE [content_keyword] (
+  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [content_id] INTEGER NOT NULL,
+  [keyword_name] varchar(64) UNIQUE NOT NULL,
+  
+  FOREIGN KEY ([content_id])   REFERENCES [content] ([id])   ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY ([keyword_name]) REFERENCES [keyword] ([name]) ON DELETE CASCADE ON UPDATE CASCADE
+  
+);
+
+
+
