@@ -18,6 +18,7 @@ CREATE TABLE [user] (
   [username] varchar(32) UNIQUE NOT NULL,
   [full_name] varchar(64) UNIQUE NOT NULL
 );
+INSERT INTO [user] VALUES(0,'(system)','System User');
 
 DROP TABLE IF EXISTS [preprocessor];
 CREATE TABLE [preprocessor] (
@@ -46,7 +47,9 @@ CREATE TABLE [content] (
   [create_user_id] INTEGER NOT NULL,
   [update_user_id] INTEGER NOT NULL,
   [pp_code] varchar(8) DEFAULT NULL,
-  [format_code] varchar(8) NOT NULL,
+  [format_code] varchar(8) DEFAULT NULL,
+  
+  [body] text default '',
   
   
   FOREIGN KEY ([create_user_id]) REFERENCES [user]         ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,

@@ -41,7 +41,15 @@ __PACKAGE__->add_columns(
     size => 8,
   },
   "format_code",
-  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 8 },
+  {
+    data_type => "varchar",
+    default_value => \"null",
+    is_foreign_key => 1,
+    is_nullable => 1,
+    size => 8,
+  },
+  "body",
+  { data_type => "text", default_value => "", is_nullable => 1 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->has_many(
@@ -66,7 +74,12 @@ __PACKAGE__->belongs_to(
   "format_code",
   "Rapi::Blog::DB::Result::Format",
   { code => "format_code" },
-  { is_deferrable => 0, on_delete => "RESTRICT", on_update => "CASCADE" },
+  {
+    is_deferrable => 0,
+    join_type     => "LEFT",
+    on_delete     => "RESTRICT",
+    on_update     => "CASCADE",
+  },
 );
 __PACKAGE__->belongs_to(
   "pp_code",
@@ -87,8 +100,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-12-11 19:00:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:qIoOe5dQlM3KoZ8WIuSTwQ
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-12-13 00:33:51
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:FOmJyzZhN2szrGgpGlNgAA
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

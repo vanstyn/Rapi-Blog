@@ -2,7 +2,7 @@ package Rapi::Blog;
 use Moose;
 use namespace::autoclean;
 
-use RapidApp 1.210101;
+use RapidApp 1.2101_50;
 
 use Catalyst qw/
     -Debug
@@ -54,6 +54,11 @@ __PACKAGE__->config(
       },
       access_class => 'Rapi::Blog::Template::Access',
       store_class  => 'Rapi::Blog::Template::Store',
+      store_params => {
+        tpl_prefix => 'site/content/',
+        get_Model => sub { Rapi::Blog->model('DB') } 
+      }
+
       
     }
 

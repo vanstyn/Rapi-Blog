@@ -83,13 +83,13 @@ __PACKAGE__->config(
             header => 'create_user_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           update_user_id => {
             header => 'update_user_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           pp_code => {
             header => 'pp_code',
@@ -129,6 +129,12 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
+          body => {
+            header => 'body',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
         },
       },
       ContentKeyword => {
@@ -149,7 +155,7 @@ __PACKAGE__->config(
             header => 'content_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           keyword_name => {
             header => 'keyword_name',
@@ -183,7 +189,7 @@ __PACKAGE__->config(
             header => 'content_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           name => {
             header => 'name',
