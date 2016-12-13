@@ -19,7 +19,10 @@ has 'Model', is => 'ro', lazy => 1, default => sub {
   $self->get_Model->()
 }, isa => Object;
 
-has 'tpl_prefix', is => 'ro', isa => Str, required => 1;
+
+has 'content_path',  is => 'ro', isa => Str, required => 1;
+has 'view_wrappers', is => 'ro', isa => HashRef, default => sub {{}};
+
 
 sub get_uid {
   my $self = shift;
@@ -37,10 +40,36 @@ sub cur_ts {
   join(' ',$dt->ymd('-'),$dt->hms(':'));
 }
 
+sub split_name_wrapper {
+  my ($self, $template) = @_;
+  
+  my ($name, $wrapper);
+  
+  for my $view (keys %{ $self->view_wrappers }, $self->content_path) {
+    my $pfx;
+    ($pfx,$name) = split($view,$template,2);
+    if($name && $pfx eq '') {
+      $wrapper = $self->view_wrappers->{$view};
+      last;
+    };
+  }
+  
+  return ($name, $wrapper);
+}
+
+
 sub local_name {
   my ($self, $template) = @_;
-  (split($self->tpl_prefix,$template,2))[1]
+  my ($name, $wrapper) = $self->split_name_wrapper($template);
+  return $name;
 }
+
+sub wrapper_name {
+  my ($self, $template) = @_;
+  my ($name, $wrapper) = $self->split_name_wrapper($template);
+  return $wrapper;
+}
+
 
 sub owns_tpl {
   my ($self, $template) = @_;
@@ -74,7 +103,8 @@ sub template_mtime {
 
 sub template_content {
   my ($self, $template) = @_;
-  my $name = $self->local_name($template) or return undef;
+  my ($name, $wrapper) = $self->split_name_wrapper($template);
+  return undef unless ($name);
   
   my $Row = $self->Model->resultset('Content')
     ->search_rs(undef,{
@@ -84,7 +114,11 @@ sub template_content {
     ->search_rs({ 'content_names.name' => $name })
     ->first or return undef;
     
-  return $Row->get_column('body');
+  my $body = $Row->get_column('body');
+    
+  return $wrapper 
+    ? join("\n",'[% WRAPPER "'.$wrapper.'" %]',$body,'[% END %]')
+    : $body
 }
 
 
@@ -151,7 +185,7 @@ sub delete_template {
 
 sub list_templates {
   my $self = shift;
-  [ map { join('',$self->tpl_prefix,$_) } $self->Model->resultset('ContentName')->get_column('name')->all ]
+  [ map { join('',$self->content_path,$_) } $self->Model->resultset('ContentName')->get_column('name')->all ]
 }
 
 

@@ -55,7 +55,11 @@ __PACKAGE__->config(
       access_class => 'Rapi::Blog::Template::Access',
       store_class  => 'Rapi::Blog::Template::Store',
       store_params => {
-        tpl_prefix => 'site/content/',
+        content_path => 'site/content/',
+        view_wrappers => {
+          'content/' => 'site/content/standard_wrapper.html'
+        
+        },
         get_Model => sub { Rapi::Blog->model('DB') } 
       }
 
