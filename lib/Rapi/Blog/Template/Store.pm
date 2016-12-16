@@ -106,6 +106,12 @@ sub template_content {
   my ($name, $wrapper) = $self->split_name_wrapper($template);
   return undef unless ($name);
   
+  return join("\n",
+    join('','[% WRAPPER "',$wrapper,'" %]'),
+    join('','[% INCLUDE "',$self->content_path,$name,'" %]'),
+    '[% END %]'
+  ) if ($wrapper);
+  
   my $Row = $self->Model->resultset('Content')
     ->search_rs(undef,{
       join    => 'content_names',
@@ -113,12 +119,8 @@ sub template_content {
     })
     ->search_rs({ 'content_names.name' => $name })
     ->first or return undef;
-    
-  my $body = $Row->get_column('body');
-    
-  return $wrapper 
-    ? join("\n",'[% WRAPPER "'.$wrapper.'" %]',$body,'[% END %]')
-    : $body
+  
+  return $Row->get_column('body');
 }
 
 
