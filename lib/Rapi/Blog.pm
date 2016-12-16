@@ -60,6 +60,9 @@ __PACKAGE__->config(
           'content/' => 'site/content/standard_wrapper.html'
         
         },
+        resource_dir => 'root/bootstrap-3.3.7-dist',
+        resource_paths => [qw/css js fonts/],
+
         get_Model => sub { Rapi::Blog->model('DB') } 
       }
 
