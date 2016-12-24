@@ -2,7 +2,7 @@ package Rapi::Blog;
 use Moose;
 use namespace::autoclean;
 
-use RapidApp 1.2101_50;
+use RapidApp 1.2101_51;
 
 use Catalyst qw/
     -Debug
@@ -46,16 +46,15 @@ __PACKAGE__->config(
       read_alias_path => '/tpl',  #<-- already the default
       edit_alias_path => '/tple', #<-- already the default
       default_template_extension => 'html',
+      access_class => 'Rapi::Blog::Template::AccessStore',
       access_params => {
         writable_regex      => $tpl_regex,
         creatable_regex     => $tpl_regex,
         deletable_regex     => $tpl_regex,
         external_tpl_regex  => $tpl_regex.'public\/',
-      },
-      access_class => 'Rapi::Blog::Template::Access',
-      store_class  => 'Rapi::Blog::Template::Store',
-      store_params => {
+        static_tpl_regex    => '\.(css|js|md)$',
         content_path => 'site/content/',
+        
         view_wrappers => {
           'content/' => 'site/content/standard_wrapper.html'
         
@@ -64,7 +63,8 @@ __PACKAGE__->config(
         resource_paths => [qw/css js fonts/],
 
         get_Model => sub { Rapi::Blog->model('DB') } 
-      }
+      },
+
 
       
     }

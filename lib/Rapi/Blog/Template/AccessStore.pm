@@ -1,12 +1,31 @@
-package Rapi::Blog::Template::Store;
+package Rapi::Blog::Template::AccessStore;
 use strict;
 use warnings;
 
 use RapidApp::Util qw(:all);
 
 use Moo;
-extends 'RapidApp::Template::Store';
+extends 'RapidApp::Template::AccessStore';
 use Types::Standard ':all';
+
+
+# -----------------
+# Access class API:
+
+around 'get_template_vars' => sub {
+  my ($orig,$self,@args) = @_;
+  
+  my $vars = $self->$orig(@args);
+  
+  
+  return $vars;
+};
+
+
+
+# -----------------
+# Store class API:
+
 
 use DateTime;
 use Date::Parse;
@@ -256,8 +275,6 @@ sub _resource_content {
   my $File = file( $self->_resource_Dir, $resource )->resolve;
   scalar $File->slurp
 }
-
-
 
 
 1;
