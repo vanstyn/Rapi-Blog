@@ -51,16 +51,17 @@ __PACKAGE__->config(
         writable_regex      => $tpl_regex,
         creatable_regex     => $tpl_regex,
         deletable_regex     => $tpl_regex,
-        external_tpl_regex  => $tpl_regex.'public\/',
-        static_tpl_regex    => '\.(css|js|md)$',
+        #external_tpl_regex  => $tpl_regex.'public\/',
+        external_tpl_regex => '^content\/',
+        static_tpl_regex    => '\.(css|js)$',
         content_path => 'site/content/',
         
         view_wrappers => {
-          'content/' => 'site/content/standard_wrapper.html'
+          'content/' => 'site/content/tpls/content.html'
         
         },
-        resource_dir => 'root/bootstrap-3.3.7-dist',
-        resource_paths => [qw/css js fonts/],
+        resource_dir => 'root/scaffold',
+        resource_paths => [qw/css js fonts img tpls/],
 
         get_Model => sub { Rapi::Blog->model('DB') } 
       },

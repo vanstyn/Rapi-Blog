@@ -277,4 +277,26 @@ sub _resource_content {
 }
 
 
+sub get_external_tpl_headers {
+  my ($self, $template) = @_;
+  
+  my $content_type =
+    $template =~ /\.css$/ ? 'text/css; charset=utf-8' :
+    $template =~ /\.js$/  ? 'application/javascript; charset=utf-8' :
+    $template =~ /\.ico$/  ? 'image/x-icon' :
+    
+    undef;
+
+  $content_type ? { 'Content-Type' => $content_type } : undef
+}
+
+
+sub template_post_processor_class {
+  my ($self, $template) = @_;
+  
+  # no post-processors for now:
+  return undef;
+}
+
+
 1;
