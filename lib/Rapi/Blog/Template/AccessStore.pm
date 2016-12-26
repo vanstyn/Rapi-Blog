@@ -8,6 +8,12 @@ use Moo;
 extends 'RapidApp::Template::AccessStore';
 use Types::Standard ':all';
 
+use Plack::App::File;
+
+has 'Resource_app', is => 'ro', lazy => 1, default => sub {
+  my $self = shift;
+  Plack::App::File->new(root => $self->_resource_Dir)->to_app
+};
 
 # -----------------
 # Access class API:
@@ -312,5 +318,19 @@ around 'template_post_processor_class' => sub {
   return $self->$orig(@args)
 };
 
+
+sub template_psgi_response {
+  my ($self, $template, $c) = @_;
+  
+  my $resource = $self->resource_name($template) or return undef;
+  
+  my $env = {
+    %{ $c->req->env },
+    PATH_INFO   => "/$resource",
+    SCRIPT_NAME => ''
+  };
+  
+  return $self->Resource_app->($env)
+}
 
 1;
