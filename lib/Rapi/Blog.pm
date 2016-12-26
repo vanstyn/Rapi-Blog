@@ -41,8 +41,8 @@ __PACKAGE__->config(
     },
     
     'Controller::RapidApp::Template' => {
-      root_template_prefix  => 'site/public/page/',
-      root_template         => 'site/public/page/home',
+      root_template_prefix  => '/',
+      root_template         => 'content/f4.md',
       read_alias_path => '/tpl',  #<-- already the default
       edit_alias_path => '/tple', #<-- already the default
       default_template_extension => 'html',
