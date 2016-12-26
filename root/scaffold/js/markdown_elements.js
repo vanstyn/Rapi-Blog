@@ -5,7 +5,7 @@ function processMarkdownElement(markdownEl) {
   var mdText = markdownEl.innerHTML;
   
   var newNode = document.createElement('div');
-  newNode.className = 'container';
+  newNode.className = 'rabl-rendered-markdown';
   
   markdownEl.parentNode.replaceChild(newNode, markdownEl);
   

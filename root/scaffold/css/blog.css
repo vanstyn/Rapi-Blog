@@ -164,3 +164,12 @@ h6, .h6 {
 .blog-footer p:last-child {
   margin-bottom: 0;
 }
+
+
+/* extra styles */
+
+/* responsive images */
+.blog-post img {
+  height: auto;
+  max-width: 100%;
+}
