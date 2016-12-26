@@ -2,7 +2,7 @@ package Rapi::Blog;
 use Moose;
 use namespace::autoclean;
 
-use RapidApp 1.2101_51;
+use RapidApp 1.2101_52;
 
 use Catalyst qw/
     -Debug

@@ -292,10 +292,18 @@ sub get_external_tpl_headers {
 
 
 sub template_post_processor_class {
-  my ($self, $template) = @_;
+  my ($self,@args) = @_;
+  my $template = join('/',@args);
   
-  # no post-processors for now:
-  return undef;
+  # By rule, never use a post processor with a wrapper view:
+  return undef if ($self->wrapper_name($template));
+  
+  my $format = $self->get_template_format($template);
+  
+  return 
+    $format eq 'markdown' ? 'Rapi::Blog::Template::Postprocessor::MarkedWrapper' :
+        
+    undef
 }
 
 
