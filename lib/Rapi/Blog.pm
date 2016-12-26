@@ -53,7 +53,6 @@ __PACKAGE__->config(
         deletable_regex     => $tpl_regex,
         #external_tpl_regex  => $tpl_regex.'public\/',
         external_tpl_regex => '^content\/',
-        static_tpl_regex    => '\.(css|js)$',
         content_path => 'site/content/',
         
         view_wrappers => {
