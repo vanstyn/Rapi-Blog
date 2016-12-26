@@ -15,16 +15,33 @@ has 'Resource_app', is => 'ro', lazy => 1, default => sub {
   Plack::App::File->new(root => $self->_resource_Dir)->to_app
 };
 
+sub templateData {
+  my ($self, $template) = @_;
+  die 'template name argument missing!' unless ($template);
+  $self->local_cache->{template_row_slot}{$template} //= do {
+    my $data = {};
+    if(my $name = $self->local_name($template)) {
+      $data->{Row} = $self->Model->resultset('Content')
+        ->search_rs(undef,{ join => 'content_names' })
+        ->search_rs({ 'content_names.name' => $name })
+        ->first; 
+    }
+    $data
+  }
+}
+
 # -----------------
 # Access class API:
 
 around 'get_template_vars' => sub {
   my ($orig,$self,@args) = @_;
   
-  my $vars = $self->$orig(@args);
+  my $template = join('/',@args);
   
-  
-  return $vars;
+  return {
+    %{ $self->$orig(@args) },
+    %{ $self->templateData($template) || {} }
+  };
 };
 
 
@@ -181,13 +198,15 @@ sub template_content {
     '[% END %]'
   ) if ($wrapper);
   
-  my $Row = $self->Model->resultset('Content')
-    ->search_rs(undef,{
-      join    => 'content_names',
-      columns => ['body']
-    })
-    ->search_rs({ 'content_names.name' => $name })
-    ->first or return undef;
+  my $Row = $self->templateData($template)->{Row} or return undef;
+  
+  #my $Row = $self->Model->resultset('Content')
+  #  ->search_rs(undef,{
+  #    join    => 'content_names',
+  #    columns => ['body']
+  #  })
+  #  ->search_rs({ 'content_names.name' => $name })
+  #  ->first or return undef;
   
   return $Row->get_column('body');
 }
