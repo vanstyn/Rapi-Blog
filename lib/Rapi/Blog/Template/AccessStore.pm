@@ -291,20 +291,26 @@ sub get_external_tpl_headers {
 }
 
 
-sub template_post_processor_class {
-  my ($self,@args) = @_;
+around 'template_post_processor_class' => sub {
+  my ($orig,$self,@args) = @_;
   my $template = join('/',@args);
   
   # By rule, never use a post processor with a wrapper view:
   return undef if ($self->wrapper_name($template));
   
-  my $format = $self->get_template_format($template);
-  
-  return 
-    $format eq 'markdown' ? 'Rapi::Blog::Template::Postprocessor::MarkedWrapper' :
-        
-    undef
-}
+  # Render markdown with our MarkdownElement post-processor if the next template
+  # (i.e. which is including us) is one of our wrapper/views. This will defer
+  # rendering of markdown to the client-side with the marked.js library
+  if($self->process_Context && $self->get_template_format($template) eq 'markdown') {
+    if(my $next_template = $self->process_Context->next_template) {
+      if($self->wrapper_name($next_template)) {
+        return 'Rapi::Blog::Template::Postprocessor::MarkdownElement'
+      }
+    }
+  }
+
+  return $self->$orig(@args)
+};
 
 
 1;
