@@ -64,7 +64,7 @@ has 'Model', is => 'ro', lazy => 1, default => sub {
 
 
 has 'content_path',  is => 'ro', isa => Str, required => 1;
-has 'view_wrappers', is => 'ro', isa => HashRef, default => sub {{}};
+has 'view_wrappers', is => 'ro', isa => ArrayRef[HashRef], default => sub {[]};
 
 has 'resource_dir',    is => 'ro', isa => Str, required => 1;
 has 'resource_paths',  is => 'ro', isa => ArrayRef[Str], required => 1;
@@ -110,21 +110,28 @@ sub resource_name {
     : undef
 }
 
+sub _match_path {
+  my ($self, $path, $template) = @_;
+  
+  my ($pfx,$name) = split($path,$template,2);
+  return ($name && $pfx eq '') ? $name : undef;
+}
 
 sub split_name_wrapper {
   my ($self, $template) = @_;
   
   my ($name, $wrapper);
   
-  for my $view (keys %{ $self->view_wrappers }, $self->content_path) {
-    my $pfx;
-    ($pfx,$name) = split($view,$template,2);
-    if($name && $pfx eq '') {
-      $wrapper = $self->view_wrappers->{$view};
+  for my $def (@{ $self->view_wrappers }) {
+    my $path = $def->{path} or die "Bad view_wrapper definition -- 'path' is required";
+    if ($name = $self->_match_path($path, $template)) {
+      $wrapper = $def;
       last;
-    };
+    }
   }
   
+  $name ||= $self->_match_path($self->content_path, $template);
+
   return ($name, $wrapper);
 }
 
@@ -135,7 +142,7 @@ sub local_name {
   return $name;
 }
 
-sub wrapper_name {
+sub wrapper_def {
   my ($self, $template) = @_;
   my ($name, $wrapper) = $self->split_name_wrapper($template);
   return $wrapper;
@@ -192,11 +199,20 @@ sub template_content {
   my ($name, $wrapper) = $self->split_name_wrapper($template);
   return undef unless ($name);
   
-  return join("\n",
-    join('','[% WRAPPER "',$wrapper,'" %]'),
-    join('','[% INCLUDE "',$self->content_path,$name,'" %]'),
-    '[% END %]'
-  ) if ($wrapper);
+  if($wrapper) {
+    my $wrap_name = $wrapper->{wrapper} or die "Bad view_wrapper definition -- 'wrapper' is required";
+    my $type      = $wrapper->{type} or die "Bad view_wrapper definition -- 'type' is required";
+    my $directive = 
+      $type eq 'include' ? 'INCLUDE' :
+      $type eq 'insert'  ? 'INSERT'  :
+      die "Bad view_wrapper definition -- 'type' must be 'include' or 'insert'";
+    
+    return join("\n",
+      join('','[% WRAPPER "',$wrap_name,'" %]'),
+      join('','[% ', $directive, ' "',$self->content_path,$name,'" %]'),
+      '[% END %]'
+    )
+  }
   
   my $Row = $self->templateData($template)->{Row} or return undef;
   
@@ -307,14 +323,14 @@ around 'template_post_processor_class' => sub {
   my $template = join('/',@args);
   
   # By rule, never use a post processor with a wrapper view:
-  return undef if ($self->wrapper_name($template));
+  return undef if ($self->wrapper_def($template));
   
   # Render markdown with our MarkdownElement post-processor if the next template
   # (i.e. which is including us) is one of our wrapper/views. This will defer
   # rendering of markdown to the client-side with the marked.js library
   if($self->process_Context && $self->get_template_format($template) eq 'markdown') {
     if(my $next_template = $self->process_Context->next_template) {
-      if($self->wrapper_name($next_template)) {
+      if($self->wrapper_def($next_template)) {
         return 'Rapi::Blog::Template::Postprocessor::MarkdownElement'
       }
     }

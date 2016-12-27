@@ -52,13 +52,15 @@ __PACKAGE__->config(
         creatable_regex     => $tpl_regex,
         deletable_regex     => $tpl_regex,
         #external_tpl_regex  => $tpl_regex.'public\/',
-        external_tpl_regex => '^content\/',
+        external_tpl_regex => '^(content|strapdown)\/',
         content_path => 'site/content/',
         
-        view_wrappers => {
-          'content/' => 'site/content/tpls/content.html'
+        view_wrappers => [
+          { path => 'content/',   wrapper => 'site/content/tpls/content.html',   type => 'include' },
+          { path => 'strapdown/', wrapper => 'site/content/tpls/strapdown.html', type => 'insert'  },
         
-        },
+        ],
+        
         resource_dir => 'root/scaffold',
         resource_paths => [qw/css js fonts img tpls/],
 
