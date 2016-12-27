@@ -40,9 +40,19 @@ around 'get_template_vars' => sub {
   
   return {
     %{ $self->$orig(@args) },
-    %{ $self->templateData($template) || {} }
+    %{ $self->templateData($template) || {} },
+    
+    content_list => sub { $self->Model->resultset('ContentName')->content_list(@_) }
+    
   };
 };
+
+sub content_list {
+  my ($self, $query) = @_;
+  
+  # TODO: define a simple query API
+
+}
 
 
 
@@ -245,7 +255,8 @@ sub create_template {
       create_ts => $ts,
       update_ts => $ts,
       body => $content
-    }
+    },
+    published => 1
   };
   
   $self->Model->resultset('ContentName')->create($create) ? 1 : 0;

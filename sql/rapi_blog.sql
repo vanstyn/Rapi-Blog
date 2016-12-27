@@ -65,6 +65,7 @@ CREATE TABLE [content_name] (
   [content_id] INTEGER NOT NULL,
   [name] varchar(255) UNIQUE NOT NULL,
   [prio] INTEGER NOT NULL DEFAULT 0,
+  [published] BOOLEAN NOT NULL DEFAULT 0,
   
   FOREIGN KEY ([content_id]) REFERENCES [content] ([id]) ON DELETE CASCADE ON UPDATE CASCADE
   

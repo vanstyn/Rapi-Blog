@@ -22,6 +22,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 0, size => 255 },
   "prio",
   { data_type => "integer", default_value => 0, is_nullable => 0 },
+  "published",
+  { data_type => "boolean", default_value => 0, is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("name_unique", ["name"]);
@@ -33,8 +35,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-12-11 19:00:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:zFmQLTrKrFP/3cGEUrq1pw
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-12-27 18:40:11
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:7uBHZGvxbjQrdkuvJY0Yyg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
