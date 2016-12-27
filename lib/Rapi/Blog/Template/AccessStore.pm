@@ -208,6 +208,7 @@ sub template_content {
       die "Bad view_wrapper definition -- 'type' must be 'include' or 'insert'";
     
     return join("\n",
+      join('','[% META local_name = "',$name,'" %]'),
       join('','[% WRAPPER "',$wrap_name,'" %]'),
       join('','[% ', $directive, ' "',$self->content_path,$name,'" %]'),
       '[% END %]'
