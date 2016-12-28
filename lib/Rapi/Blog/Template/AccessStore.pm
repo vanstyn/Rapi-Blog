@@ -22,8 +22,7 @@ sub templateData {
     my $data = {};
     if(my $name = $self->local_name($template)) {
       $data->{Row} = $self->Model->resultset('Content')
-        ->search_rs(undef,{ join => 'content_names' })
-        ->search_rs({ 'content_names.name' => $name })
+        ->search_rs({ 'me.name' => $name })
         ->first; 
     }
     $data

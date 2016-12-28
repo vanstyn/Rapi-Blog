@@ -43,6 +43,7 @@ DROP TABLE IF EXISTS [content];
 CREATE TABLE [content] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   [name] varchar(255) UNIQUE NOT NULL,
+  [title] varchar(255) DEFAULT NULL,
   [create_ts] datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   [update_ts] datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   [create_user_id] INTEGER NOT NULL,
@@ -50,6 +51,7 @@ CREATE TABLE [content] (
   [pp_code] varchar(8) DEFAULT NULL,
   [format_code] varchar(8) DEFAULT NULL,
   [published] BOOLEAN NOT NULL DEFAULT 0,
+  [publish_ts] datetime DEFAULT NULL,
   
   [body] text default '',
   

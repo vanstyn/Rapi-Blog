@@ -18,6 +18,13 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "name",
   { data_type => "varchar", is_nullable => 0, size => 255 },
+  "title",
+  {
+    data_type => "varchar",
+    default_value => \"null",
+    is_nullable => 1,
+    size => 255,
+  },
   "create_ts",
   {
     data_type     => "datetime",
@@ -52,6 +59,8 @@ __PACKAGE__->add_columns(
   },
   "published",
   { data_type => "boolean", default_value => 0, is_nullable => 0 },
+  "publish_ts",
+  { data_type => "datetime", default_value => \"null", is_nullable => 1 },
   "body",
   { data_type => "text", default_value => "", is_nullable => 1 },
 );
@@ -99,8 +108,45 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-12-28 16:50:15
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+5hkQpzNZMFwAX+yviWW3g
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-12-28 17:26:54
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KMIW37YpW6zo3dDZUHXEmA
+
+use RapidApp::Util ':all';
+
+sub insert {
+  my $self = shift;
+  my $columns = shift;
+  $self->set_inflated_columns($columns) if $columns;
+  
+  $self->_set_column_defaults;
+
+  $self->next::method;
+}
+
+sub update {
+  my $self = shift;
+  my $columns = shift;
+  $self->set_inflated_columns($columns) if $columns;
+  
+  $self->_set_column_defaults;
+
+  $self->next::method;
+}
+
+
+
+sub _set_column_defaults {
+  my $self = shift;
+  
+  # defualt title:
+  $self->title($self->name) unless $self->title;
+  
+  
+
+
+}
+
+
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
