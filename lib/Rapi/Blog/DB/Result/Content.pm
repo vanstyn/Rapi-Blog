@@ -28,13 +28,13 @@ __PACKAGE__->add_columns(
   "create_ts",
   {
     data_type     => "datetime",
-    default_value => \"current_timestamp",
+    default_value => \"datetime(CURRENT_TIMESTAMP,'localtime')",
     is_nullable   => 0,
   },
   "update_ts",
   {
     data_type     => "datetime",
-    default_value => \"current_timestamp",
+    default_value => \"datetime(CURRENT_TIMESTAMP,'localtime')",
     is_nullable   => 0,
   },
   "create_user_id",
@@ -108,8 +108,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-12-28 17:26:54
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:KMIW37YpW6zo3dDZUHXEmA
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-12-28 17:51:21
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U1FsGvBpJVgwzpFt3Kh/AQ
 
 use RapidApp::Util ':all';
 
@@ -141,6 +141,12 @@ sub _set_column_defaults {
   # defualt title:
   $self->title($self->name) unless $self->title;
   
+  if ($self->published) {
+    $self->publish_ts(\"datetime(CURRENT_TIMESTAMP,'localtime')") unless $self->publish_ts;
+  }
+  else {
+    $self->publish_ts(undef) if $self->publish_ts;
+  }
   
 
 

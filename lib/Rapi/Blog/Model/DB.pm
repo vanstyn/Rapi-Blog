@@ -38,10 +38,10 @@ __PACKAGE__->config(
       '*defaults' => {
         include_colspec => ['*'],    #<-- default already ['*']
         ## uncomment these lines to turn on editing in all grids
-        #updatable_colspec   => ['*'],
-        #creatable_colspec   => ['*'],
-        #destroyable_relspec => ['*'],
-        extra_extconfig => {
+        updatable_colspec   => ['*'],
+        creatable_colspec   => ['*'],
+        destroyable_relspec => ['*'],
+        extra_extconfig     => {
           store_button_cnf => {
             save => { showtext => 1 },
             undo => { showtext => 1 }
@@ -54,8 +54,7 @@ __PACKAGE__->config(
     # and is used/available to all modules which interact with them
     TableSpecs => {
       Content => {
-        display_column => 'id',
-        title          => 'Content',
+        display_column => 'title',
         title_multi    => 'Content Rows',
         iconCls        => 'ra-icon-pg',
         multiIconCls   => 'ra-icon-pg-multi',
@@ -63,6 +62,18 @@ __PACKAGE__->config(
           id => {
             allow_add => 0,
             header    => 'id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          name => {
+            header => 'name',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          title => {
+            header => 'title',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -103,15 +114,27 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
-          content_keywords => {
-            header => 'content_keywords',
+          published => {
+            header => 'published',
             #width => 100,
-            #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
-          content_names => {
-            header => 'content_names',
+          publish_ts => {
+            header => 'publish_ts',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          body => {
+            header => 'body',
+            hidden => 1
+              #width => 100,
+              #renderer => 'RA.ux.App.someJsFunc',
+              #profiles => [],
+          },
+          content_keywords => {
+            header => 'content_keywords',
             #width => 100,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
@@ -125,36 +148,6 @@ __PACKAGE__->config(
           },
           update_user => {
             header => 'update_user',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          body => {
-            header => 'body',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          name => {
-            header => 'name',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          published => {
-            header => 'published',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          title => {
-            header => 'title',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          publish_ts => {
-            header => 'publish_ts',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -189,52 +182,6 @@ __PACKAGE__->config(
           },
           content => {
             header => 'content',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-        },
-      },
-      ContentName => {
-        display_column => 'name',
-        title          => 'ContentName',
-        title_multi    => 'ContentName Rows',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
-        columns        => {
-          id => {
-            allow_add => 0,
-            header    => 'id',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          content_id => {
-            header => 'content_id',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            profiles => ['hidden'],
-          },
-          name => {
-            header => 'name',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          prio => {
-            header => 'prio',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          content => {
-            header => 'content',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          published => {
-            header => 'published',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -360,7 +307,7 @@ __PACKAGE__->config(
           },
         },
       },
-    },
+    }
   },
 
 );
