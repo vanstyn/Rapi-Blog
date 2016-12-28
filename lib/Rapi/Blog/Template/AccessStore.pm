@@ -47,14 +47,6 @@ around 'get_template_vars' => sub {
   };
 };
 
-sub content_list {
-  my ($self, $query) = @_;
-  
-  # TODO: define a simple query API
-
-}
-
-
 
 # -----------------
 # Store class API:
