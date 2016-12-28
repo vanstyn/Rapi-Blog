@@ -1,4 +1,4 @@
-package Rapi::Blog::DB::ResultSet::ContentName;
+package Rapi::Blog::DB::ResultSet::Content;
 
 use strict;
 use warnings;
@@ -15,8 +15,7 @@ sub published {
 sub newest_created_first {
   (shift)
     ->search_rs(undef,{ 
-      join => ['content'],
-      order_by => { -desc => 'content.created_ts' }
+      order_by => { -desc => 'me.created_ts' }
     })
 
 }
@@ -32,8 +31,7 @@ sub content_list {
     ->published
     ->newest_created_first
     ->search_rs(undef,{
-      select => [qw/me.name content.created_ts/],
-      as     => [qw/name    created_ts/]
+      columns     => [qw/name    created_ts/]
     
     })
     ->search_rs(undef,{ result_class => 'DBIx::Class::ResultClass::HashRefInflator' })

@@ -42,12 +42,14 @@ INSERT INTO [format] VALUES('html', 'HTML');
 DROP TABLE IF EXISTS [content];
 CREATE TABLE [content] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [name] varchar(255) UNIQUE NOT NULL,
   [create_ts] datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   [update_ts] datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   [create_user_id] INTEGER NOT NULL,
   [update_user_id] INTEGER NOT NULL,
   [pp_code] varchar(8) DEFAULT NULL,
   [format_code] varchar(8) DEFAULT NULL,
+  [published] BOOLEAN NOT NULL DEFAULT 0,
   
   [body] text default '',
   
@@ -56,18 +58,6 @@ CREATE TABLE [content] (
   FOREIGN KEY ([update_user_id]) REFERENCES [user]         ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY ([pp_code])        REFERENCES [preprocessor] ([code]) ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY ([format_code])    REFERENCES [format]       ([code]) ON DELETE RESTRICT ON UPDATE CASCADE
-  
-);
-
-DROP TABLE IF EXISTS [content_name];
-CREATE TABLE [content_name] (
-  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  [content_id] INTEGER NOT NULL,
-  [name] varchar(255) UNIQUE NOT NULL,
-  [prio] INTEGER NOT NULL DEFAULT 0,
-  [published] BOOLEAN NOT NULL DEFAULT 0,
-  
-  FOREIGN KEY ([content_id]) REFERENCES [content] ([id]) ON DELETE CASCADE ON UPDATE CASCADE
   
 );
 

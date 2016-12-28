@@ -42,7 +42,7 @@ around 'get_template_vars' => sub {
     %{ $self->$orig(@args) },
     %{ $self->templateData($template) || {} },
     
-    content_list => sub { $self->Model->resultset('ContentName')->content_list(@_) }
+    content_list => sub { $self->Model->resultset('Content')->content_list(@_) }
     
   };
 };
@@ -166,7 +166,7 @@ sub template_exists {
   
   my $name = $self->local_name($template) or return undef;
   
-  $self->Model->resultset('ContentName')
+  $self->Model->resultset('Content')
     ->search_rs({ 'me.name' => $name })
     ->count
 }
@@ -182,10 +182,9 @@ sub template_mtime {
   
   my $Row = $self->Model->resultset('Content')
     ->search_rs(undef,{
-      join    => 'content_names',
       columns => ['update_ts']
     })
-    ->search_rs({ 'content_names.name' => $name })
+    ->search_rs({ 'me.name' => $name })
     ->first or return undef;
   
   return Date::Parse::str2time( $Row->get_column('update_ts') )
@@ -240,18 +239,15 @@ sub create_template {
 
   my $create = {
     name => $name,
-    prio => 0,
-    content => {
-      create_user_id => $uid,
-      update_user_id => $uid,
-      create_ts => $ts,
-      update_ts => $ts,
-      body => $content
-    },
+    create_user_id => $uid,
+    update_user_id => $uid,
+    create_ts => $ts,
+    update_ts => $ts,
+    body => $content,
     published => 1
   };
   
-  $self->Model->resultset('ContentName')->create($create) ? 1 : 0;
+  $self->Model->resultset('Content')->create($create) ? 1 : 0;
   
 }
 
@@ -264,10 +260,7 @@ sub update_template {
   my $ts  = $self->cur_ts;
   
   my $Row = $self->Model->resultset('Content')
-    ->search_rs(undef,{
-      join    => 'content_names',
-    })
-    ->search_rs({ 'content_names.name' => $name })
+    ->search_rs({ 'me.name' => $name })
     ->first or die 'Not found!';
   
   $Row->update({
@@ -283,10 +276,7 @@ sub delete_template {
   my $name = $self->local_name($template) or return undef;
   
   my $Row = $self->Model->resultset('Content')
-    ->search_rs(undef,{
-      join    => 'content_names',
-    })
-    ->search_rs({ 'content_names.name' => $name })
+    ->search_rs({ 'me.name' => $name })
     ->first or die 'Not found!';
   
   $Row->delete ? 1 : 0;
@@ -295,7 +285,7 @@ sub delete_template {
 
 sub list_templates {
   my $self = shift;
-  [ map { join('',$self->content_path,$_) } $self->Model->resultset('ContentName')->get_column('name')->all ]
+  [ map { join('',$self->content_path,$_) } $self->Model->resultset('Content')->get_column('name')->all ]
 }
 
 
