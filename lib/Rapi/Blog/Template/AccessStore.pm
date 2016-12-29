@@ -156,6 +156,19 @@ sub owns_tpl {
 }
 
 
+sub _File_for_tpl_dir_template {
+  my ($self, $template) = @_;
+  
+  my ($name, $wrapper) = $self->split_name_wrapper($template);
+  return undef unless ($wrapper && $wrapper->{type} && $wrapper->{type} eq 'tpl_dir');
+  
+  $wrapper->{dir} or die "Bad view_wrapper definition -- 'dir' is required for 'tpl_dir'";
+  my $Dir = dir( RapidApp::Util::find_app_home('Rapi::Blog'), $wrapper->{dir} )->resolve;
+  
+  file( $Dir, $name )
+}
+
+
 sub template_exists {
   my ($self, $template) = @_;
   
@@ -164,6 +177,10 @@ sub template_exists {
   }
   
   my $name = $self->local_name($template) or return undef;
+
+  if(my $File = $self->_File_for_tpl_dir_template($template)) {
+    return -f $File;
+  }
   
   $self->Model->resultset('Content')
     ->search_rs({ 'me.name' => $name })
@@ -178,6 +195,11 @@ sub template_mtime {
   }
   
   my $name = $self->local_name($template) or return undef;
+  
+  if(my $File = $self->_File_for_tpl_dir_template($template)) {
+    my $Stat = $File->stat or return undef;
+    return $Stat->mtime;
+  }
   
   my $Row = $self->Model->resultset('Content')
     ->search_rs(undef,{
@@ -198,6 +220,10 @@ sub template_content {
   
   my ($name, $wrapper) = $self->split_name_wrapper($template);
   return undef unless ($name);
+  
+  if(my $File = $self->_File_for_tpl_dir_template($template)) {
+    return scalar $File->slurp;
+  }
   
   if($wrapper) {
     my $wrap_name = $wrapper->{wrapper} or die "Bad view_wrapper definition -- 'wrapper' is required";

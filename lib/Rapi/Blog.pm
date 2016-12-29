@@ -52,18 +52,26 @@ __PACKAGE__->config(
         creatable_regex     => $tpl_regex,
         deletable_regex     => $tpl_regex,
         #external_tpl_regex  => $tpl_regex.'public\/',
-        external_tpl_regex => '^(content|strapdown)\/',
+        external_tpl_regex => '^(content|strapdown|page)\/',
         content_path => 'site/content/',
         
         view_wrappers => [
-          { path => 'content/',   wrapper => 'site/content/tpls/content.html',   type => 'include' },
-          { path => 'strapdown/', wrapper => 'site/content/tpls/strapdown.html', type => 'insert'  },
+          { path => 'content/',   type => 'include', wrapper => 'site/content/tpls/content.html'    },
+          { path => 'strapdown/', type => 'insert',  wrapper => 'site/content/tpls/strapdown.html', },
+          
+          # This is a temp/working-name solution for a path to serve templates from
+          # the filesystem. Yes, this is already the feature of the built-in stuff,
+          # but the point is to come up with a 'scaffold' structure that contains
+          # everything in one place/dir. I'm still coming up with how it should be,
+          # and I need to experiment with features to be able to decide on the final
+          # design. All these concepts need to be merged...
+          { path => 'page/',      type => 'tpl_dir', dir     => 'root/scaffold/page',               },
         
         ],
         
         resource_dir => 'root/scaffold',
         resource_paths => [qw/css js fonts img tpls/],
-
+        
         get_Model => sub { Rapi::Blog->model('DB') } 
       },
 
