@@ -12,10 +12,10 @@ sub published {
 
 }
 
-sub newest_created_first {
+sub newest_published_first {
   (shift)
     ->search_rs(undef,{ 
-      order_by => { -desc => 'me.created_ts' }
+      order_by => { -desc => 'me.publish_ts' }
     })
 
 }
@@ -29,9 +29,9 @@ sub content_list {
   
   my @rows = $self
     ->published
-    ->newest_created_first
+    ->newest_published_first
     ->search_rs(undef,{
-      columns     => [qw/name    created_ts/]
+      columns     => [qw/name    create_ts/]
     
     })
     ->search_rs(undef,{ result_class => 'DBIx::Class::ResultClass::HashRefInflator' })
