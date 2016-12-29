@@ -22,22 +22,26 @@ sub newest_published_first {
 
 # Method exposed to templates:
 sub content_list {
-  my ($self, $query) = @_;
+  my ($self, $search) = @_;
   
   # TODO: define some sort of simple query API
   
-  
-  my @rows = $self
+  my $Rs = $self
     ->published
     ->newest_published_first
     ->search_rs(undef,{
       columns     => [qw/name    create_ts/]
     
     })
-    ->search_rs(undef,{ result_class => 'DBIx::Class::ResultClass::HashRefInflator' })
-    ->all;
+    ->search_rs(undef,{ result_class => 'DBIx::Class::ResultClass::HashRefInflator' });
   
-  return \@rows
+  # -- example of how a query could work --
+  $Rs = $Rs->search_rs(
+    { 'me.name' => { like => join('','%',$search,'%') } }
+  ) if ($search);
+  # --
+  
+  return [ $Rs->all ]
 }
 
 
