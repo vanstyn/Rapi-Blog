@@ -1,0 +1,7 @@
+{
+  "static_paths"  : [ "css/", "js/", "fonts/", "img/" ],
+  "private_paths" : [ "private/" ],
+  "landing_page"  : "content/gotalk.md",
+  "favicon"       : "img/favicon.ico"
+
+}

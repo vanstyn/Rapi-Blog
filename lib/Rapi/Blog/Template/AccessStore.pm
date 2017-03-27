@@ -10,6 +10,103 @@ use Types::Standard ':all';
 
 use Plack::App::File;
 
+has 'scaffold_dir',  is => 'ro', isa => InstanceOf['Path::Class::Dir'], required => 1;
+has 'static_paths',  is => 'ro', isa => ArrayRef[Str], default => sub {[]};
+has 'private_paths', is => 'ro', isa => ArrayRef[Str], default => sub {[]};
+
+around 'template_external_tpl' => sub {
+  my ($orig,$self,@args) = @_;
+  my $template = join('/',@args);
+
+  return 1 if ($self->_is_static_path($template) || $self->_resolve_scaffold_file($template));
+
+  return $self->$orig(@args)
+};
+
+
+has 'static_path_app', is => 'ro', lazy => 1, default => sub {
+  my $self = shift;
+  Plack::App::File->new(root => $self->scaffold_dir)->to_app
+};
+
+
+has '_static_path_regexp', is => 'ro', lazy => 1, default => sub {
+  my $self = shift;
+  my @paths = @{$self->static_paths};
+  return undef unless (scalar(@paths) > 0);
+  
+  # Clean up and normalize values:
+  my @list = map { $_ =~ s/^\///; $_ =~ s/\/?$/\//; $_ } @paths;
+  
+  my $reStr = join('','^(',join('|', @list ),')');
+
+  return qr/$reStr/
+};
+
+has '_private_path_regexp', is => 'ro', lazy => 1, default => sub {
+  my $self = shift;
+  my @paths = @{$self->private_paths};
+  return undef unless (scalar(@paths) > 0);
+  
+  # Clean up and normalize values:
+  my @list = map { $_ =~ s/^\///; $_ =~ s/\/?$/\//; $_ } @paths;
+  
+  my $reStr = join('','^(',join('|', @list ),')');
+
+  return qr/$reStr/
+};
+
+sub _is_static_path {
+  my ($self, $template) = @_;
+  my $Regexp = $self->_static_path_regexp or return 0;
+  $template =~ $Regexp
+}
+
+sub _is_private_path {
+  my ($self, $template) = @_;
+  my $Regexp = $self->_private_path_regexp or return 0;
+  $template =~ $Regexp
+}
+
+sub _resolve_scaffold_file {
+  my ($self, $template) = @_;
+  my $File = $self->scaffold_dir->file($template);
+  -f $File ? $File : undef
+}
+
+sub _resolve_static_path {
+  my ($self, $template) = @_;
+  return $template if ($self->_is_static_path($template));
+  
+  for my $def (@{ $self->view_wrappers }) {
+    my $path = $def->{path} or die "Bad view_wrapper definition -- 'path' is required";
+    $path =~ s/\/?/\//;
+    my ($pre, $loc_tpl) = split(/$path/,$template,2);
+    return $loc_tpl if ($pre eq '' && $loc_tpl && $self->_is_static_path($loc_tpl));
+  }
+  
+  return undef
+}
+
+sub _File_mtime {
+  my ($self, $File) = @_;
+  my $Stat = $File->stat or return undef;
+  $Stat->mtime
+}
+
+
+sub _File_content {
+  my ($self, $File) = @_;
+  scalar $File->slurp
+}
+
+
+
+
+
+
+
+
 has 'Resource_app', is => 'ro', lazy => 1, default => sub {
   my $self = shift;
   Plack::App::File->new(root => $self->_resource_Dir)->to_app
@@ -152,35 +249,36 @@ sub wrapper_def {
 
 sub owns_tpl {
   my ($self, $template) = @_;
-  $self->local_name($template) ? 1 : 0
+  $self->local_name($template) 
+    || $self->_is_static_path($template) 
+    || $self->_resolve_scaffold_file($template) 
+  ? 1 : 0
 }
 
 
-sub _File_for_tpl_dir_template {
-  my ($self, $template) = @_;
-  
-  my ($name, $wrapper) = $self->split_name_wrapper($template);
-  return undef unless ($wrapper && $wrapper->{type} && $wrapper->{type} eq 'tpl_dir');
-  
-  $wrapper->{dir} or die "Bad view_wrapper definition -- 'dir' is required for 'tpl_dir'";
-  my $Dir = dir( RapidApp::Util::find_app_home('Rapi::Blog'), $wrapper->{dir} )->resolve;
-  
-  file( $Dir, $name )
-}
+#sub _File_for_tpl_dir_template {
+#  my ($self, $template) = @_;
+#  
+#  my ($name, $wrapper) = $self->split_name_wrapper($template);
+#  return undef unless ($wrapper && $wrapper->{type} && $wrapper->{type} eq 'tpl_dir');
+#  
+#  $wrapper->{dir} or die "Bad view_wrapper definition -- 'dir' is required for 'tpl_dir'";
+#  my $Dir = dir( RapidApp::Util::find_app_home('Rapi::Blog'), $wrapper->{dir} )->resolve;
+#  
+#  file( $Dir, $name )
+#}
 
 
 sub template_exists {
   my ($self, $template) = @_;
   
-  if (my $resource = $self->resource_name($template)) {
-    return $self->_resource_exists($resource);
-  }
+  return 1 if ($self->_resolve_scaffold_file($template));
   
   my $name = $self->local_name($template) or return undef;
 
-  if(my $File = $self->_File_for_tpl_dir_template($template)) {
-    return -f $File;
-  }
+  #if(my $File = $self->_File_for_tpl_dir_template($template)) {
+  #  return -f $File;
+  #}
   
   $self->Model->resultset('Content')
     ->search_rs({ 'me.name' => $name })
@@ -190,16 +288,16 @@ sub template_exists {
 sub template_mtime {
   my ($self, $template) = @_;
   
-  if (my $resource = $self->resource_name($template)) {
-    return $self->_resource_mtime($resource);
+  if (my $File = $self->_resolve_scaffold_file($template)) {
+    return $self->_File_mtime($File);
   }
   
   my $name = $self->local_name($template) or return undef;
   
-  if(my $File = $self->_File_for_tpl_dir_template($template)) {
-    my $Stat = $File->stat or return undef;
-    return $Stat->mtime;
-  }
+  #if(my $File = $self->_File_for_tpl_dir_template($template)) {
+  #  my $Stat = $File->stat or return undef;
+  #  return $Stat->mtime;
+  #}
   
   my $Row = $self->Model->resultset('Content')
     ->search_rs(undef,{
@@ -214,16 +312,16 @@ sub template_mtime {
 sub template_content {
   my ($self, $template) = @_;
   
-  if (my $resource = $self->resource_name($template)) {
-    return $self->_resource_content($resource);
+  if (my $File = $self->_resolve_scaffold_file($template)) {
+    return $self->_File_content($File);
   }
   
   my ($name, $wrapper) = $self->split_name_wrapper($template);
   return undef unless ($name);
   
-  if(my $File = $self->_File_for_tpl_dir_template($template)) {
-    return scalar $File->slurp;
-  }
+  #if(my $File = $self->_File_for_tpl_dir_template($template)) {
+  #  return scalar $File->slurp;
+  #}
   
   if($wrapper) {
     my $wrap_name = $wrapper->{wrapper} or die "Bad view_wrapper definition -- 'wrapper' is required";
@@ -315,26 +413,26 @@ sub list_templates {
 
 
 
-sub _resource_exists {
-  my ($self, $resource) = @_;
-  my $File = file( $self->_resource_Dir, $resource );
-  -f $File
-}
-
-
-sub _resource_mtime {
-  my ($self, $resource) = @_;
-  my $File = file( $self->_resource_Dir, $resource );
-  my $Stat = $File->stat or return undef;
-  $Stat->mtime
-}
-
-
-sub _resource_content {
-  my ($self, $resource) = @_;
-  my $File = file( $self->_resource_Dir, $resource )->resolve;
-  scalar $File->slurp
-}
+#sub _resource_exists {
+#  my ($self, $resource) = @_;
+#  my $File = file( $self->_resource_Dir, $resource );
+#  -f $File
+#}
+#
+#
+#sub _resource_mtime {
+#  my ($self, $resource) = @_;
+#  my $File = file( $self->_resource_Dir, $resource );
+#  my $Stat = $File->stat or return undef;
+#  $Stat->mtime
+#}
+#
+#
+#sub _resource_content {
+#  my ($self, $resource) = @_;
+#  my $File = file( $self->_resource_Dir, $resource )->resolve;
+#  scalar $File->slurp
+#}
 
 
 around 'template_post_processor_class' => sub {
@@ -362,15 +460,20 @@ around 'template_post_processor_class' => sub {
 sub template_psgi_response {
   my ($self, $template, $c) = @_;
   
-  my $resource = $self->resource_name($template) or return undef;
+  # Return 404 for private paths:
+  return [ 
+    404, [ 'Content-Type' => 'text/plain' ], [ 'Hello World' ] 
+  ] if ($self->_is_private_path($template));
+  
+  my $tpl = $self->_resolve_static_path($template) or return undef;
   
   my $env = {
     %{ $c->req->env },
-    PATH_INFO   => "/$resource",
+    PATH_INFO   => "/$tpl",
     SCRIPT_NAME => ''
   };
   
-  return $self->Resource_app->($env)
+  return $self->static_path_app->($env)
 }
 
 1;

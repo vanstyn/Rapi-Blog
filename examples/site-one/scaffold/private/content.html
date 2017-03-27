@@ -1,0 +1,21 @@
+[%- USE date(format = '%a %d-%b-%Y') -%]
+[%- WRAPPER site/content/tpls/site_wrapper.html 
+  title = '...content...'
+-%]
+
+  <div class="blog-post">
+  
+      <h2 class="blog-post-title">Blog post</h2>
+      <p class="blog-post-meta">[% date.format(Row.update_ts) %] by <a href="#">???</a></p>
+      
+      <p class="blog-post-meta">
+        View in Strapdown: 
+        <a href="../strapdown/[% template.local_name %]">../strapdown/[% template.local_name %]</a>
+      </p>
+
+      [% content %]
+    
+  
+  </div>
+
+[% END %]

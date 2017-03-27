@@ -1,0 +1,15 @@
+[%- WRAPPER site/content/tpls/site_wrapper.html 
+  title = 'List'
+-%]
+
+  <div class="blog-post">
+  
+    <ul>
+      [% FOREACH i IN content_list( c.req.query_params.search ) %]
+        <li><a href="../content/[% i.name %]">../content/[% i.name %]</a></li>
+      [% END %]
+    </ul>
+  
+  </div>
+
+[% END %]
