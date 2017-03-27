@@ -18,7 +18,11 @@ around 'template_external_tpl' => sub {
   my ($orig,$self,@args) = @_;
   my $template = join('/',@args);
 
-  return 1 if ($self->_is_static_path($template) || $self->_resolve_scaffold_file($template));
+  return 1 if (
+    $self->_is_static_path($template) || 
+    $self->_resolve_scaffold_file($template) ||
+    $self->wrapper_def($template)
+  );
 
   return $self->$orig(@args)
 };
