@@ -1,1 +1,0 @@
-New Template 'site/dummy/template1.md'
