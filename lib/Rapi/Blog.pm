@@ -120,7 +120,6 @@ sub _build_config {
         writable_regex      => $tpl_regex,
         creatable_regex     => $tpl_regex,
         deletable_regex     => $tpl_regex,
-
         
         scaffold_dir  => $self->scaffold_dir,
         static_paths  => $self->scaffold_cnf->{static_paths},
@@ -131,20 +130,8 @@ sub _build_config {
         view_wrappers => [
           { path => 'content/',   type => 'include', wrapper => 'private/content.html'    },
           { path => 'strapdown/', type => 'insert',  wrapper => 'private/strapdown.html', },
-          
-          ## This is a temp/working-name solution for a path to serve templates from
-          ## the filesystem. Yes, this is already the feature of the built-in stuff,
-          ## but the point is to come up with a 'scaffold' structure that contains
-          ## everything in one place/dir. I'm still coming up with how it should be,
-          ## and I need to experiment with features to be able to decide on the final
-          ## design. All these concepts need to be merged...
-          #{ path => 'page/',      type => 'tpl_dir', dir     => 'root/scaffold/page',               },
-        
         ],
-        
-        resource_dir => 'root/scaffold',
-        resource_paths => [qw/css js fonts img tpls/],
-        
+
         get_Model => sub { $self->base_appname->model('DB') } 
       } 
     }
