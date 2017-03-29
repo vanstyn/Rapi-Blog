@@ -84,7 +84,7 @@ sub _resolve_static_path {
   
   for my $def (@{ $self->view_wrappers }) {
     my $path = $def->{path} or die "Bad view_wrapper definition -- 'path' is required";
-    $path =~ s/\/?/\//;
+    $path =~ s/\/?/\//; $path =~ s/^\///;
     my ($pre, $loc_tpl) = split(/$path/,$template,2);
     return $loc_tpl if ($pre eq '' && $loc_tpl && $self->_is_static_path($loc_tpl));
   }
