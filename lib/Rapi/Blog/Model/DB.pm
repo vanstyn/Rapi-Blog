@@ -312,18 +312,16 @@ __PACKAGE__->config(
 
 );
 
-
 before 'setup' => sub {
   my $self = shift;
-  
+
   # extract path from dsn because the app reaches in to set it
   my $dsn = $self->connect_info->{dsn};
-  my ($pre,$db_path) = split(/\:SQLite\:/,$dsn,2);
-  
-  return if (-f $db_path);
+  my ( $pre, $db_path ) = split( /\:SQLite\:/, $dsn, 2 );
+
+  return if ( -f $db_path );
   $self->schema_class->connect($dsn)->deploy;
 };
-
 
 =head1 NAME
 
