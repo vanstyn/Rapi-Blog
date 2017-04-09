@@ -14,6 +14,7 @@ use Types::Standard qw(:all);
 
 use RapidApp::Util ':all';
 use Path::Class qw/file dir/;
+use YAML::XS 0.64 'LoadFile';
 
 our $VERSION = '0.01';
 our $TITLE = "Rapi::Blog v" . $VERSION;
@@ -70,9 +71,12 @@ has 'scaffold_cnf', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   
   my $cnf = clone( $self->scaffold_config );
   
-  my $json_file = $self->scaffold_dir->file('scaffold.json');
-  %$cnf = ( %{ decode_json_utf8( scalar $json_file->slurp ) }, %$cnf ) if (-f $json_file);
-
+  my $yaml_file = $self->scaffold_dir->file('scaffold.yml');
+  if (-f $yaml_file) {
+    my $data = LoadFile( $yaml_file );
+    %$cnf = ( %$data, %$cnf );
+  }
+  
   %$cnf = ( %$defaults, %$cnf );
   
   return $cnf
