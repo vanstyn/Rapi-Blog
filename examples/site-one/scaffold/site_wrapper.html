@@ -43,13 +43,15 @@
     <div class="blog-masthead">
       <div class="container">
         <nav class="blog-nav">
-          <a class="blog-nav-item active" href="#">Home</a>
-          <a class="blog-nav-item" href="#">New features</a>
-          <a class="blog-nav-item" href="#">Press</a>
-          <a class="blog-nav-item" href="#">New hires</a>
-          <a class="blog-nav-item" href="#">About</a>
-          <a class="blog-nav-item" href="/list">List</a>
-          
+				
+					[% FOREACH page IN scaffold.pages %]
+					  [%- IF page.path == request_path %]
+							<a class="blog-nav-item active" href="[%- page.path -%]">[%- page.title -%]</a>
+						[%- ELSE %]
+						  <a class="blog-nav-item" href="[%- page.path -%]">[%- page.title -%]</a>
+						[%- END %]
+					[% END %]
+				
           <form class="navbar-form navbar-right" action="/list">
             <div class="form-group">
               <input type="text" class="form-control" name="search">
@@ -79,7 +81,7 @@
           <div class="sidebar-module sidebar-module-inset">
             <h4>About</h4>
             <p>
-						  This is an example site/scaffold for Rapi::Blog
+						  This is an example site/scaffold for Rapi::Blog - [% request_path %]
 						</p>
           </div>
           

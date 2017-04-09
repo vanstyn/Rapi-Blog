@@ -122,6 +122,7 @@ sub _build_config {
         deletable_regex     => $tpl_regex,
         
         scaffold_dir  => $self->scaffold_dir,
+        scaffold_cnf  => $self->scaffold_cnf,
         static_paths  => $self->scaffold_cnf->{static_paths},
         private_paths => $self->scaffold_cnf->{private_paths},
         

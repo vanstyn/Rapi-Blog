@@ -11,6 +11,7 @@ use Types::Standard ':all';
 use Plack::App::File;
 
 has 'scaffold_dir',  is => 'ro', isa => InstanceOf['Path::Class::Dir'], required => 1;
+has 'scaffold_cnf',  is => 'ro', isa => HashRef, required => 1;
 has 'static_paths',  is => 'ro', isa => ArrayRef[Str], default => sub {[]};
 has 'private_paths', is => 'ro', isa => ArrayRef[Str], default => sub {[]};
 
@@ -124,16 +125,24 @@ sub templateData {
 
 around 'get_template_vars' => sub {
   my ($orig,$self,@args) = @_;
+  my $c = RapidApp->active_request_context;
   
   my $template = join('/',@args);
   
-  return {
+  my $vars = {
     %{ $self->$orig(@args) },
     %{ $self->templateData($template) || {} },
     
-    content_list => sub { $self->Model->resultset('Content')->content_list(@_) }
+    scaffold     => $self->scaffold_cnf,
+    content_list => sub { $self->Model->resultset('Content')->content_list(@_) },
+    
+    # TODO: consider mount_url
+    request_path => sub { $c ? join('','/',$c->req->path) : undef }
     
   };
+  
+  return $vars
+  
 };
 
 

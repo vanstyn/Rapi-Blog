@@ -2,6 +2,13 @@
   "static_paths"  : [ "css/", "js/", "fonts/", "img/" ],
   "private_paths" : [ "private/" ],
   "landing_page"  : "content/gotalk.md",
-  "favicon"       : "img/favicon.ico"
+  "favicon"       : "img/favicon.ico",
+  
+  "pages" : [
+    { "title": "Home",  "path": "/" },
+    { "title": "About", "path": "/about" },
+    { "title": "List",  "path": "/list" }
+  
+  ]
 
 }
