@@ -9,9 +9,15 @@ use RapidApp::Util ':all';
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
+my $dir = $ARGV[0];
+
 use Rapi::Blog;
 
-my $AC = Rapi::Blog->controller('RapidApp::Template')->Access;
+my $Blog = Rapi::Blog->new({ site_path => $dir });
+
+$Blog->to_app; # init
+
+my $AC = $Blog->base_appname->controller('RapidApp::Template')->Access;
 
 my $tpls = &_tpls;
 for my $template (keys %$tpls) {
