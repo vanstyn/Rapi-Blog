@@ -6,6 +6,10 @@ landing_page  : content/gotalk.md
 favicon       : img/favicon.ico
 
 pages : 
-  - { title: Home,  path: / }
+  - { title: Home,  path: /      }
   - { title: About, path: /about }
-  - { title: List,  path: /list }
+  - { title: List,  path: /list  }
+
+view_wrappers:
+  - { path: content/,   type: include, wrapper: private/content.html   }
+  - { path: strapdown/, type: insert,  wrapper: private/strapdown.html }  

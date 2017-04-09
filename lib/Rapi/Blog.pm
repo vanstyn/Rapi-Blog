@@ -132,10 +132,7 @@ sub _build_config {
         
         content_path => 'site/content/',
         
-        view_wrappers => [
-          { path => 'content/',   type => 'include', wrapper => 'private/content.html'    },
-          { path => 'strapdown/', type => 'insert',  wrapper => 'private/strapdown.html', },
-        ],
+        view_wrappers => $self->scaffold_cnf->{view_wrappers}, 
 
         get_Model => sub { $self->base_appname->model('DB') } 
       } 
