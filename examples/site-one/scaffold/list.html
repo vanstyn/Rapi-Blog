@@ -6,7 +6,7 @@
   
     <ul>
       [% FOREACH i IN content_list( c.req.query_params.search ) %]
-        <li><a href="../content/[% i.name %]">../content/[% i.name %]</a></li>
+        <li><a href="../content/[% i.name %]">[% i.title %]</a></li>
       [% END %]
     </ul>
   

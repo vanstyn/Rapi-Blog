@@ -9,7 +9,7 @@ use RapidApp::Util ':all';
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 
-my $dir = $ARGV[0];
+my $dir = $ARGV[0] or die "missing site_path argument";
 
 use Rapi::Blog;
 

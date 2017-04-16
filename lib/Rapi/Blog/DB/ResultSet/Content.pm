@@ -29,10 +29,10 @@ sub content_list {
   my $Rs = $self
     ->published
     ->newest_published_first
-    ->search_rs(undef,{
-      columns     => [qw/name    create_ts/]
-    
-    })
+    #->search_rs(undef,{
+    #  columns     => [qw/name    create_ts/]
+    #
+    #})
     ->search_rs(undef,{ result_class => 'DBIx::Class::ResultClass::HashRefInflator' });
   
   # -- example of how a query could work --
