@@ -44,6 +44,7 @@ CREATE TABLE [content] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   [name] varchar(255) UNIQUE NOT NULL,
   [title] varchar(255) DEFAULT NULL,
+  [image] varchar(255) DEFAULT NULL,
   [create_ts] datetime NOT NULL DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')),
   [update_ts] datetime NOT NULL DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')),
   [create_user_id] INTEGER NOT NULL,

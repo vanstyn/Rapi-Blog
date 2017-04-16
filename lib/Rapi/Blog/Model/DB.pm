@@ -78,6 +78,12 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
+          image => {
+            header   => 'image',
+            profiles => ['cas_img'],
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+          },
           create_ts => {
             header => 'create_ts',
             #width => 100,

@@ -25,6 +25,13 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
     size => 255,
   },
+  "image",
+  {
+    data_type => "varchar",
+    default_value => \"null",
+    is_nullable => 1,
+    size => 255,
+  },
   "create_ts",
   {
     data_type     => "datetime",
@@ -108,8 +115,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-12-28 17:51:21
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:U1FsGvBpJVgwzpFt3Kh/AQ
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-16 12:41:10
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BQEQkNQnDh/jovXFcoXcvw
 
 use RapidApp::Util ':all';
 
