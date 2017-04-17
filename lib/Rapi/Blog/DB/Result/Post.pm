@@ -1,5 +1,5 @@
 use utf8;
-package Rapi::Blog::DB::Result::Content;
+package Rapi::Blog::DB::Result::Post;
 
 # Created by DBIx::Class::Schema::Loader
 # DO NOT MODIFY THE FIRST PART OF THIS FILE
@@ -12,7 +12,7 @@ use MooseX::NonMoose;
 use MooseX::MarkAsMethods autoclean => 1;
 extends 'DBIx::Class::Core';
 __PACKAGE__->load_components("InflateColumn::DateTime");
-__PACKAGE__->table("content");
+__PACKAGE__->table("post");
 __PACKAGE__->add_columns(
   "id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
@@ -73,12 +73,6 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("name_unique", ["name"]);
-__PACKAGE__->has_many(
-  "content_keywords",
-  "Rapi::Blog::DB::Result::ContentKeyword",
-  { "foreign.content_id" => "self.id" },
-  { cascade_copy => 0, cascade_delete => 0 },
-);
 __PACKAGE__->belongs_to(
   "create_user",
   "Rapi::Blog::DB::Result::User",
@@ -95,6 +89,12 @@ __PACKAGE__->belongs_to(
     on_delete     => "RESTRICT",
     on_update     => "CASCADE",
   },
+);
+__PACKAGE__->has_many(
+  "post_keywords",
+  "Rapi::Blog::DB::Result::PostKeyword",
+  { "foreign.post_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->belongs_to(
   "pp_code",
@@ -115,8 +115,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-16 12:41:10
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:BQEQkNQnDh/jovXFcoXcvw
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-17 07:32:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Q/4MbdcpsTRWDtpERqDAvg
 
 use RapidApp::Util ':all';
 

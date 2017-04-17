@@ -16,7 +16,7 @@ use RapidApp::Util ':all';
 use Path::Class qw/file dir/;
 use YAML::XS 0.64 'LoadFile';
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 our $TITLE = "Rapi::Blog v" . $VERSION;
 
 has 'site_path',        is => 'ro', required => 1;

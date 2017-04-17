@@ -19,15 +19,15 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key("name");
 __PACKAGE__->might_have(
-  "content_keyword",
-  "Rapi::Blog::DB::Result::ContentKeyword",
+  "post_keyword",
+  "Rapi::Blog::DB::Result::PostKeyword",
   { "foreign.keyword_name" => "self.name" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-12-11 19:00:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:UsWJj4cI7S1N4YFzDZ4CcQ
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-17 07:32:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OvSqabZQ3ZZ25er7AdHrWg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

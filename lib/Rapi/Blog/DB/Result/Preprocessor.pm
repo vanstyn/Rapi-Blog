@@ -22,15 +22,15 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("code");
 __PACKAGE__->add_unique_constraint("name_unique", ["name"]);
 __PACKAGE__->has_many(
-  "contents",
-  "Rapi::Blog::DB::Result::Content",
+  "posts",
+  "Rapi::Blog::DB::Result::Post",
   { "foreign.pp_code" => "self.code" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2016-12-11 19:00:13
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:eRulsElMH11HlSkwG8zaQg
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-17 07:32:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:v17UijJD6EpIxvjmT5hsPg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

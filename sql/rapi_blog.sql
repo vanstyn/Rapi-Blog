@@ -39,8 +39,8 @@ INSERT INTO [format] VALUES('md',   'Markdown');
 INSERT INTO [format] VALUES('html', 'HTML');
 
 
-DROP TABLE IF EXISTS [content];
-CREATE TABLE [content] (
+DROP TABLE IF EXISTS [post];
+CREATE TABLE [post] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   [name] varchar(255) UNIQUE NOT NULL,
   [title] varchar(255) DEFAULT NULL,
@@ -70,13 +70,13 @@ CREATE TABLE [keyword] (
   [name] varchar(64) PRIMARY KEY NOT NULL
 );
 
-DROP TABLE IF EXISTS [content_keyword];
-CREATE TABLE [content_keyword] (
+DROP TABLE IF EXISTS [post_keyword];
+CREATE TABLE [post_keyword] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  [content_id] INTEGER NOT NULL,
+  [post_id] INTEGER NOT NULL,
   [keyword_name] varchar(64) UNIQUE NOT NULL,
   
-  FOREIGN KEY ([content_id])   REFERENCES [content] ([id])   ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY ([post_id])      REFERENCES [post] ([id])      ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY ([keyword_name]) REFERENCES [keyword] ([name]) ON DELETE CASCADE ON UPDATE CASCADE
   
 );

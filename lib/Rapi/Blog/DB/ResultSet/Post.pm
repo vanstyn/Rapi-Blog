@@ -1,4 +1,4 @@
-package Rapi::Blog::DB::ResultSet::Content;
+package Rapi::Blog::DB::ResultSet::Post;
 
 use strict;
 use warnings;
@@ -21,7 +21,7 @@ sub newest_published_first {
 }
 
 # Method exposed to templates:
-sub content_list {
+sub list_posts {
   my ($self, $search) = @_;
   
   # TODO: define some sort of simple query API

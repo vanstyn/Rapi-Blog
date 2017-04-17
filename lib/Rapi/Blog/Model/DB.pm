@@ -53,9 +53,71 @@ __PACKAGE__->config(
     # TableSpecs define extra RapidApp-specific metadata for each source
     # and is used/available to all modules which interact with them
     TableSpecs => {
-      Content => {
+      Format => {
+        display_column => 'name',
+        title          => 'Format',
+        title_multi    => 'Format Rows',
+        iconCls        => 'ra-icon-pg',
+        multiIconCls   => 'ra-icon-pg-multi',
+        columns        => {
+          code => {
+            header => 'code',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          name => {
+            header => 'name',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          contents => {
+            header => 'contents',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          posts => {
+            header => 'posts',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+        },
+      },
+      Keyword => {
+        display_column => 'name',
+        title          => 'Keyword',
+        title_multi    => 'Keyword Rows',
+        iconCls        => 'ra-icon-pg',
+        multiIconCls   => 'ra-icon-pg-multi',
+        columns        => {
+          name => {
+            header => 'name',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          content_keyword => {
+            header => 'content_keyword',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          post_keyword => {
+            header => 'post_keyword',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+        },
+      },
+      Post => {
         display_column => 'title',
-        title_multi    => 'Content Rows',
+        title_multi    => 'Post Rows',
         iconCls        => 'ra-icon-pg',
         multiIconCls   => 'ra-icon-pg-multi',
         columns        => {
@@ -79,10 +141,10 @@ __PACKAGE__->config(
             #profiles => [],
           },
           image => {
-            header   => 'image',
-            profiles => ['cas_img'],
+            header => 'image',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
           },
           create_ts => {
             header => 'create_ts',
@@ -134,21 +196,20 @@ __PACKAGE__->config(
           },
           body => {
             header => 'body',
-            hidden => 1
-              #width => 100,
-              #renderer => 'RA.ux.App.someJsFunc',
-              #profiles => [],
-          },
-          content_keywords => {
-            header => 'content_keywords',
             #width => 100,
-            #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           create_user => {
             header => 'create_user',
             #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          post_keywords => {
+            header => 'post_keywords',
+            #width => 100,
+            #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -160,10 +221,10 @@ __PACKAGE__->config(
           },
         },
       },
-      ContentKeyword => {
+      PostKeyword => {
         display_column => 'id',
-        title          => 'ContentKeyword',
-        title_multi    => 'ContentKeyword Rows',
+        title          => 'PostKeyword',
+        title_multi    => 'PostKeyword Rows',
         iconCls        => 'ra-icon-pg',
         multiIconCls   => 'ra-icon-pg-multi',
         columns        => {
@@ -174,8 +235,8 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
-          content_id => {
-            header => 'content_id',
+          post_id => {
+            header => 'post_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             profiles => ['hidden'],
@@ -186,57 +247,8 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
-          content => {
-            header => 'content',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-        },
-      },
-      Format => {
-        display_column => 'name',
-        title          => 'Format',
-        title_multi    => 'Format Rows',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
-        columns        => {
-          code => {
-            header => 'code',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          name => {
-            header => 'name',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          contents => {
-            header => 'contents',
-            #width => 100,
-            #sortable => 1,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-        },
-      },
-      Keyword => {
-        display_column => 'name',
-        title          => 'Keyword',
-        title_multi    => 'Keyword Rows',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
-        columns        => {
-          name => {
-            header => 'name',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          content_keyword => {
-            header => 'content_keyword',
+          post => {
+            header => 'post',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -264,6 +276,13 @@ __PACKAGE__->config(
           },
           contents => {
             header => 'contents',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          posts => {
+            header => 'posts',
             #width => 100,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
@@ -306,6 +325,20 @@ __PACKAGE__->config(
           },
           content_update_users => {
             header => 'content_update_users',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          post_create_users => {
+            header => 'post_create_users',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          post_update_users => {
+            header => 'post_update_users',
             #width => 100,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',

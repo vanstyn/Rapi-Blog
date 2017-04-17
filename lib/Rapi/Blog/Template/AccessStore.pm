@@ -112,7 +112,7 @@ sub templateData {
   $self->local_cache->{template_row_slot}{$template} //= do {
     my $data = {};
     if(my $name = $self->local_name($template)) {
-      $data->{Row} = $self->Model->resultset('Content')
+      $data->{Row} = $self->Model->resultset('Post')
         ->search_rs({ 'me.name' => $name })
         ->first; 
     }
@@ -134,7 +134,7 @@ around 'get_template_vars' => sub {
     %{ $self->templateData($template) || {} },
     
     scaffold     => $self->scaffold_cnf,
-    content_list => sub { $self->Model->resultset('Content')->content_list(@_) },
+    list_posts   => sub { $self->Model->resultset('Post')->list_posts(@_) },
     
     # TODO: consider mount_url
     request_path => sub { $c ? join('','/',$c->req->path) : undef }
@@ -236,7 +236,7 @@ sub template_exists {
   
   my $name = $self->local_name($template) or return undef;
 
-  $self->Model->resultset('Content')
+  $self->Model->resultset('Post')
     ->search_rs({ 'me.name' => $name })
     ->count
 }
@@ -250,7 +250,7 @@ sub template_mtime {
   
   my $name = $self->local_name($template) or return undef;
   
-  my $Row = $self->Model->resultset('Content')
+  my $Row = $self->Model->resultset('Post')
     ->search_rs(undef,{
       columns => ['update_ts']
     })
@@ -288,7 +288,7 @@ sub template_content {
   
   my $Row = $self->templateData($template)->{Row} or return undef;
   
-  #my $Row = $self->Model->resultset('Content')
+  #my $Row = $self->Model->resultset('Post')
   #  ->search_rs(undef,{
   #    join    => 'content_names',
   #    columns => ['body']
@@ -317,7 +317,7 @@ sub create_template {
     published => 1
   };
   
-  $self->Model->resultset('Content')->create($create) ? 1 : 0;
+  $self->Model->resultset('Post')->create($create) ? 1 : 0;
   
 }
 
@@ -329,7 +329,7 @@ sub update_template {
   my $uid = $self->get_uid;
   my $ts  = $self->cur_ts;
   
-  my $Row = $self->Model->resultset('Content')
+  my $Row = $self->Model->resultset('Post')
     ->search_rs({ 'me.name' => $name })
     ->first or die 'Not found!';
   
@@ -345,7 +345,7 @@ sub delete_template {
   my ($self, $template) = @_;
   my $name = $self->local_name($template) or return undef;
   
-  my $Row = $self->Model->resultset('Content')
+  my $Row = $self->Model->resultset('Post')
     ->search_rs({ 'me.name' => $name })
     ->first or die 'Not found!';
   
@@ -355,7 +355,7 @@ sub delete_template {
 
 sub list_templates {
   my $self = shift;
-  [ map { join('',$self->content_path,$_) } $self->Model->resultset('Content')->get_column('name')->all ]
+  [ map { join('',$self->content_path,$_) } $self->Model->resultset('Post')->get_column('name')->all ]
 }
 
 around 'template_post_processor_class' => sub {
@@ -385,7 +385,7 @@ sub template_psgi_response {
   
   # Return 404 for private paths:
   return [ 
-    404, [ 'Content-Type' => 'text/plain' ], [ '404 not found' ] 
+    404, [ 'Post-Type' => 'text/plain' ], [ '404 not found' ] 
   ] if ($self->_is_private_path($template));
   
   my $tpl = $self->_resolve_static_path($template) or return undef;
