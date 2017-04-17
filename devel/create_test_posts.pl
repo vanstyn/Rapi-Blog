@@ -25,7 +25,7 @@ my $Rs = $Blog->base_appname->model('DB::Post');
 
 my $uid = 0;
 
-my @posts = sort { $b->{date} cmp $a->{date} } &_posts;
+my @posts = sort { $a->{date} cmp $b->{date} } &_posts;
 for my $post (@posts) {
   print "\n  $post->{name} :   ";
 
@@ -56,6 +56,7 @@ print "\n\n";
 ########################################
 
 sub _posts {(
+  { name => 'emscripten.md', title => 'Emscripten',  date => '2014-03-24' },
   { name => 'gotalk.md',     title => 'Gotalk',      date => '2015-01-21' },
   { name => 'marked.md',     title => 'marked',      date => '2016-03-14' },
   { name => 'reveal.js.md',  title => 'reveal.js',   date => '2017-02-14' },
