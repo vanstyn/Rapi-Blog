@@ -13,6 +13,9 @@ extends 'RapidApp::Builder';
 use Types::Standard qw(:all);
 
 use RapidApp::Util ':all';
+use File::ShareDir qw(dist_dir);
+use FindBin;
+require Module::Locate;
 use Path::Class qw/file dir/;
 use YAML::XS 0.64 'LoadFile';
 
@@ -25,6 +28,24 @@ has 'scaffold_config',  is => 'ro', isa => HashRef, default => sub {{}};
 
 has '+base_appname', default => sub { 'Rapi::Blog::App' };
 has '+debug',        default => sub {1};
+
+has 'share_dir', is => 'ro', isa => Str, lazy => 1, default => sub {
+  my $self = shift;
+
+  $ENV{RAPI_BLOG_SHARE_DIR} || (
+    try{dist_dir('Rapi-Blog')} || (
+      -d "$FindBin::Bin/share" ? "$FindBin::Bin/share"       : 
+      -d "$FindBin::Bin/../share" ? "$FindBin::Bin/../share" :
+      join('',$self->_module_locate_dir,'/../../share')
+    )
+  )
+};
+
+sub _module_locate_dir {
+  my $self = shift;
+  my $pm_path = Module::Locate::locate('Rapi::Blog') or die "Failed to locate Rapi::Blog?!";
+  file($pm_path)->parent->stringify
+}
 
 has '+inject_components', default => sub {
   my $self = shift;
@@ -88,8 +109,20 @@ has 'scaffold_cnf', is => 'ro', init_arg => undef, lazy => 1, default => sub {
 sub _build_version { $VERSION }
 sub _build_plugins { ['RapidApp::RapidDbic'] }
 
-sub _build_config {
+sub _build_base_config {
   my $self = shift;
+  
+  my $tpl_dir = join('/',$self->share_dir,'templates');
+  -d $tpl_dir or die join('',
+    "template dir ($tpl_dir) not found; ", 
+    __PACKAGE__, " may not be installed properly.\n"
+  );
+  
+  my $loc_assets_dir = join('/',$self->share_dir,'assets');
+  -d $loc_assets_dir or die join('',
+    "assets dir ($loc_assets_dir) not found; ", 
+    __PACKAGE__, " may not be installed properly.\n"
+  );
   
   my $tpl_regex = '^site\/';
 
@@ -97,6 +130,7 @@ sub _build_config {
   
     'RapidApp' => {
       module_root_namespace => 'adm',
+      local_assets_dir => $loc_assets_dir,
     },
     
     'Model::RapidApp::CoreSchema' => {
@@ -110,7 +144,8 @@ sub _build_config {
     'Plugin::RapidApp::TabGui' => {
       title => $TITLE,
       nav_title => 'Administration',
-      dashboard_url => '/tple/site/dashboard.md',
+      banner_template => file($tpl_dir,'banner.html')->stringify,
+      dashboard_url => '/tpl/dashboard.md',
       template_navtree_regex => $tpl_regex
     },
     
@@ -120,6 +155,7 @@ sub _build_config {
       read_alias_path => '/tpl',  #<-- already the default
       edit_alias_path => '/tple', #<-- already the default
       default_template_extension => 'html',
+      include_paths => [ $tpl_dir ],
       access_class => 'Rapi::Blog::Template::AccessStore',
       access_params => {
         writable_regex      => $tpl_regex,
