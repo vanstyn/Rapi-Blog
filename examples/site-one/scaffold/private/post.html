@@ -1,12 +1,14 @@
 [%- USE date(format = '%a %d-%b-%Y') -%]
 [%- WRAPPER site_wrapper.html 
-  title = '...content...'
+  title = Row.title
 -%]
 
   <div class="blog-post">
   
-      <h2 class="blog-post-title">Blog post</h2>
-      <p class="blog-post-meta">[% date.format(Row.update_ts) %] by <a href="#">???</a></p>
+      <h2 class="blog-post-title">[% Row.title %]</h2>
+      <p class="blog-post-meta">
+        [% date.format(Row.publish_ts) %] by <i>[% Row.create_user.username %]</i></a>
+      </p>
       
       <p class="blog-post-meta">
         View in Strapdown: 

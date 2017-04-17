@@ -1,3 +1,4 @@
+[%- USE date(format = '%a, %d-%b-%Y') -%]
 [%- WRAPPER site_wrapper.html 
   title = 'List'
 -%]
@@ -6,7 +7,10 @@
   
     <ul>
       [% FOREACH i IN list_posts( c.req.query_params.search ) %]
-        <li><a href="../post/[% i.name %]">[% i.title %]</a></li>
+        <li>
+          <a href="../post/[% i.name %]">[% i.title %]</a> 
+          <i style="padding-left:3px;opacity:0.6;font-size:.9em;"> [% date.format(i.publish_ts) %]</i>
+        </li>
       [% END %]
     </ul>
   

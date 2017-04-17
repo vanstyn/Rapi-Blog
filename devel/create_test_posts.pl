@@ -41,7 +41,7 @@ for my $post (@posts) {
     update_user_id => $uid,
     body => $content,
     published => 1,
-    publish_ts => $post->{date}
+    publish_ts => join(' ',$post->{date},'12:00:00')
   }) and print "created";
 
 }
@@ -62,6 +62,7 @@ sub _posts {(
   { date => '2016-03-14', name => 'metacpan-readme.md',     title => 'Web interface for MetaCPAN (README)' },
   { date => '2017-02-14', name => 'reveal.js.md',           title => 'reveal.js'    },
   { date => '2017-02-15', name => 'metacpan-dev-readme.md', title => 'MetaCPAN Developer (README)' },
+  { date => '2017-03-29', name => 'mosh.md',                title => 'Mosh: the mobile shell'  },
   { date => '2017-04-14', name => 'jsoneditor.md',          title => 'JSON Editor'  },
 
 
