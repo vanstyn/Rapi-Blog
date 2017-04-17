@@ -56,11 +56,13 @@ print "\n\n";
 ########################################
 
 sub _posts {(
-  { name => 'emscripten.md', title => 'Emscripten',  date => '2014-03-24' },
-  { name => 'gotalk.md',     title => 'Gotalk',      date => '2015-01-21' },
-  { name => 'marked.md',     title => 'marked',      date => '2016-03-14' },
-  { name => 'reveal.js.md',  title => 'reveal.js',   date => '2017-02-14' },
-  { name => 'jsoneditor.md', title => 'JSON Editor', date => '2017-04-14' },
+  { date => '2014-03-24', name => 'emscripten.md',          title => 'Emscripten'   },
+  { date => '2015-01-21', name => 'gotalk.md',              title => 'Gotalk'       },
+  { date => '2016-03-14', name => 'marked.md',              title => 'marked'       },
+  { date => '2016-03-14', name => 'metacpan-readme.md',     title => 'Web interface for MetaCPAN (README)' },
+  { date => '2017-02-14', name => 'reveal.js.md',           title => 'reveal.js'    },
+  { date => '2017-02-15', name => 'metacpan-dev-readme.md', title => 'MetaCPAN Developer (README)' },
+  { date => '2017-04-14', name => 'jsoneditor.md',          title => 'JSON Editor'  },
 
 
 )}
