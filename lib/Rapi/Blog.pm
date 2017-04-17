@@ -64,8 +64,9 @@ has 'scaffold_cnf', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
   
   my $defaults = {
-    favicon       => 'favicon.ico',
-    landing_page  => 'index.html'
+    favicon            => 'favicon.ico',
+    landing_page       => 'index.html',
+    internal_post_path => 'private/post/',
   
   };
   
@@ -130,7 +131,7 @@ sub _build_config {
         static_paths  => $self->scaffold_cnf->{static_paths},
         private_paths => $self->scaffold_cnf->{private_paths},
         
-        content_path => 'site/content/',
+        internal_post_path => $self->scaffold_cnf->{internal_post_path},
         
         view_wrappers => $self->scaffold_cnf->{view_wrappers}, 
 

@@ -163,7 +163,7 @@ has 'Model', is => 'ro', lazy => 1, default => sub {
 }, isa => Object;
 
 
-has 'content_path',  is => 'ro', isa => Str, required => 1;
+has 'internal_post_path',  is => 'ro', isa => Str, required => 1;
 has 'view_wrappers', is => 'ro', isa => ArrayRef[HashRef], default => sub {[]};
 
 sub get_uid {
@@ -202,7 +202,7 @@ sub split_name_wrapper {
     }
   }
   
-  $name ||= $self->_match_path($self->content_path, $template);
+  $name ||= $self->_match_path($self->internal_post_path, $template);
 
   return ($name, $wrapper);
 }
@@ -281,7 +281,7 @@ sub template_content {
     return join("\n",
       join('','[% META local_name = "',$name,'" %]'),
       join('','[% WRAPPER "',$wrap_name,'" %]'),
-      join('','[% ', $directive, ' "',$self->content_path,$name,'" %]'),
+      join('','[% ', $directive, ' "',$self->internal_post_path,$name,'" %]'),
       '[% END %]'
     )
   }
@@ -355,7 +355,7 @@ sub delete_template {
 
 sub list_templates {
   my $self = shift;
-  [ map { join('',$self->content_path,$_) } $self->Model->resultset('Post')->get_column('name')->all ]
+  [ map { join('',$self->internal_post_path,$_) } $self->Model->resultset('Post')->get_column('name')->all ]
 }
 
 around 'template_post_processor_class' => sub {
