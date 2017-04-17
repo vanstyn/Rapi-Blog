@@ -2,7 +2,7 @@
 
 static_paths  : [ css/, js/, fonts/, img/ ]
 private_paths : [ private/ ]
-landing_page  : content/gotalk.md
+landing_page  : post/gotalk.md
 favicon       : img/favicon.ico
 
 pages : 
@@ -11,5 +11,5 @@ pages :
   - { title: List,  path: /list  }
 
 view_wrappers:
-  - { path: content/,   type: include, wrapper: private/content.html   }
+  - { path: post/,      type: include, wrapper: private/post.html      }
   - { path: strapdown/, type: insert,  wrapper: private/strapdown.html }  
