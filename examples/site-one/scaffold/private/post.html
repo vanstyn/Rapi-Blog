@@ -1,4 +1,4 @@
-[%- USE date(format = '%a %d-%b-%Y') -%]
+[%- USE date(format = '%a, %d-%b-%Y') -%]
 [%- WRAPPER site_wrapper.html 
   title = Row.title
 -%]
@@ -7,7 +7,7 @@
   
       <h2 class="blog-post-title">[% Row.title %]</h2>
       <p class="blog-post-meta">
-        [% date.format(Row.publish_ts) %] by <i>[% Row.create_user.username %]</i></a>
+        [% date.format(Row.ts) %] by <i>[% Row.author.username %]</i></a>
       </p>
       
       <p class="blog-post-meta">

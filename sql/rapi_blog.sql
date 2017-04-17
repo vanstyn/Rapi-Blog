@@ -45,10 +45,12 @@ CREATE TABLE [post] (
   [name] varchar(255) UNIQUE NOT NULL,
   [title] varchar(255) DEFAULT NULL,
   [image] varchar(255) DEFAULT NULL,
+  [ts] datetime NOT NULL DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')),
   [create_ts] datetime NOT NULL DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')),
   [update_ts] datetime NOT NULL DEFAULT (datetime(CURRENT_TIMESTAMP,'localtime')),
-  [create_user_id] INTEGER NOT NULL,
-  [update_user_id] INTEGER NOT NULL,
+  [author_id] INTEGER NOT NULL,
+  [creator_id] INTEGER NOT NULL,
+  [updater_id] INTEGER NOT NULL,
   [pp_code] varchar(8) DEFAULT NULL,
   [format_code] varchar(8) DEFAULT NULL,
   [published] BOOLEAN NOT NULL DEFAULT 0,
@@ -56,9 +58,9 @@ CREATE TABLE [post] (
   
   [body] text default '',
   
-  
-  FOREIGN KEY ([create_user_id]) REFERENCES [user]         ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY ([update_user_id]) REFERENCES [user]         ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY ([author_id]) REFERENCES [user]              ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY ([creator_id]) REFERENCES [user]             ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY ([updater_id]) REFERENCES [user]             ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY ([pp_code])        REFERENCES [preprocessor] ([code]) ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY ([format_code])    REFERENCES [format]       ([code]) ON DELETE RESTRICT ON UPDATE CASCADE
   

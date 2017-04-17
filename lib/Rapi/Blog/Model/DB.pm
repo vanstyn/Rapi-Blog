@@ -124,7 +124,7 @@ __PACKAGE__->config(
           id => {
             allow_add => 0,
             header    => 'id',
-            #width => 100,
+            width => 80,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -136,7 +136,7 @@ __PACKAGE__->config(
           },
           title => {
             header => 'title',
-            #width => 100,
+            width => 160,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -157,18 +157,6 @@ __PACKAGE__->config(
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
-          },
-          create_user_id => {
-            header => 'create_user_id',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            profiles => ['hidden'],
-          },
-          update_user_id => {
-            header => 'update_user_id',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            profiles => ['hidden'],
           },
           pp_code => {
             header => 'pp_code',
@@ -196,13 +184,8 @@ __PACKAGE__->config(
           },
           body => {
             header => 'body',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          create_user => {
-            header => 'create_user',
-            #width => 100,
+            hidden => 1,
+            width => 400,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -213,8 +196,44 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
-          update_user => {
-            header => 'update_user',
+          ts => {
+            header => 'ts',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          author_id => {
+            header => 'author_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => [ 'hidden' ],
+          },
+          creator_id => {
+            header => 'creator_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => [ 'hidden' ],
+          },
+          updater_id => {
+            header => 'updater_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => [ 'hidden' ],
+          },
+          author => {
+            header => 'author',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          creator => {
+            header => 'creator',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          updater => {
+            header => 'updater',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -291,9 +310,9 @@ __PACKAGE__->config(
         },
       },
       User => {
-        display_column => 'id',
+        display_column => 'username',
         title          => 'User',
-        title_multi    => 'User Rows',
+        title_multi    => 'Users',
         iconCls        => 'ra-icon-pg',
         multiIconCls   => 'ra-icon-pg-multi',
         columns        => {
@@ -339,6 +358,27 @@ __PACKAGE__->config(
           },
           post_update_users => {
             header => 'post_update_users',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          post_authors => {
+            header => 'post_authors',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          post_creators => {
+            header => 'post_creators',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          post_updaters => {
+            header => 'post_updaters',
             #width => 100,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',

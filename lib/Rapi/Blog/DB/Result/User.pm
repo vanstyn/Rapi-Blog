@@ -25,21 +25,27 @@ __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("full_name_unique", ["full_name"]);
 __PACKAGE__->add_unique_constraint("username_unique", ["username"]);
 __PACKAGE__->has_many(
-  "post_create_users",
+  "post_authors",
   "Rapi::Blog::DB::Result::Post",
-  { "foreign.create_user_id" => "self.id" },
+  { "foreign.author_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->has_many(
-  "post_update_users",
+  "post_creators",
   "Rapi::Blog::DB::Result::Post",
-  { "foreign.update_user_id" => "self.id" },
+  { "foreign.creator_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
+  "post_updaters",
+  "Rapi::Blog::DB::Result::Post",
+  { "foreign.updater_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-17 07:32:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:kX32I3KrFdxFbMBLgqz4zA
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-17 16:58:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4szSN0KnoTTJE6LhtGK6YQ
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

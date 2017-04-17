@@ -9,7 +9,7 @@
       [% FOREACH i IN list_posts( c.req.query_params.search ) %]
         <li>
           <a href="../post/[% i.name %]">[% i.title %]</a> 
-          <i style="padding-left:3px;opacity:0.6;font-size:.9em;"> [% date.format(i.publish_ts) %]</i>
+          <i style="padding-left:3px;opacity:0.6;font-size:.9em;"> [% date.format(i.ts) %]</i>
         </li>
       [% END %]
     </ul>

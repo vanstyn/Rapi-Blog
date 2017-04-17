@@ -32,6 +32,12 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
     size => 255,
   },
+  "ts",
+  {
+    data_type     => "datetime",
+    default_value => \"datetime(CURRENT_TIMESTAMP,'localtime')",
+    is_nullable   => 0,
+  },
   "create_ts",
   {
     data_type     => "datetime",
@@ -44,9 +50,11 @@ __PACKAGE__->add_columns(
     default_value => \"datetime(CURRENT_TIMESTAMP,'localtime')",
     is_nullable   => 0,
   },
-  "create_user_id",
+  "author_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "update_user_id",
+  "creator_id",
+  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "updater_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "pp_code",
   {
@@ -74,9 +82,15 @@ __PACKAGE__->add_columns(
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("name_unique", ["name"]);
 __PACKAGE__->belongs_to(
-  "create_user",
+  "author",
   "Rapi::Blog::DB::Result::User",
-  { id => "create_user_id" },
+  { id => "author_id" },
+  { is_deferrable => 0, on_delete => "RESTRICT", on_update => "CASCADE" },
+);
+__PACKAGE__->belongs_to(
+  "creator",
+  "Rapi::Blog::DB::Result::User",
+  { id => "creator_id" },
   { is_deferrable => 0, on_delete => "RESTRICT", on_update => "CASCADE" },
 );
 __PACKAGE__->belongs_to(
@@ -108,15 +122,15 @@ __PACKAGE__->belongs_to(
   },
 );
 __PACKAGE__->belongs_to(
-  "update_user",
+  "updater",
   "Rapi::Blog::DB::Result::User",
-  { id => "update_user_id" },
+  { id => "updater_id" },
   { is_deferrable => 0, on_delete => "RESTRICT", on_update => "CASCADE" },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-17 07:32:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:Q/4MbdcpsTRWDtpERqDAvg
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-17 16:58:50
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/lF9fAwYOVQQLrF6dZBYgg
 
 use RapidApp::Util ':all';
 

@@ -37,11 +37,12 @@ for my $post (@posts) {
   $Rs->create({
     name => $post->{name},
     title => $post->{title},
-    create_user_id => $uid,
-    update_user_id => $uid,
+    author_id  => $uid,
+    creator_id => $uid,
+    updater_id => $uid,
     body => $content,
     published => 1,
-    publish_ts => join(' ',$post->{date},'12:00:00')
+    ts => join(' ',$post->{date},'12:00:00')
   }) and print "created";
 
 }
