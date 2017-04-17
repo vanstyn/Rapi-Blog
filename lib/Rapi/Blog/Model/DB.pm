@@ -124,7 +124,7 @@ __PACKAGE__->config(
           id => {
             allow_add => 0,
             header    => 'id',
-            width => 80,
+            width     => 80,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -136,7 +136,7 @@ __PACKAGE__->config(
           },
           title => {
             header => 'title',
-            width => 160,
+            width  => 160,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -185,7 +185,7 @@ __PACKAGE__->config(
           body => {
             header => 'body',
             hidden => 1,
-            width => 400,
+            width  => 400,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -206,19 +206,19 @@ __PACKAGE__->config(
             header => 'author_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           creator_id => {
             header => 'creator_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           updater_id => {
             header => 'updater_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           author => {
             header => 'author',
