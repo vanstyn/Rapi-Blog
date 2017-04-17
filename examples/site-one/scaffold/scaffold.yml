@@ -1,7 +1,7 @@
 ## scaffold.yml - Rapi::Blog scaffold config file
 
 static_paths  : [ css/, js/, fonts/, img/ ]
-private_paths : [ private/ ]
+private_paths : [ private/, scaffold.yml ]
 landing_page  : post/gotalk.md
 favicon       : img/favicon.ico
 

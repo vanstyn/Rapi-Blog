@@ -37,29 +37,38 @@ has 'static_path_app', is => 'ro', lazy => 1, default => sub {
 
 has '_static_path_regexp', is => 'ro', lazy => 1, default => sub {
   my $self = shift;
-  my @paths = @{$self->static_paths};
-  return undef unless (scalar(@paths) > 0);
-  
-  # Clean up and normalize values:
-  my @list = map { $_ =~ s/^\///; $_ =~ s/\/?$/\//; $_ } @paths;
-  
-  my $reStr = join('','^(',join('|', @list ),')');
-
-  return qr/$reStr/
+  return $self->_compile_path_list_regex(@{$self->static_paths});
 };
 
 has '_private_path_regexp', is => 'ro', lazy => 1, default => sub {
   my $self = shift;
-  my @paths = @{$self->private_paths};
+  return $self->_compile_path_list_regex(@{$self->private_paths});
+};
+
+sub _compile_path_list_regex {
+  my ($self, @paths) = @_;
   return undef unless (scalar(@paths) > 0);
   
-  # Clean up and normalize values:
-  my @list = map { $_ =~ s/^\///; $_ =~ s/\/?$/\//; $_ } @paths;
+  my @list = ();
+  for my $path (@paths) {
+    $path =~ s/^\///; # strip and ignore leading /
+    if ($path =~ /\/$/) {
+      # ends in slash, matches begining of the path
+      push @list, join('','^',$path);
+    }
+    else {
+      # does not end in slash, match as if it did AND the whole path
+      push @list, join('','^',$path,'/');
+      push @list, join('','^',$path,'$');
+    }
+  }
   
-  my $reStr = join('','^(',join('|', @list ),')');
-
+  my $reStr = join('','(',join('|', @list ),')');
+  
   return qr/$reStr/
-};
+}
+
+
 
 sub _is_static_path {
   my ($self, $template) = @_;
