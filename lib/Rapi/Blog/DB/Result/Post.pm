@@ -134,10 +134,24 @@ __PACKAGE__->belongs_to(
 
 use RapidApp::Util ':all';
 
+sub get_uid {
+  my $self = shift;
+  
+  if(my $c = RapidApp->active_request_context) {
+    return $c->user->id if ($c->can('user'));
+  }
+  
+  return 0;
+}
+
 sub insert {
   my $self = shift;
   my $columns = shift;
   $self->set_inflated_columns($columns) if $columns;
+  
+  my $uid = $self->get_uid;
+  $self->creator_id( $uid );
+  $self->updater_id( $uid );
   
   $self->_set_column_defaults;
 
@@ -148,6 +162,9 @@ sub update {
   my $self = shift;
   my $columns = shift;
   $self->set_inflated_columns($columns) if $columns;
+  
+  my $uid = $self->get_uid;
+  $self->updater_id( $uid );
   
   $self->_set_column_defaults;
 

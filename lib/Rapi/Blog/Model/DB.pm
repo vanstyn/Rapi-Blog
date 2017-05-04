@@ -148,12 +148,14 @@ __PACKAGE__->config(
           },
           create_ts => {
             header => 'create_ts',
+            allow_add => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           update_ts => {
             header => 'update_ts',
+            allow_add => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -178,6 +180,8 @@ __PACKAGE__->config(
           },
           publish_ts => {
             header => 'publish_ts',
+            allow_add => \0,
+            allow_edit => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -187,7 +191,7 @@ __PACKAGE__->config(
             hidden => 1,
             width  => 400,
             #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
+            profiles => ['markdown'],
           },
           post_keywords => {
             header => 'post_keywords',
@@ -225,15 +229,22 @@ __PACKAGE__->config(
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
+            editor => {
+              value => sub {
+                return 0
+              }
+            }
           },
           creator => {
             header => 'creator',
+            allow_add => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           updater => {
             header => 'updater',
+            allow_add => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
