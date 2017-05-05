@@ -16,7 +16,7 @@
   font-size:12px;
 }
 .rapi-blog-postview .with-icon {
-  display: inline;
+  display: inline-box;
   border-bottom: medium none;
 }
 .rapi-blog-postview tr.vert {
