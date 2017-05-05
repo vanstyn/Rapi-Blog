@@ -47,6 +47,9 @@ __PACKAGE__->config(
             undo => { showtext => 1 }
           }
         }
+      },
+      Post => {
+        page_class => 'Rapi::Blog::Module::PostPage'
       }
     },
 
@@ -117,9 +120,9 @@ __PACKAGE__->config(
       },
       Post => {
         display_column => 'title',
-        title_multi    => 'Post Rows',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
+        title_multi    => 'Posts',
+        iconCls        => 'icon-post',
+        multiIconCls   => 'icon-posts',
         columns        => {
           id => {
             allow_add => 0,

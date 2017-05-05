@@ -1,0 +1,39 @@
+
+<title class="icon-post">[% Row.title %]</title>
+
+<div class="ra-scoped-reset ra-doc">
+
+<div class="rapi-blog-postview" style="font-size:12px;">
+
+  <h4>
+    <span class="bigger">{title}</span>&nbsp;
+  </h4>
+
+  <table class="r-simple-table">
+    <tr>
+      <th>Name</th>
+      <td colspan=4>
+        <span class="with-icon icon-post bigger">[% r.autofield.name %]</span>
+      </td>
+    </tr>
+    <tr>
+      <th>Title</th>
+      <td colspan=4>
+        <span class="with-icon icon-post bigger">[% r.autofield.title %]</span>
+      </td>
+    </tr>
+    
+    <tr class="vert"><td></td><th>Date/Time           </th><th>Created                    </th><th>Updated                    </th><th>Author                  </th></tr>
+    <tr class="vert"><td></td><td>[% r.autofield.ts %]</td><td>[% r.autofield.create_ts %]</td><td>[% r.autofield.update_ts %]</td><td>[% r.autofield.author %]</td></tr>
+    
+  </table>
+  
+
+  <h5 style="padding-top:8px;">Body:</h5>
+  <div class="post-body">
+    [% r.autofield.body %]
+  </div>
+  
+</div>
+
+</div>
