@@ -1,4 +1,58 @@
 
+.rapi-blog-postview {
+  padding: 2px 5px;
+  margin: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  background-color: #ffffff;
+}
+
+.rapi-blog-postview h1,
+.rapi-blog-postview h2,
+.rapi-blog-postview h3,
+.rapi-blog-postview h4,
+.rapi-blog-postview h5,
+.rapi-blog-postview h6 {
+  margin: 10px 0;
+  font-family: inherit;
+  font-weight: bold;
+  line-height: 20px;
+  color: inherit;
+  text-rendering: optimizelegibility;
+}
+
+.rapi-blog-postview h1,
+.rapi-blog-postview h2,
+.rapi-blog-postview h3 {
+  line-height: 40px;
+}
+
+.rapi-blog-postview h1 {
+  font-size: 38.5px;
+}
+
+.rapi-blog-postview h2 {
+  font-size: 31.5px;
+}
+
+.rapi-blog-postview h3 {
+  font-size: 24.5px;
+}
+
+.rapi-blog-postview h4 {
+  font-size: 17.5px;
+}
+
+.rapi-blog-postview h5 {
+  font-size: 14px;
+}
+
+.rapi-blog-postview h6 {
+  font-size: 11.9px;
+}
+
 .rapi-blog-postview table.r-simple-table tr * {
   white-space: nowrap;
 }
@@ -31,7 +85,7 @@
   vertical-align: top;
   padding: 0px 8px 0px 5px;
 }
-.rapi-blog-postview div.post-body {
+.rapi-blog-postview div.post-body-old {
   border: 1px solid #dddddd;
   position: absolute;
   top: 200px;
@@ -40,7 +94,19 @@
   right: 25px;
   min-height: 200px;
   min-width: 400px;
+  overflow: auto;
 }
+
+.rapi-blog-postview div.post-body {
+  border: 1px solid #dddddd;
+  padding: 10px;
+  height: 400px;
+
+  overflow: auto;
+}
+
+
+
 .rapi-blog-postview div.post-body div.img-wrap {
   position: absolute;
   top: 5px;
