@@ -18,25 +18,22 @@ before 'setup' => sub {
   my $dsn = $self->connect_info->{dsn};
   my ( $pre, $db_path ) = split( /\:SQLite\:/, $dsn, 2 );
 
-  unless( -f $db_path ) {
+  unless ( -f $db_path ) {
     warn "  ** Auto-Deploy $db_path **\n";
     $self->_one_off_connect->deploy;
   }
-  
-  my $diff = $self->_diff_deployed_schema
-    ->filter('*:columns')
-    ->filter_out('*:columns/*._inflate_info')
-    ->filter_out('*:columns/*._ic_dt_method')
-    ->diff;
-  
-  if($diff) {
-    die join("\n",'','','',
-      '**** '.__PACKAGE__.' - column differences found in deployed database! ****','',
-      'Dump (DBIx::Class::Schema::Diff): ',Dumper($diff),'','',''
-    )
+
+  my $diff =
+    $self->_diff_deployed_schema->filter('*:columns')->filter_out('*:columns/*._inflate_info')
+    ->filter_out('*:columns/*._ic_dt_method')->diff;
+
+  if ($diff) {
+    die join( "\n",
+      '', '', '', '**** ' . __PACKAGE__ . ' - column differences found in deployed database! ****',
+      '', 'Dump (DBIx::Class::Schema::Diff): ',
+      Dumper($diff), '', '', '' );
   }
-  
-  
+
 };
 
 __PACKAGE__->config(
@@ -178,14 +175,14 @@ __PACKAGE__->config(
             #profiles => [],
           },
           create_ts => {
-            header => 'create_ts',
+            header    => 'create_ts',
             allow_add => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           update_ts => {
-            header => 'update_ts',
+            header    => 'update_ts',
             allow_add => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
@@ -210,8 +207,8 @@ __PACKAGE__->config(
             #profiles => [],
           },
           publish_ts => {
-            header => 'publish_ts',
-            allow_add => \0,
+            header     => 'publish_ts',
+            allow_add  => \0,
             allow_edit => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
@@ -262,19 +259,19 @@ __PACKAGE__->config(
             #profiles => [],
             editor => {
               value => sub {
-                return 0
+                return 0;
               }
             }
           },
           creator => {
-            header => 'creator',
+            header    => 'creator',
             allow_add => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           updater => {
-            header => 'updater',
+            header    => 'updater',
             allow_add => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
@@ -432,7 +429,6 @@ __PACKAGE__->config(
   },
 
 );
-
 
 =head1 NAME
 
