@@ -11,6 +11,34 @@ use RapidApp::Util ':all';
 my $db_path = file( RapidApp::Util::find_app_home('Rapi::Blog'), 'rapi_blog.db' );
 sub _sqlt_db_path { "$db_path" };    # exposed for use by the regen devel script
 
+before 'setup' => sub {
+  my $self = shift;
+
+  # extract path from dsn because the app reaches in to set it
+  my $dsn = $self->connect_info->{dsn};
+  my ( $pre, $db_path ) = split( /\:SQLite\:/, $dsn, 2 );
+
+  unless( -f $db_path ) {
+    warn "  ** Auto-Deploy $db_path **\n";
+    $self->_one_off_connect->deploy;
+  }
+  
+  my $diff = $self->_diff_deployed_schema
+    ->filter('*:columns')
+    ->filter_out('*:columns/*._inflate_info')
+    ->filter_out('*:columns/*._ic_dt_method')
+    ->diff;
+  
+  if($diff) {
+    die join("\n",'','','',
+      '**** '.__PACKAGE__.' - column differences found in deployed database! ****','',
+      'Dump (DBIx::Class::Schema::Diff): ',Dumper($diff),'','',''
+    )
+  }
+  
+  
+};
+
 __PACKAGE__->config(
   schema_class => 'Rapi::Blog::DB',
 
@@ -405,16 +433,6 @@ __PACKAGE__->config(
 
 );
 
-before 'setup' => sub {
-  my $self = shift;
-
-  # extract path from dsn because the app reaches in to set it
-  my $dsn = $self->connect_info->{dsn};
-  my ( $pre, $db_path ) = split( /\:SQLite\:/, $dsn, 2 );
-
-  return if ( -f $db_path );
-  $self->schema_class->connect($dsn)->deploy;
-};
 
 =head1 NAME
 
