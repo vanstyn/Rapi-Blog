@@ -33,23 +33,11 @@ __PACKAGE__->add_columns(
     size => 255,
   },
   "ts",
-  {
-    data_type     => "datetime",
-    default_value => \"datetime(CURRENT_TIMESTAMP,'localtime')",
-    is_nullable   => 0,
-  },
+  { data_type => "datetime", is_nullable => 0 },
   "create_ts",
-  {
-    data_type     => "datetime",
-    default_value => \"datetime(CURRENT_TIMESTAMP,'localtime')",
-    is_nullable   => 0,
-  },
+  { data_type => "datetime", is_nullable => 0 },
   "update_ts",
-  {
-    data_type     => "datetime",
-    default_value => \"datetime(CURRENT_TIMESTAMP,'localtime')",
-    is_nullable   => 0,
-  },
+  { data_type => "datetime", is_nullable => 0 },
   "author_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "creator_id",
@@ -129,10 +117,18 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-17 16:58:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:/lF9fAwYOVQQLrF6dZBYgg
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-07 10:01:57
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iEkx/hek1PihBadRN0sRyw
+
 
 use RapidApp::Util ':all';
+use DateTime;
+
+sub now_ts {
+  my $dt = DateTime->now( time_zone => 'local' );
+  join(' ',$dt->ymd('-'),$dt->hms(':'));
+}
+
 
 sub get_uid {
   my $self = shift;
@@ -149,11 +145,7 @@ sub insert {
   my $columns = shift;
   $self->set_inflated_columns($columns) if $columns;
   
-  my $uid = $self->get_uid;
-  $self->creator_id( $uid );
-  $self->updater_id( $uid );
-  
-  $self->_set_column_defaults;
+  $self->_set_column_defaults('insert');
 
   $self->next::method;
 }
@@ -166,7 +158,7 @@ sub update {
   my $uid = $self->get_uid;
   $self->updater_id( $uid );
   
-  $self->_set_column_defaults;
+  $self->_set_column_defaults('update');
 
   $self->next::method;
 }
@@ -175,18 +167,28 @@ sub update {
 
 sub _set_column_defaults {
   my $self = shift;
+  my $for = shift || '';
   
-  # defualt title:
+  # default title:
   $self->title($self->name) unless $self->title;
   
+  my $uid = $self->get_uid;
+  my $now_ts = $self->now_ts;
+  
   if ($self->published) {
-    $self->publish_ts(\"datetime(CURRENT_TIMESTAMP,'localtime')") unless $self->publish_ts;
+    $self->publish_ts($now_ts) unless $self->publish_ts;
   }
   else {
     $self->publish_ts(undef) if $self->publish_ts;
   }
   
-
+  $self->update_ts($now_ts);
+  $self->updater_id( $uid );
+  
+  if($for eq 'insert') {
+    $self->create_ts($now_ts);
+    $self->creator_id( $uid );
+  }
 
 }
 
