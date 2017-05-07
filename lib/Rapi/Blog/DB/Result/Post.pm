@@ -122,13 +122,7 @@ __PACKAGE__->belongs_to(
 
 
 use RapidApp::Util ':all';
-use DateTime;
-
-sub now_ts {
-  my $dt = DateTime->now( time_zone => 'local' );
-  join(' ',$dt->ymd('-'),$dt->hms(':'));
-}
-
+use Rapi::Blog::Util;
 
 sub get_uid {
   my $self = shift;
@@ -173,7 +167,7 @@ sub _set_column_defaults {
   $self->title($self->name) unless $self->title;
   
   my $uid = $self->get_uid;
-  my $now_ts = $self->now_ts;
+  my $now_ts = Rapi::Blog::Util->now_ts;
   
   if ($self->published) {
     $self->publish_ts($now_ts) unless $self->publish_ts;

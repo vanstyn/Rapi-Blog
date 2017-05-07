@@ -11,6 +11,8 @@ use RapidApp::Util ':all';
 my $db_path = file( RapidApp::Util::find_app_home('Rapi::Blog'), 'rapi_blog.db' );
 sub _sqlt_db_path { "$db_path" };    # exposed for use by the regen devel script
 
+use Rapi::Blog::Util;
+
 #<<<  tell perltidy not to mess with this
 before 'setup' => sub {
   my $self = shift;
@@ -236,6 +238,13 @@ __PACKAGE__->config(
           },
           ts => {
             header => 'ts',
+            # extra_properties get merged instead of replaced, so we don't clobber the rest of 
+            # the 'editor' properties
+            extra_properties => {
+              editor => {
+                value => sub { Rapi::Blog::Util->now_ts }
+              }
+            }
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
