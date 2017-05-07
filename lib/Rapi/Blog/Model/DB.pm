@@ -11,6 +11,7 @@ use RapidApp::Util ':all';
 my $db_path = file( RapidApp::Util::find_app_home('Rapi::Blog'), 'rapi_blog.db' );
 sub _sqlt_db_path { "$db_path" };    # exposed for use by the regen devel script
 
+#<<<  tell perltidy not to mess with this
 before 'setup' => sub {
   my $self = shift;
 
@@ -24,8 +25,13 @@ before 'setup' => sub {
   }
 
   my $diff =
-    $self->_diff_deployed_schema->filter('*:columns')->filter_out('*:columns/*._inflate_info')
-    ->filter_out('*:columns/*._ic_dt_method')->diff;
+    $self->_diff_deployed_schema
+    ->filter_out('*:relationships')
+    ->filter_out('*:constraints')
+    ->filter_out('*:isa')
+    ->filter_out('*:columns/*._inflate_info')
+    ->filter_out('*:columns/*._ic_dt_method')
+    ->diff;
 
   if ($diff) {
     die join( "\n",
@@ -33,8 +39,8 @@ before 'setup' => sub {
       '', 'Dump (DBIx::Class::Schema::Diff): ',
       Dumper($diff), '', '', '' );
   }
-
 };
+#>>>
 
 __PACKAGE__->config(
   schema_class => 'Rapi::Blog::DB',
