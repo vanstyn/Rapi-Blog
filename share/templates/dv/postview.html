@@ -5,9 +5,14 @@
 
 <div class="rapi-blog-postview" style="font-size:12px;">
 
+
+<div style="float:right;">[% r.toggle.edit %]</div>
   <h4>
     <span class="bigger">{title}</span>&nbsp;
+    
   </h4>
+  
+  
 
   <table class="r-simple-table">
     <tr>
@@ -30,7 +35,7 @@
   </table>
   
 
-  <h5 style="padding-top:8px;">Body:</h5>
+  <h5 style="padding-top:8px;">Body: [% r.toggle.edit %]</h5>
   <div class="post-body">
     [% r.autofield.body %]
   </div>

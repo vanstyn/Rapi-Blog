@@ -185,6 +185,7 @@ __PACKAGE__->config(
           create_ts => {
             header    => 'create_ts',
             allow_add => \0,
+            allow_edit => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -192,6 +193,7 @@ __PACKAGE__->config(
           update_ts => {
             header    => 'update_ts',
             allow_add => \0,
+            allow_edit => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
