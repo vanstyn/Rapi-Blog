@@ -1,1 +1,2 @@
 *.db
+examples/*/cas_store/
