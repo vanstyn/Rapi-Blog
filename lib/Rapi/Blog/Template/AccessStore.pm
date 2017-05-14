@@ -172,8 +172,10 @@ has 'Model', is => 'ro', lazy => 1, default => sub {
 }, isa => Object;
 
 
-has 'internal_post_path',  is => 'ro', isa => Str, required => 1;
-has 'view_wrappers', is => 'ro', isa => ArrayRef[HashRef], default => sub {[]};
+has 'internal_post_path', is => 'ro', isa => Str, required => 1;
+has 'view_wrappers',      is => 'ro', isa => ArrayRef[HashRef], default => sub {[]};
+has 'default_view_path',  is => 'ro', isa => Str, required => 1;
+
 
 sub get_uid {
   my $self = shift;

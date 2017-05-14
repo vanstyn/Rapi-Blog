@@ -5,7 +5,7 @@ use warnings;
 
 # ABSTRACT: RapidApp-powered blog
 
-use RapidApp 1.2111_55;
+use RapidApp 1.2111_56;
 
 use Moose;
 extends 'RapidApp::Builder';
@@ -105,6 +105,22 @@ has 'scaffold_cnf', is => 'ro', init_arg => undef, lazy => 1, default => sub {
 
 }, isa => HashRef;
 
+has 'default_view_path', is => 'ro', lazy => 1, default => sub {
+  my $self = shift;
+  
+  return $self->scaffold_cnf->{default_view_path} if ($self->scaffold_cnf->{default_view_path});
+  
+  # first marked 'default' or first type 'include' or first anything
+  my @wrappers = grep { $_->{path} } @{$self->scaffold_cnf->{view_wrappers} || []};
+  my $def = List::Util::first { $_->{default} } @wrappers;
+  $def ||= List::Util::first { $_->{type} eq 'include' } @wrappers;
+  $def ||= $self->scaffold_cnf->{view_wrappers}[0];
+  
+  $def or die "No suitable view_wrappers to use as 'default_view_path'";
+
+  return $def->{path}
+};
+
 
 sub _build_version { $VERSION }
 sub _build_plugins { ['RapidApp::RapidDbic'] }
@@ -168,8 +184,8 @@ sub _build_base_config {
         private_paths => $self->scaffold_cnf->{private_paths},
         
         internal_post_path => $self->scaffold_cnf->{internal_post_path},
-        
-        view_wrappers => $self->scaffold_cnf->{view_wrappers}, 
+        view_wrappers      => $self->scaffold_cnf->{view_wrappers},
+        default_view_path  => $self->default_view_path,
 
         get_Model => sub { $self->base_appname->model('DB') } 
       } 

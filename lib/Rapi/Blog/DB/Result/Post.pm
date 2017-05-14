@@ -124,6 +124,18 @@ __PACKAGE__->belongs_to(
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 
+sub schema { (shift)->result_source->schema }
+# This relies on us having been loaded via RapidApp::Util::Role::ModelDBIC
+sub parent_app_class { (shift)->schema->_ra_catalyst_origin_model->app_class }
+sub Access { (shift)->parent_app_class->template_controller->Access }
+
+sub public_url {
+  my $self = shift;
+  my $app = $self->parent_app_class;
+  join('',$app->mount_url,$self->Access->default_view_path,$self->name)
+}
+
+
 sub get_uid {
   my $self = shift;
   
@@ -153,7 +165,7 @@ sub update {
   $self->updater_id( $uid );
   
   $self->_set_column_defaults('update');
-
+  
   $self->next::method;
 }
 
