@@ -7,11 +7,14 @@
 
 
 <div style="float:right;">[% r.toggle.edit %]</div>
-  <h4>
-    <span class="bigger">{title}</span>&nbsp;
-    
+  <h4 style="margin-bottom:2px;">
+    <span class="bigger">
+      <span
+        style="padding-right:15px;"
+      >{title}</span>
+      
+    </span>
   </h4>
-  
   
 
   <table class="r-simple-table">
@@ -35,7 +38,22 @@
   </table>
   
 
-  <h5 style="padding-top:8px;">Body: [% r.toggle.edit %]</h5>
+  <h5 style="padding-top:5px;margin-bottom:-2px;">
+    <span style="padding-right:85px;">Body: [% r.toggle.edit %]</span>
+  
+    <i><a 
+      class="with-icon ra-icon-tab-go"
+      style="vertical-align: text-bottom;font-size:.8em;padding-right:5px;"
+      href="#!/post/{name}"
+    >Public View (tab)</a></i>
+    <i><a 
+      class="with-icon ra-icon-page-white-world"
+      style="vertical-align: text-bottom;font-size:.8em;"
+      href="/post/{name}"
+      target="_blank"
+    >Open URL (new window)</a></i>
+  
+  </h5>
   <div class="post-body">
     [% r.autofield.body %]
   </div>
