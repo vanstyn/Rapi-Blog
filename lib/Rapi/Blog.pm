@@ -123,7 +123,11 @@ has 'default_view_path', is => 'ro', lazy => 1, default => sub {
 
 
 sub _build_version { $VERSION }
-sub _build_plugins { ['RapidApp::RapidDbic'] }
+sub _build_plugins { [qw/
+  RapidApp::RapidDbic
+  RapidApp::NavCore
+  RapidApp::CoreSchemaAdmin
+/]}
 
 sub _build_base_config {
   my $self = shift;
