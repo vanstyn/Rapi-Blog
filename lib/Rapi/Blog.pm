@@ -144,7 +144,8 @@ sub _build_base_config {
     __PACKAGE__, " may not be installed properly.\n"
   );
   
-  my $tpl_regex = '^site\/';
+  # Temp for dev/testing - everything but 'rapidapp/' templates:
+  my $tpl_regex = '^(?!rapidapp\/).+';
 
   my $config = {
   
@@ -174,7 +175,7 @@ sub _build_base_config {
       root_template         => $self->scaffold_cnf->{landing_page},
       read_alias_path => '/tpl',  #<-- already the default
       edit_alias_path => '/tple', #<-- already the default
-      default_template_extension => 'html',
+      default_template_extension => undef,
       include_paths => [ $tpl_dir ],
       access_class => 'Rapi::Blog::Template::AccessStore',
       access_params => {

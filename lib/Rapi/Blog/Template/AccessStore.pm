@@ -315,21 +315,13 @@ sub create_template {
   my ($self, $template, $content) = @_;
   my $name = $self->local_name($template) or return undef;
   
-  my $uid = $self->get_uid;
-  my $ts  = $self->cur_ts;
-
   my $create = {
     name => $name,
-    create_user_id => $uid,
-    update_user_id => $uid,
-    create_ts => $ts,
-    update_ts => $ts,
     body => $content,
     published => 1
   };
   
   $self->Model->resultset('Post')->create($create) ? 1 : 0;
-  
 }
 
 
@@ -337,18 +329,11 @@ sub update_template {
   my ($self, $template, $content) = @_;
   my $name = $self->local_name($template) or return undef;
   
-  my $uid = $self->get_uid;
-  my $ts  = $self->cur_ts;
-  
   my $Row = $self->Model->resultset('Post')
     ->search_rs({ 'me.name' => $name })
     ->first or die 'Not found!';
   
-  $Row->update({
-    update_user_id => $uid,
-    update_ts => $ts,
-    body => $content
-  }) ? 1 : 0;
+  $Row->update({ body => $content }) ? 1 : 0;
 }
 
 
@@ -395,9 +380,11 @@ sub template_psgi_response {
   my ($self, $template, $c) = @_;
   
   # Return 404 for private paths:
-  return [ 
-    404, [ 'Post-Type' => 'text/plain' ], [ '404 not found' ] 
-  ] if ($self->_is_private_path($template));
+  if ($self->_is_private_path($template)) {
+    return [ 404, [ 'Post-Type' => 'text/plain' ], [ '404 not found' ] ] unless (
+      $c->req->action =~ /^\/rapidapp\/template\// # does not apply to internal tpl reqs
+    );
+  }
   
   my $tpl = $self->_resolve_static_path($template) or return undef;
   
