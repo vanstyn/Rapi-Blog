@@ -129,10 +129,19 @@ sub schema { (shift)->result_source->schema }
 sub parent_app_class { (shift)->schema->_ra_catalyst_origin_model->app_class }
 sub Access { (shift)->parent_app_class->template_controller->Access }
 
+sub public_url_path {
+  my $self = shift;
+  $self->{_public_url_path} //= do {
+    my $app = $self->parent_app_class;
+    my $path = join('',$app->mount_url,$self->Access->default_view_path);
+    $path =~ s/\/?$/\//; # make sure there is a trailing '/';
+    $path
+  }
+}
+
 sub public_url {
   my $self = shift;
-  my $app = $self->parent_app_class;
-  join('',$app->mount_url,$self->Access->default_view_path,$self->name)
+ return join('',$self->public_url_path,$self->name)
 }
 
 
