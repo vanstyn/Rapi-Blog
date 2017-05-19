@@ -89,41 +89,6 @@ __PACKAGE__->config(
     # TableSpecs define extra RapidApp-specific metadata for each source
     # and is used/available to all modules which interact with them
     TableSpecs => {
-      Format => {
-        display_column => 'name',
-        title          => 'Format',
-        title_multi    => 'Format Rows',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
-        columns        => {
-          code => {
-            header => 'code',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          name => {
-            header => 'name',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          contents => {
-            header => 'contents',
-            #width => 100,
-            #sortable => 1,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          posts => {
-            header => 'posts',
-            #width => 100,
-            #sortable => 1,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-        },
-      },
       Keyword => {
         display_column => 'name',
         title          => 'Keyword',
@@ -183,16 +148,16 @@ __PACKAGE__->config(
             #profiles => [],
           },
           create_ts => {
-            header    => 'create_ts',
-            allow_add => \0,
+            header     => 'create_ts',
+            allow_add  => \0,
             allow_edit => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           update_ts => {
-            header    => 'update_ts',
-            allow_add => \0,
+            header     => 'update_ts',
+            allow_add  => \0,
             allow_edit => \0,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
@@ -240,16 +205,16 @@ __PACKAGE__->config(
           },
           ts => {
             header => 'ts',
-            # extra_properties get merged instead of replaced, so we don't clobber the rest of 
+            # extra_properties get merged instead of replaced, so we don't clobber the rest of
             # the 'editor' properties
             extra_properties => {
               editor => {
                 value => sub { Rapi::Blog::Util->now_ts }
               }
-            }
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
+              }
+              #width => 100,
+              #renderer => 'RA.ux.App.someJsFunc',
+              #profiles => [],
           },
           author_id => {
             header => 'author_id',
@@ -325,41 +290,6 @@ __PACKAGE__->config(
           post => {
             header => 'post',
             #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-        },
-      },
-      Preprocessor => {
-        display_column => 'name',
-        title          => 'Preprocessor',
-        title_multi    => 'Preprocessor Rows',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
-        columns        => {
-          code => {
-            header => 'code',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          name => {
-            header => 'name',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          contents => {
-            header => 'contents',
-            #width => 100,
-            #sortable => 1,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
-          posts => {
-            header => 'posts',
-            #width => 100,
-            #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },

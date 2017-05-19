@@ -20,24 +20,6 @@ CREATE TABLE [user] (
 );
 INSERT INTO [user] VALUES(0,'(system)','System User');
 
-DROP TABLE IF EXISTS [preprocessor];
-CREATE TABLE [preprocessor] (
-  [code] varchar(8) PRIMARY KEY NOT NULL,
-  [name] varchar(32) UNIQUE NOT NULL
-);
-INSERT INTO [preprocessor] VALUES('tt',  'Template Toolkit');
-
-
-DROP TABLE IF EXISTS [format];
-CREATE TABLE [format] (
-  [code] varchar(8) PRIMARY KEY NOT NULL,
-  [name] varchar(32) UNIQUE NOT NULL
-  
-);
-INSERT INTO [format] VALUES('txt',  'Plain Text');
-INSERT INTO [format] VALUES('md',   'Markdown');
-INSERT INTO [format] VALUES('html', 'HTML');
-
 
 DROP TABLE IF EXISTS [post];
 CREATE TABLE [post] (
@@ -51,8 +33,6 @@ CREATE TABLE [post] (
   [author_id] INTEGER NOT NULL,
   [creator_id] INTEGER NOT NULL,
   [updater_id] INTEGER NOT NULL,
-  [pp_code] varchar(8) DEFAULT NULL,
-  [format_code] varchar(8) DEFAULT NULL,
   [published] BOOLEAN NOT NULL DEFAULT 0,
   [publish_ts] datetime DEFAULT NULL,
   
@@ -60,9 +40,7 @@ CREATE TABLE [post] (
   
   FOREIGN KEY ([author_id]) REFERENCES [user]              ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
   FOREIGN KEY ([creator_id]) REFERENCES [user]             ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY ([updater_id]) REFERENCES [user]             ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY ([pp_code])        REFERENCES [preprocessor] ([code]) ON DELETE RESTRICT ON UPDATE CASCADE,
-  FOREIGN KEY ([format_code])    REFERENCES [format]       ([code]) ON DELETE RESTRICT ON UPDATE CASCADE
+  FOREIGN KEY ([updater_id]) REFERENCES [user]             ([id])   ON DELETE RESTRICT ON UPDATE CASCADE
   
 );
 

@@ -44,22 +44,6 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
   "updater_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "pp_code",
-  {
-    data_type => "varchar",
-    default_value => \"null",
-    is_foreign_key => 1,
-    is_nullable => 1,
-    size => 8,
-  },
-  "format_code",
-  {
-    data_type => "varchar",
-    default_value => \"null",
-    is_foreign_key => 1,
-    is_nullable => 1,
-    size => 8,
-  },
   "published",
   { data_type => "boolean", default_value => 0, is_nullable => 0 },
   "publish_ts",
@@ -81,33 +65,11 @@ __PACKAGE__->belongs_to(
   { id => "creator_id" },
   { is_deferrable => 0, on_delete => "RESTRICT", on_update => "CASCADE" },
 );
-__PACKAGE__->belongs_to(
-  "format_code",
-  "Rapi::Blog::DB::Result::Format",
-  { code => "format_code" },
-  {
-    is_deferrable => 0,
-    join_type     => "LEFT",
-    on_delete     => "RESTRICT",
-    on_update     => "CASCADE",
-  },
-);
 __PACKAGE__->has_many(
   "post_keywords",
   "Rapi::Blog::DB::Result::PostKeyword",
   { "foreign.post_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
-);
-__PACKAGE__->belongs_to(
-  "pp_code",
-  "Rapi::Blog::DB::Result::Preprocessor",
-  { code => "pp_code" },
-  {
-    is_deferrable => 0,
-    join_type     => "LEFT",
-    on_delete     => "RESTRICT",
-    on_update     => "CASCADE",
-  },
 );
 __PACKAGE__->belongs_to(
   "updater",
@@ -117,8 +79,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-07 10:01:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:iEkx/hek1PihBadRN0sRyw
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-19 13:45:42
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OeOKcnzU6TN8se0JD2i3ZQ
 
 
 use RapidApp::Util ':all';
