@@ -87,6 +87,12 @@
 }
 
 
+.rapi-blog-postview div.post-body-head {
+  position: absolute;
+  top: 170px;
+  height: 20px;
+}
+
 .rapi-blog-postview div.post-body {
   border: 1px solid #dddddd;
   border-radius: 6px;

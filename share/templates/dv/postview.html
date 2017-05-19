@@ -39,22 +39,24 @@
   </table>
   
 
-  <h5 style="padding-top:5px;margin-bottom:-2px;">
-    <span style="padding-right:85px;">Body: [% r.toggle.edit %]</span>
-  
-    <i><a 
-      class="with-icon ra-icon-tab-go"
-      style="vertical-align: text-bottom;font-size:.8em;padding-right:5px;"
-      href="#!/[% Row.public_url_path %]{name}"
-    >Public View (tab)</a></i>
-    <i><a 
-      class="with-icon ra-icon-page-white-world"
-      style="vertical-align: text-bottom;font-size:.8em;"
-      href="/[% Row.public_url_path %]{name}"
-      target="_blank"
-    >Open URL (new window)</a></i>
-  
-  </h5>
+  <div class="post-body-head">
+    <h5 style="padding-top:5px;margin-bottom:-2px;">
+      <span style="padding-right:85px;">Body (markdown): [% r.toggle.edit %]</span>
+    
+      <i><a 
+        class="with-icon ra-icon-tab-go"
+        style="vertical-align: text-bottom;font-size:.8em;padding-right:5px;"
+        href="#!/[% Row.public_url_path %]{name}"
+      >Public View (tab)</a></i>
+      <i><a 
+        class="with-icon ra-icon-page-white-world"
+        style="vertical-align: text-bottom;font-size:.8em;"
+        href="/[% Row.public_url_path %]{name}"
+        target="_blank"
+      >Open URL (new window)</a></i>
+    
+    </h5>
+  </div>
   <div class="post-body appdv-fill-absolute">
     [% r.autofield.body %]
   </div>
