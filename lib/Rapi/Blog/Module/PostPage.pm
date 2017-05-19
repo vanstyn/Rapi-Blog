@@ -16,5 +16,10 @@ has '+tt_include_path', default => sub {
   dir( $self->app->ra_builder->share_dir )->stringify;
 };
 
+has '+destroyable_relspec', default => sub {['*']};
+has '+close_on_destroy'   , default => 1;
+
+
+
 1;
 
