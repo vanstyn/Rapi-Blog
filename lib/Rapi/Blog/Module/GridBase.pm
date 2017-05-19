@@ -8,6 +8,24 @@ extends 'Catalyst::Plugin::RapidApp::RapidDbic::TableBase';
 
 use RapidApp::Util ':all';
 
+sub BUILD {
+  my $self = shift;
+  
+  if($self->ResultSource->source_name eq 'Post') {
+
+    $self->apply_extconfig(
+      store_button_cnf => {
+        add => {
+          text     => 'New Post',
+          iconCls  => 'icon-post-add',
+          showtext => 1
+        }
+      },
+    );
+  }
+}
+
+has '+use_edit_form', default => 0;
 
 around 'get_add_edit_form_items' => sub {
   my ($orig, $self, @args) = @_;

@@ -7,7 +7,7 @@
       href="#![% c.mount_url %]/adm/main/db/db_post"
   >View Posts</a></div>
   <div><a 
-      class="with-icon ra-icon-add" 
+      class="with-icon icon-post-add" 
       style="text-decoration:none;font-weight:bold;" 
       href="#![% c.mount_url %]/adm/main/db/db_post/add"
   >New Post</a></div>
