@@ -48,6 +48,8 @@ __PACKAGE__->add_columns(
   { data_type => "boolean", default_value => 0, is_nullable => 0 },
   "publish_ts",
   { data_type => "datetime", default_value => \"null", is_nullable => 1 },
+  "size",
+  { data_type => "integer", default_value => \"null", is_nullable => 1 },
   "body",
   { data_type => "text", default_value => "", is_nullable => 1 },
 );
@@ -79,8 +81,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-19 13:45:42
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OeOKcnzU6TN8se0JD2i3ZQ
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-19 17:02:42
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:V/epRjYVCYCuSktvR5A2+Q
 
 
 use RapidApp::Util ':all';
@@ -148,6 +150,7 @@ sub _set_column_defaults {
   
   # default title:
   $self->title($self->name) unless $self->title;
+  $self->size( length $self->get_column('body') );
   
   my $uid = $self->get_uid;
   my $now_ts = Rapi::Blog::Util->now_ts;
