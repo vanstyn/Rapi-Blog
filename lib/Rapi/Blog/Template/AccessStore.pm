@@ -348,6 +348,15 @@ sub delete_template {
   $Row->delete ? 1 : 0;
 }
 
+around 'get_template_format' => sub {
+  my ($orig, $self, @args) = @_;
+  my $template = join('/',@args);
+  
+  # By rule all local tempaltes (Post rows) are markdown
+  return $self->local_name($template)
+    ? 'markdown'
+    : $self->$orig(@args)
+};
 
 sub list_templates {
   my $self = shift;
