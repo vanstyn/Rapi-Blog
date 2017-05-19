@@ -118,3 +118,8 @@
 .rapi-blog-postview div.post-body div.data-holder {
   min-width: 600px;
 }
+
+/* make the edit control always visible */
+.rapi-blog-postview .appdv-tt-generated .edit-record-toggle .edit {
+  visibility:visible;
+}
