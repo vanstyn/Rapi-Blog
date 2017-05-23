@@ -16,9 +16,12 @@ DROP TABLE IF EXISTS [user];
 CREATE TABLE [user] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   [username] varchar(32) UNIQUE NOT NULL,
-  [full_name] varchar(64) UNIQUE NOT NULL
+  [full_name] varchar(64) UNIQUE NOT NULL,
+  [admin] BOOLEAN NOT NULL DEFAULT 0,
+  [author] BOOLEAN NOT NULL DEFAULT 0,
+  [comment] BOOLEAN NOT NULL DEFAULT 1
 );
-INSERT INTO [user] VALUES(0,'(system)','System User');
+INSERT INTO [user] VALUES(0,'(system)','System User',1,1,1);
 
 
 DROP TABLE IF EXISTS [post];

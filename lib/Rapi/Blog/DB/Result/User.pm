@@ -20,6 +20,12 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 0, size => 32 },
   "full_name",
   { data_type => "varchar", is_nullable => 0, size => 64 },
+  "admin",
+  { data_type => "boolean", default_value => 0, is_nullable => 0 },
+  "author",
+  { data_type => "boolean", default_value => 0, is_nullable => 0 },
+  "comment",
+  { data_type => "boolean", default_value => 1, is_nullable => 0 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("full_name_unique", ["full_name"]);
@@ -44,8 +50,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-17 16:58:50
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:4szSN0KnoTTJE6LhtGK6YQ
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-23 12:44:33
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pVeQa5u+6JVWNP2n1aJiPg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
