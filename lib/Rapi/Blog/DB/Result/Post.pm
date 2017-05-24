@@ -115,16 +115,6 @@ sub public_url {
 }
 
 
-sub get_uid {
-  my $self = shift;
-  
-  if(my $c = RapidApp->active_request_context) {
-    return $c->user->linkedRow->id if ($c->can('user'));
-  }
-  
-  return 0;
-}
-
 sub insert {
   my $self = shift;
   my $columns = shift;
@@ -140,7 +130,7 @@ sub update {
   my $columns = shift;
   $self->set_inflated_columns($columns) if $columns;
   
-  my $uid = $self->get_uid;
+  my $uid = Rapi::Blog::Util->get_uid;
   $self->updater_id( $uid );
   
   $self->_set_column_defaults('update');
@@ -158,7 +148,7 @@ sub _set_column_defaults {
   $self->title($self->name) unless $self->title;
   $self->size( length $self->get_column('body') );
   
-  my $uid = $self->get_uid;
+  my $uid = Rapi::Blog::Util->get_uid;
   my $now_ts = Rapi::Blog::Util->now_ts;
   
   if ($self->published) {

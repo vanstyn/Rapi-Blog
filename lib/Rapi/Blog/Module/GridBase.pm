@@ -73,6 +73,20 @@ sub apply_permissions {
       $self->apply_extconfig( store_exclude_api => [qw(create update destroy)] );
     }
   }
+  elsif($source_name eq 'Comment') {
+    if($User->comment) {
+      # commentors can only comment as themselves and only for the current time
+      $self->apply_columns({ 
+        user => { allow_add => 0 },
+        ts   => { allow_add => 0 },
+      });
+    }
+    else {
+      # Deny all changes if the user is does not have 'comment'
+      $self->apply_extconfig( store_exclude_api => [qw(create update destroy)] );
+    }  
+  
+  }
   elsif($source_name eq 'User') {
   
   

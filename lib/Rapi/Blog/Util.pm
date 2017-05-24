@@ -10,5 +10,11 @@ sub now_ts {
   join(' ',$dt->ymd('-'),$dt->hms(':'));
 }
 
+sub get_uid {
+  if(my $c = RapidApp->active_request_context) {
+    return $c->user->linkedRow->id if ($c->can('user'));
+  }
+  return 0;
+}
 
 1;

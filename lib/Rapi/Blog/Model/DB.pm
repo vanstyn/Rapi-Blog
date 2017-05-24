@@ -223,7 +223,7 @@ __PACKAGE__->config(
             #profiles => [],
             editor => {
               value => sub {
-                return 0;
+                return Rapi::Blog::Util->get_uid;
               }
             }
           },
@@ -403,6 +403,11 @@ __PACKAGE__->config(
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
+            extra_properties => {
+              editor => {
+                value => sub { Rapi::Blog::Util->now_ts }
+              }
+            }
           },
           body => {
             header => 'body',
@@ -428,6 +433,11 @@ __PACKAGE__->config(
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
+            editor => {
+              value => sub {
+                return Rapi::Blog::Util->get_uid;
+              }
+            }
           },
           parent_id => {
             header => 'parent_id',
