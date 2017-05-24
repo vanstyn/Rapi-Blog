@@ -113,7 +113,7 @@ sub get_uid {
   my $self = shift;
   
   if(my $c = RapidApp->active_request_context) {
-    return $c->user->id if ($c->can('user'));
+    return $c->user->linkedRow->id if ($c->can('user'));
   }
   
   return 0;
@@ -164,6 +164,7 @@ sub _set_column_defaults {
   
   $self->update_ts($now_ts);
   $self->updater_id( $uid );
+  $self->author_id( $uid ) unless $self->author_id;
   
   if($for eq 'insert') {
     $self->create_ts($now_ts);

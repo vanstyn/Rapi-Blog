@@ -45,5 +45,49 @@ around 'get_add_edit_form_items' => sub {
 };
 
 
+before 'load_saved_search' => sub { (shift)->apply_permissions };
+
+sub apply_permissions {
+  my $self = shift;
+  my $c = RapidApp->active_request_context or return;
+  
+  # System 'admin' role trumps everything:
+  return if ($c->check_user_roles('admin'));
+  
+  # Only admins can edit grids:
+  $self->apply_extconfig( store_exclude_api => [qw(update destroy)] );
+  
+  
+  my $User = $c->user->linkedRow;
+  
+  my $source_name = $self->ResultSource->source_name;
+  
+  if($source_name eq 'Post') {
+    if($User->author) {
+      # authors can only post as themselves
+      $self->apply_columns({ author => { allow_add => 0 } });
+    
+    }
+    else {
+      # Deny all changes to Post if the user is not an author
+      $self->apply_extconfig( store_exclude_api => [qw(create update destroy)] );
+    }
+  }
+  elsif($source_name eq 'User') {
+  
+  
+  
+  }
+  else {
+  
+  
+  
+  }
+  
+
+}
+
+
+
 1;
 
