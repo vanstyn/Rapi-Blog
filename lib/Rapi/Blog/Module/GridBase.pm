@@ -51,8 +51,8 @@ sub apply_permissions {
   my $self = shift;
   my $c = RapidApp->active_request_context or return;
   
-  # System 'admin' role trumps everything:
-  return if ($c->check_user_roles('admin'));
+  # System 'administrator' role trumps everything:
+  return if ($c->check_user_roles('administrator'));
   
   # Only admins can edit grids:
   $self->apply_extconfig( store_exclude_api => [qw(update destroy)] );

@@ -375,9 +375,9 @@ __PACKAGE__->config(
       Comment => {
         display_column => 'id',
         title          => 'Comment',
-        title_multi    => 'Comment Rows',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
+        title_multi    => 'Comments',
+        iconCls        => 'icon-comment',
+        multiIconCls   => 'icon-comments',
         columns        => {
           id => {
             allow_add => 0,

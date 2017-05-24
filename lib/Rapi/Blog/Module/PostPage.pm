@@ -19,18 +19,15 @@ has '+tt_include_path', default => sub {
 has '+destroyable_relspec', default => sub {['*']};
 has '+close_on_destroy'   , default => 1;
 
-sub BUILD {
-  my $self = shift;
-  $self->add_ONREQUEST_calls_early('apply_permissions');
-}
+before 'content' => sub { (shift)->apply_permissions };
 
 sub apply_permissions {
   my $self = shift;
   my $c = RapidApp->active_request_context or return;
   
-  # System 'admin' role trumps everything:
-  return if ($c->check_user_roles('admin'));
-  
+  # System 'administrator' role trumps everything:
+  return if ($c->check_user_roles('administrator'));
+
   my $User = $c->user->linkedRow;
   my $reqRow = $self->req_Row or return;
   
