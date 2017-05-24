@@ -84,8 +84,11 @@ sub _is_private_path {
 }
 
 sub _resolve_scaffold_file {
-  my ($self, $template) = @_;
+  my ($self, $template,$recur) = @_;
   my $File = $self->scaffold_dir->file($template);
+  # temp hack: simulate function of 'default_template_extension' just for scaffold files:
+  # TODO: something else, or, make configurable option
+  return $self->_resolve_scaffold_file($template.'.html',1) unless ($recur || -f $File);
   -f $File ? $File : undef
 }
 
