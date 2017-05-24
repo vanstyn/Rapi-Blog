@@ -69,6 +69,7 @@ __PACKAGE__->config(
     grid_params => {
       # The special '*defaults' key applies to all sources at once
       '*defaults' => {
+        page_class => 'Rapi::Blog::Module::PageBase',
         include_colspec => ['*'],    #<-- default already ['*']
         ## uncomment these lines to turn on editing in all grids
         updatable_colspec   => ['*'],

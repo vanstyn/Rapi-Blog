@@ -17,4 +17,11 @@ sub get_uid {
   return 0;
 }
 
+sub get_User {
+  if(my $c = RapidApp->active_request_context) {
+    return $c->user->linkedRow if ($c->can('user'));
+  }
+  return undef;
+}
+
 1;

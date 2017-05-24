@@ -7,6 +7,7 @@ use Moose;
 extends 'RapidApp::Module::DbicRowDV';
 
 use RapidApp::Util qw(:all);
+use Rapi::Blog::Util;
 use Path::Class qw(file dir);
 
 has '+template', default => 'templates/dv/postview.html';
@@ -28,10 +29,10 @@ sub apply_permissions {
   # System 'administrator' role trumps everything:
   return if ($c->check_user_roles('administrator'));
 
-  my $User = $c->user->linkedRow;
+  my $uid = Rapi::Blog::Util->get_uid or return;
   my $reqRow = $self->req_Row or return;
   
-  if ($User->id == $reqRow->author_id) {
+  if ($uid == $reqRow->author_id) {
     # users cannot change the author to someone else:
     $self->apply_columns({ author => { allow_edit => 0 } });
   }

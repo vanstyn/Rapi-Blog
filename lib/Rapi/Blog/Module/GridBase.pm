@@ -7,6 +7,7 @@ use Moose;
 extends 'Catalyst::Plugin::RapidApp::RapidDbic::TableBase';
 
 use RapidApp::Util ':all';
+use Rapi::Blog::Util;
 
 sub BUILD {
   my $self = shift;
@@ -58,7 +59,7 @@ sub apply_permissions {
   $self->apply_extconfig( store_exclude_api => [qw(update destroy)] );
   
   
-  my $User = $c->user->linkedRow;
+  my $User = Rapi::Blog::Util->get_User;
   
   my $source_name = $self->ResultSource->source_name;
   
@@ -85,19 +86,11 @@ sub apply_permissions {
       # Deny all changes if the user is does not have 'comment'
       $self->apply_extconfig( store_exclude_api => [qw(create update destroy)] );
     }  
-  
-  }
-  elsif($source_name eq 'User') {
-  
-  
-  
   }
   else {
-  
-  
-  
+    # deny all changes unless otherwise specified:
+    $self->apply_extconfig( store_exclude_api => [qw(create update destroy)] );
   }
-  
 
 }
 
