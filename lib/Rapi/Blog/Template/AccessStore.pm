@@ -154,6 +154,9 @@ around 'get_template_vars' => sub {
     
     User => sub { Rapi::Blog::Util->get_User },
     
+    # Path to the 'Remote' controller
+    remote_action_path => sub { $c ? join('',$c->mount_url,'/remote') : undef },
+    
   };
   
   return $vars

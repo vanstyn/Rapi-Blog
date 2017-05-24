@@ -109,7 +109,7 @@ sub public_url_path {
   my $self = shift;
   $self->{_public_url_path} //= do {
     my $app = $self->parent_app_class;
-    my $path = join('',$app->mount_url,$self->Access->default_view_path);
+    my $path = join('',$app->mount_url,'/',$self->Access->default_view_path);
     $path =~ s/\/?$/\//; # make sure there is a trailing '/';
     $path
   }

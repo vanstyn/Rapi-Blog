@@ -57,7 +57,8 @@ has '+inject_components', default => sub {
   $model->config->{connect_info}{dsn} = "dbi:SQLite:$db";
 
   return [
-    [ $model => 'Model::DB' ]
+    [ $model => 'Model::DB' ],
+    [ 'Rapi::Blog::Controller::Remote' => 'Controller::Remote' ]
   ]
 };
 

@@ -117,6 +117,10 @@ sub _set_column_defaults {
   
 }
 
+sub html_id {
+  my $self = shift;
+  join('','comment-',$self->id)
+}
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

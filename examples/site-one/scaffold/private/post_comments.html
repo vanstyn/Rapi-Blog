@@ -13,8 +13,17 @@
 
 [% IF User.can_comment %]
 
-<h2>** CAN COMMENT **</h2>
+<h3>Add comment:</h3>
+<form name="comment" action="[% remote_action_path %]/comment/add" method="post">
+  <input name="post_id" type="hidden" value="[% Row.id %]" />
+  <textarea name="body" style="width:100%;height: 150px;"></textarea>
 
+  <button class="btn btn-primary" type="submit">Comment</button>
+</form>
+
+
+[% ELSE %]
+<h3>Sign in to add comment</h3>
 [% END %]
 
 <br><br>
