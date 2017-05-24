@@ -19,6 +19,30 @@ has '+tt_include_path', default => sub {
 has '+destroyable_relspec', default => sub {['*']};
 has '+close_on_destroy'   , default => 1;
 
+sub BUILD {
+  my $self = shift;
+  $self->add_ONREQUEST_calls_early('apply_permissions');
+}
+
+sub apply_permissions {
+  my $self = shift;
+  my $c = RapidApp->active_request_context or return;
+  
+  # System 'admin' role trumps everything:
+  return if ($c->check_user_roles('admin'));
+  
+  my $User = $c->user->linkedRow;
+  my $reqRow = $self->req_Row or return;
+  
+  if ($User->id == $reqRow->author_id) {
+    # users cannot change the author to someone else:
+    $self->apply_columns({ author => { allow_edit => 0 } });
+  }
+  else {
+    # If the user is not the author they can make no changes:
+    $self->apply_extconfig( store_exclude_api => [qw(create update destroy)] );
+  }
+}
 
 
 1;
