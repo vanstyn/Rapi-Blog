@@ -155,6 +155,17 @@ sub _apply_to_CoreUser {
 }
 
 
+sub can_post {
+  my $self = shift;
+  $self->admin || $self->author
+}
+
+sub can_comment {
+  my $self = shift;
+  $self->admin || $self->comment
+}
+
+
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;

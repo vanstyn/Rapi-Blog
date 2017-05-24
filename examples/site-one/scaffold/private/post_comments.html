@@ -5,10 +5,16 @@
 
 <h4>Comments ([% Row.scalar.comments.count %])</h4>
 
-[% FOREACH child IN Row.scalar.post_comments.all %]
+[% FOREACH child IN Row.scalar.direct_comments.all %]
   [% INCLUDE private/comment.html comment = child %]
 [% END %]
 
 <hr>
+
+[% IF User.can_comment %]
+
+<h2>** CAN COMMENT **</h2>
+
+[% END %]
 
 <br><br>

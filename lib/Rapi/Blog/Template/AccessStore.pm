@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use RapidApp::Util qw(:all);
+use Rapi::Blog::Util;
 
 use Moo;
 extends 'RapidApp::Template::AccessStore';
@@ -146,7 +147,9 @@ around 'get_template_vars' => sub {
     list_posts   => sub { $self->Model->resultset('Post')->list_posts(@_) },
     
     # TODO: consider mount_url
-    request_path => sub { $c ? join('','/',$c->req->path) : undef }
+    request_path => sub { $c ? join('','/',$c->req->path) : undef },
+    
+    User => sub { Rapi::Blog::Util->get_User },
     
   };
   

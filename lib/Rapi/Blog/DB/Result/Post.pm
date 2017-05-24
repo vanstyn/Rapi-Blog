@@ -90,6 +90,12 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-24 12:06:23
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gmulIrHT79xDd7DaXgRo7w
 
+__PACKAGE__->has_many(
+  "direct_comments",
+  "Rapi::Blog::DB::Result::Comment",
+  { "foreign.post_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0, where => { parent_id => undef } },
+);
 
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
