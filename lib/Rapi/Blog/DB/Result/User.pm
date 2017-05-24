@@ -36,6 +36,12 @@ __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("full_name_unique", ["full_name"]);
 __PACKAGE__->add_unique_constraint("username_unique", ["username"]);
 __PACKAGE__->has_many(
+  "comments",
+  "Rapi::Blog::DB::Result::Comment",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "post_authors",
   "Rapi::Blog::DB::Result::Post",
   { "foreign.author_id" => "self.id" },
@@ -55,8 +61,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-23 16:46:52
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dpPCtnToQAYpBcywqgV1Rg
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-24 12:06:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:d8XOlxc3ysqy5CPSA0/2UQ
 
 use RapidApp::Util ':all';
 

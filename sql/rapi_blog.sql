@@ -65,4 +65,17 @@ CREATE TABLE [post_keyword] (
 );
 
 
+DROP TABLE IF EXISTS [comment];
+CREATE TABLE [comment] (
+  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [parent_id] INTEGER DEFAULT NULL,
+  [post_id] INTEGER NOT NULL,
+  [user_id] INTEGER NOT NULL,
+  [ts] datetime NOT NULL,
+  [body] text default '',
+  
+  FOREIGN KEY ([parent_id]) REFERENCES [comment] ([id]) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY ([post_id])   REFERENCES [post] ([id])    ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY ([user_id])   REFERENCES [user] ([id])    ON DELETE CASCADE ON UPDATE CASCADE
+);
 

@@ -61,6 +61,12 @@ __PACKAGE__->belongs_to(
   { id => "author_id" },
   { is_deferrable => 0, on_delete => "RESTRICT", on_update => "CASCADE" },
 );
+__PACKAGE__->has_many(
+  "comments",
+  "Rapi::Blog::DB::Result::Comment",
+  { "foreign.post_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 __PACKAGE__->belongs_to(
   "creator",
   "Rapi::Blog::DB::Result::User",
@@ -81,8 +87,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-19 17:02:42
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:V/epRjYVCYCuSktvR5A2+Q
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-24 12:06:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gmulIrHT79xDd7DaXgRo7w
 
 
 use RapidApp::Util ':all';
