@@ -1,0 +1,25 @@
+[% USE scalar %]
+[% BLOCK show_comment %]
+
+<hr>
+
+  <p class="blog-post-meta">
+    [ [% this_comment.id %] ] |
+    [% date.format(this_comment.ts) %] by <i>[% this_comment.user.username %]</i></a>
+  </p>
+  <p>
+    [% this_comment.body %]
+  </p>
+  <div style="padding-left:25px;">
+
+    [% FOREACH child IN this_comment.scalar.comments.all %]
+      [% PROCESS show_comment this_comment=child %]
+    [% END %]
+  </div>
+
+[% END %]
+
+
+[% IF comment %]
+  [% PROCESS show_comment this_comment=comment %]
+[% END %]

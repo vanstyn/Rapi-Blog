@@ -1,0 +1,14 @@
+[% USE scalar %]
+<br><br>
+
+<hr>
+
+<h4>Comments ([% Row.scalar.comments.count %])</h4>
+
+[% FOREACH child IN Row.scalar.post_comments.all %]
+  [% INCLUDE private/comment.html comment = child %]
+[% END %]
+
+<hr>
+
+<br><br>
