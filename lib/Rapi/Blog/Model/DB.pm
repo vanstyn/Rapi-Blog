@@ -350,6 +350,12 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
+          set_pw => { 
+            header => 'Set Password*', 
+            width => 130,    
+            editor => { xtype => 'ra-change-password-field' },
+            renderer => 'Ext.ux.RapidApp.renderSetPwValue'
+          },
         },
       },
     }

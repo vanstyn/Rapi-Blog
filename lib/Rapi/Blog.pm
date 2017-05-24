@@ -5,7 +5,7 @@ use warnings;
 
 # ABSTRACT: RapidApp-powered blog
 
-use RapidApp 1.2111_59;
+use RapidApp 1.2111_61;
 
 use Moose;
 extends 'RapidApp::Builder';
@@ -125,6 +125,7 @@ has 'default_view_path', is => 'ro', lazy => 1, default => sub {
 sub _build_version { $VERSION }
 sub _build_plugins { [qw/
   RapidApp::RapidDbic
+  RapidApp::AuthCore
   RapidApp::NavCore
   RapidApp::CoreSchemaAdmin
 /]}
@@ -156,6 +157,10 @@ sub _build_base_config {
     
     'Model::RapidApp::CoreSchema' => {
       sqlite_file => $self->site_dir->file('rapidapp_coreschema.db')->stringify
+    },
+    
+    'Plugin::RapidApp::AuthCore' => {
+      linked_user_model => 'DB::User'
     },
     
     'Controller::SimpleCAS' => {

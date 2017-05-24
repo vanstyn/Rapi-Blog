@@ -19,7 +19,12 @@ __PACKAGE__->add_columns(
   "username",
   { data_type => "varchar", is_nullable => 0, size => 32 },
   "full_name",
-  { data_type => "varchar", is_nullable => 0, size => 64 },
+  {
+    data_type => "varchar",
+    default_value => \"null",
+    is_nullable => 1,
+    size => 64,
+  },
   "admin",
   { data_type => "boolean", default_value => 0, is_nullable => 0 },
   "author",
@@ -50,8 +55,99 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-23 12:44:33
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:pVeQa5u+6JVWNP2n1aJiPg
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-23 16:46:52
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dpPCtnToQAYpBcywqgV1Rg
+
+use RapidApp::Util ':all';
+
+__PACKAGE__->load_components('+RapidApp::DBIC::Component::TableSpec');
+
+__PACKAGE__->add_virtual_columns( set_pw => {
+  data_type => "varchar", 
+  is_nullable => 1, 
+  sql => "SELECT NULL",
+  set_function => sub {} # This is a dummy designed to hook via AuthCore/linked_user_model
+});
+
+__PACKAGE__->apply_TableSpec;
+
+
+sub insert {
+  my $self = shift;
+  $self->next::method(@_);
+  
+  $self->_role_perm_sync;
+
+  $self
+}
+
+sub update {
+  my $self = shift;
+  $self->next::method(@_);
+  
+  $self->_role_perm_sync;
+
+  $self
+}
+
+
+
+sub _role_perm_sync {
+  my $self = shift;
+  
+  if($self->{_pulling_linkedRow}) {
+    $self->_apply_from_CoreUser($self->{_pulling_linkedRow});
+  }
+  else {
+    if($self->can('_find_linkedRow')) {
+      # This is ugly but needed to hook both sides correctly across all CRUD ops
+      my $Row = $self->_find_linkedRow || $self->_create_linkedRow;
+      $self->_apply_to_CoreUser( $Row );
+    }
+  }
+}
+
+
+
+# change originated from CoreSchema::User:
+sub _apply_from_CoreUser {
+  my ($self, $CoreUser) = @_;
+  
+  my $cur_admin = $self->admin;
+  
+  $CoreUser = $CoreUser->get_from_storage if ($CoreUser->in_storage); # needed in case the username has changed
+
+  my $LinkRs = $CoreUser->user_to_roles;
+  my $admin_cond = { username => $CoreUser->username, role => 'administrator' };
+  if($LinkRs->search_rs($admin_cond)->first) {
+    $self->admin(1);
+  }
+  else {
+    $self->admin(0);
+  }
+  
+  $self->update unless ($cur_admin == $self->admin);# {
+}
+
+
+
+# change originated locally:
+sub _apply_to_CoreUser {
+  my ($self, $CoreUser) = @_;
+  
+  my $LinkRs = $CoreUser->user_to_roles;
+  my $admin_cond = { username => $CoreUser->username, role => 'administrator' };
+  if($self->admin) {
+    $LinkRs->find_or_create($admin_cond);
+  }
+  else {
+    if(my $Link = $LinkRs->search_rs($admin_cond)->first) {
+      $Link->delete;
+    }
+  }
+
+}
+
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -16,7 +16,7 @@ DROP TABLE IF EXISTS [user];
 CREATE TABLE [user] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   [username] varchar(32) UNIQUE NOT NULL,
-  [full_name] varchar(64) UNIQUE NOT NULL,
+  [full_name] varchar(64) UNIQUE DEFAULT NULL,
   [admin] BOOLEAN NOT NULL DEFAULT 0,
   [author] BOOLEAN NOT NULL DEFAULT 0,
   [comment] BOOLEAN NOT NULL DEFAULT 1
