@@ -6,6 +6,14 @@
   <p class="blog-post-meta" id="[% this_comment.html_id %]">
     [ [% this_comment.id %] ] |
     [% date.format(this_comment.ts) %] by <i>[% this_comment.user.username %]</i></a>
+    
+    [% IF User.can_comment %]
+      <a 
+        style="cursor:pointer; font-size:.8em;"
+        onclick="promptSubComment('[% remote_action_path %]/comment/add','[% this_comment.id %]')"
+      >Reply</a>
+    [% END %]
+    
   </p>
   <p>
     [% this_comment.body %]
