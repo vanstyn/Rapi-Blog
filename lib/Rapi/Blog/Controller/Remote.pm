@@ -37,35 +37,38 @@ sub add_comment {
     "Add comment: permission denied"
   );
   
-  $c->req->params->{body} or return $self->error_response($c,"missing param 'body'");
+  my $body = $c->req->params->{body} or return $self->error_response($c,"missing param 'body'");
   
-  return $self->_add_sub_comment($c) if ($c->req->params->{parent_id});
+  my %data;
+  my $Post;
   
-  my $post_id = $c->req->params->{post_id} or return $self->error_response($c,
-    "missing param 'post_id' or 'parent_id'"
-  );
+  if(my $parent_id = $c->req->params->{parent_id}) {
+    my $pComment = $c->model('DB::Comment')->search_rs({ 'me.id' => $parent_id })->first
+      or return $self->error_response($c,"Comment '$parent_id' does not exist or permission denied");
+    
+    $Post = $pComment->post;
+    $data{parent_id} = $pComment->id;
+  }
+  elsif(my $post_id = $c->req->params->{post_id}) {
+    $Post = $c->model('DB::Post')->search_rs({ 'me.id' => $post_id })->first
+      or return $self->error_response($c,"Post '$post_id' does not exist or permission denied");
+  }
+  else {
+    return $self->error_response($c,"Must supply either 'post_id' or 'parent_id'");
+  }
   
-  my $Post = $c->model('DB::Post')->search_rs({ 'me.id' => $post_id })->first
-    or return $self->error_response($c,"Post '$post_id' does not exist or permission denied");
-  
-  my $Comment = $Post->comments->create({
+  %data = ( %data,
     post_id => $Post->id,
     user_id => $User->id,
-    body => $c->req->params->{body},
-  }) or return $self->error_response($c,"Unable to add comment - unknown error");
+    body    => $body
+  );
+  
+  my $Comment = $Post->comments->create(\%data)
+    or return $self->error_response($c,"Unable to add comment - unknown error");
   
   my $url = join('#',$Post->public_url,$Comment->html_id);
   
-  scream($url);
-  
   return $c->res->redirect( $url, 307 );
-}
-
-
-sub _add_sub_comment {
-  my ($self, $c) = @_;
-  
-  ...
 }
 
 
