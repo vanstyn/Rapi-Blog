@@ -84,6 +84,9 @@ __PACKAGE__->config(
       },
       Post => {
         page_class => 'Rapi::Blog::Module::PostPage'
+      },
+      PostKeyword => {
+        include_colspec => ['*','*.*'],    
       }
     },
 
@@ -94,18 +97,18 @@ __PACKAGE__->config(
         display_column => 'name',
         title          => 'Keyword',
         title_multi    => 'Keywords',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
+        iconCls        => 'icon-tag-blue',
+        multiIconCls   => 'icon-tags-blue',
         columns        => {
           name => {
             header => 'name',
-            #width => 100,
+            width => 120,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           post_keywords => {
             header => 'post_keywords',
-            #width => 100,
+            width => 160,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -271,8 +274,8 @@ __PACKAGE__->config(
         display_column => 'id',
         title          => 'Post-Keyword Link',
         title_multi    => 'Post-Keyword Links',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
+        iconCls        => 'icon-node',
+        multiIconCls   => 'icon-nodes',
         columns        => {
           id => {
             allow_add => 0,
@@ -289,13 +292,13 @@ __PACKAGE__->config(
           },
           keyword_name => {
             header => 'keyword_name',
-            #width => 100,
+            width => 120,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           post => {
             header => 'post',
-            #width => 100,
+            width => 200,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -303,10 +306,10 @@ __PACKAGE__->config(
       },
       User => {
         display_column => 'username',
-        title          => 'User',
-        title_multi    => 'Users',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
+        title          => 'Blog User',
+        title_multi    => 'Blog Users',
+        iconCls        => 'icon-user',
+        multiIconCls   => 'icon-users',
         columns        => {
           id => {
             allow_add => 0,
