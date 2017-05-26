@@ -74,8 +74,8 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "RESTRICT", on_update => "CASCADE" },
 );
 __PACKAGE__->has_many(
-  "post_keywords",
-  "Rapi::Blog::DB::Result::PostKeyword",
+  "post_tags",
+  "Rapi::Blog::DB::Result::PostTag",
   { "foreign.post_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
@@ -87,8 +87,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-24 12:06:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gmulIrHT79xDd7DaXgRo7w
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-26 13:35:23
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LIq82FE/VMxrMeFwJaBQ0Q
 
 __PACKAGE__->has_many(
   "direct_comments",
@@ -97,7 +97,7 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0, where => { parent_id => undef } },
 );
 
-__PACKAGE__->many_to_many( 'keywords', 'post_keywords', 'keyword_name' );
+__PACKAGE__->many_to_many( 'tags', 'post_tags', 'tag_name' );
 
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
@@ -132,7 +132,7 @@ sub insert {
 
   $self->next::method;
   
-  $self->_update_keywords;
+  $self->_update_tags;
   
   return $self;
 }
@@ -147,7 +147,7 @@ sub update {
   
   $self->_set_column_defaults('update');
   
-  $self->_update_keywords if ($self->is_column_changed('body'));
+  $self->_update_tags if ($self->is_column_changed('body'));
   
   $self->next::method;
 }
@@ -183,7 +183,7 @@ sub _set_column_defaults {
 
 }
 
-sub _update_keywords {
+sub _update_tags {
   my $self = shift;
   
   # normalized list of keywords, lowercased and _ converted to -
@@ -192,7 +192,7 @@ sub _update_keywords {
     $self->_extract_hashtags
   );
 
-  $self->set_keywords([ map {{ name => $_ }} @kw ]);
+  $self->set_tags([ map {{ name => $_ }} @kw ]);
 }
 
 

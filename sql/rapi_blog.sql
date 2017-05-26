@@ -48,19 +48,19 @@ CREATE TABLE [post] (
 );
 
 
-DROP TABLE IF EXISTS [keyword];
-CREATE TABLE [keyword] (
+DROP TABLE IF EXISTS [tag];
+CREATE TABLE [tag] (
   [name] varchar(64) PRIMARY KEY NOT NULL
 );
 
-DROP TABLE IF EXISTS [post_keyword];
-CREATE TABLE [post_keyword] (
+DROP TABLE IF EXISTS [post_tag];
+CREATE TABLE [post_tag] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   [post_id] INTEGER NOT NULL,
-  [keyword_name] varchar(64) NOT NULL,
+  [tag_name] varchar(64) NOT NULL,
   
-  FOREIGN KEY ([post_id])      REFERENCES [post] ([id])      ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY ([keyword_name]) REFERENCES [keyword] ([name]) ON DELETE RESTRICT ON UPDATE RESTRICT
+  FOREIGN KEY ([post_id])  REFERENCES [post] ([id])      ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY ([tag_name]) REFERENCES [tag] ([name]) ON DELETE RESTRICT ON UPDATE RESTRICT
   
 );
 

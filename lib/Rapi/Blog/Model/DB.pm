@@ -86,29 +86,29 @@ __PACKAGE__->config(
         page_class => 'Rapi::Blog::Module::PostPage'
       },
       PostKeyword => {
-        include_colspec => ['*','*.*'],    
+        include_colspec => [ '*', '*.*' ],
       }
     },
 
     # TableSpecs define extra RapidApp-specific metadata for each source
     # and is used/available to all modules which interact with them
     TableSpecs => {
-      Keyword => {
+      Tag => {
         display_column => 'name',
-        title          => 'Keyword',
-        title_multi    => 'Keywords',
+        title          => 'Tag',
+        title_multi    => 'Tags',
         iconCls        => 'icon-tag-blue',
         multiIconCls   => 'icon-tags-blue',
         columns        => {
           name => {
             header => 'name',
-            width => 120,
+            width  => 120,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
-          post_keywords => {
-            header => 'post_keywords',
-            width => 160,
+          post_tags => {
+            header => 'post_tags',
+            width  => 160,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -183,9 +183,9 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             profiles => ['markdown'],
           },
-          post_keywords => {
-            header => 'post_keywords',
-            #width => 100,
+          post_tags => {
+            header => 'post_tags',
+            width  => 120,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -270,10 +270,10 @@ __PACKAGE__->config(
           },
         },
       },
-      PostKeyword => {
+      PostTag => {
         display_column => 'id',
-        title          => 'Post-Keyword Link',
-        title_multi    => 'Post-Keyword Links',
+        title          => 'Post-Tag Link',
+        title_multi    => 'Post-Tag Links',
         iconCls        => 'icon-node',
         multiIconCls   => 'icon-nodes',
         columns        => {
@@ -290,15 +290,15 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             profiles => ['hidden'],
           },
-          keyword_name => {
-            header => 'keyword_name',
-            width => 120,
+          tag_name => {
+            header => 'tag_name',
+            width  => 120,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           post => {
             header => 'post',
-            width => 200,
+            width  => 200,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
