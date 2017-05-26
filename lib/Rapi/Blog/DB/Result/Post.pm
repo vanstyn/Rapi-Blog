@@ -97,6 +97,8 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0, where => { parent_id => undef } },
 );
 
+__PACKAGE__->many_to_many( 'keywords', 'post_keywords', 'keyword_name' );
+
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 
@@ -129,6 +131,10 @@ sub insert {
   $self->_set_column_defaults('insert');
 
   $self->next::method;
+  
+  $self->_update_keywords;
+  
+  return $self;
 }
 
 sub update {
@@ -140,6 +146,8 @@ sub update {
   $self->updater_id( $uid );
   
   $self->_set_column_defaults('update');
+  
+  $self->_update_keywords if ($self->is_column_changed('body'));
   
   $self->next::method;
 }
@@ -174,6 +182,34 @@ sub _set_column_defaults {
   }
 
 }
+
+sub _update_keywords {
+  my $self = shift;
+  
+  # normalized list of keywords, lowercased and _ converted to -
+  my @kw = uniq(
+    map { $_ =~ s/\_/\-/g; lc($_) } 
+    $self->_extract_hashtags
+  );
+
+  $self->set_keywords([ map {{ name => $_ }} @kw ]);
+}
+
+
+sub _parse_social_entities {
+  my $self = shift;
+  my $body = $self->body or return ();
+  
+  my @ents = $body =~ /(?:^|\s)([#@][-\w]{1,64})\b/g;
+  
+  return uniq(@ents)
+}
+
+sub _extract_hashtags {
+  my $self = shift;
+  map { $_ =~ s/^#//; $_ } grep { $_ =~ /^#/ } $self->_parse_social_entities
+}
+
 
 
 

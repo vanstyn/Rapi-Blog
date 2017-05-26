@@ -69,8 +69,8 @@ __PACKAGE__->config(
     grid_params => {
       # The special '*defaults' key applies to all sources at once
       '*defaults' => {
-        page_class => 'Rapi::Blog::Module::PageBase',
-        include_colspec => ['*'],    #<-- default already ['*']
+        page_class      => 'Rapi::Blog::Module::PageBase',
+        include_colspec => ['*'],                            #<-- default already ['*']
         ## uncomment these lines to turn on editing in all grids
         updatable_colspec   => ['*'],
         creatable_colspec   => ['*'],
@@ -93,7 +93,7 @@ __PACKAGE__->config(
       Keyword => {
         display_column => 'name',
         title          => 'Keyword',
-        title_multi    => 'Keyword Rows',
+        title_multi    => 'Keywords',
         iconCls        => 'ra-icon-pg',
         multiIconCls   => 'ra-icon-pg-multi',
         columns        => {
@@ -103,9 +103,10 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
-          post_keyword => {
-            header => 'post_keyword',
+          post_keywords => {
+            header => 'post_keywords',
             #width => 100,
+            #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -257,12 +258,19 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
+          direct_comments => {
+            header => 'direct_comments',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
         },
       },
       PostKeyword => {
         display_column => 'id',
-        title          => 'PostKeyword',
-        title_multi    => 'PostKeyword Rows',
+        title          => 'Post-Keyword Link',
+        title_multi    => 'Post-Keyword Links',
         iconCls        => 'ra-icon-pg',
         multiIconCls   => 'ra-icon-pg-multi',
         columns        => {
@@ -444,7 +452,7 @@ __PACKAGE__->config(
             header => 'parent_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           parent => {
             header => 'parent',

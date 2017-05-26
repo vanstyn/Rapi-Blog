@@ -57,10 +57,10 @@ DROP TABLE IF EXISTS [post_keyword];
 CREATE TABLE [post_keyword] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   [post_id] INTEGER NOT NULL,
-  [keyword_name] varchar(64) UNIQUE NOT NULL,
+  [keyword_name] varchar(64) NOT NULL,
   
   FOREIGN KEY ([post_id])      REFERENCES [post] ([id])      ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY ([keyword_name]) REFERENCES [keyword] ([name]) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY ([keyword_name]) REFERENCES [keyword] ([name]) ON DELETE RESTRICT ON UPDATE RESTRICT
   
 );
 

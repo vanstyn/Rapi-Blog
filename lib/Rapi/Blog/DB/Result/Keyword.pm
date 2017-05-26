@@ -18,16 +18,16 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_nullable => 0, size => 64 },
 );
 __PACKAGE__->set_primary_key("name");
-__PACKAGE__->might_have(
-  "post_keyword",
+__PACKAGE__->has_many(
+  "post_keywords",
   "Rapi::Blog::DB::Result::PostKeyword",
   { "foreign.keyword_name" => "self.name" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-17 07:32:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:OvSqabZQ3ZZ25er7AdHrWg
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-26 12:13:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:JMgXxEfh2Bg6Nb8GRRIHsg
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

@@ -22,12 +22,11 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 },
 );
 __PACKAGE__->set_primary_key("id");
-__PACKAGE__->add_unique_constraint("keyword_name_unique", ["keyword_name"]);
 __PACKAGE__->belongs_to(
   "keyword_name",
   "Rapi::Blog::DB::Result::Keyword",
   { name => "keyword_name" },
-  { is_deferrable => 0, on_delete => "CASCADE", on_update => "CASCADE" },
+  { is_deferrable => 0, on_delete => "RESTRICT", on_update => "RESTRICT" },
 );
 __PACKAGE__->belongs_to(
   "post",
@@ -37,8 +36,28 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-04-17 07:32:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:hmj7nzg7okdHyGt4p52KiQ
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-26 12:13:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:fKHLh54dj9bq8vhA130oAw
+
+use RapidApp::Util ':all';
+
+sub insert {
+  my $self = shift;
+  my $columns = shift;
+  $self->set_inflated_columns($columns) if $columns;
+  
+  my $kw = $self->get_column('keyword_name');
+  
+  $self->result_source->schema
+    ->resultset('Keyword')
+    ->find_or_create(
+      { name => $kw },
+      { key => 'primary' }
+    );
+
+  $self->next::method;
+}
+
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
