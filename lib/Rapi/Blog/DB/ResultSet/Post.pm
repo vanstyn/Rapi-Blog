@@ -22,7 +22,7 @@ sub newest_published_first {
 
 # Method exposed to templates:
 sub list_posts {
-  my ($self, $search) = @_;
+  my ($self, $search, $tag) = @_;
   
   # TODO: define some sort of simple query API
   
@@ -40,6 +40,11 @@ sub list_posts {
     { 'me.name' => { like => join('','%',$search,'%') } }
   ) if ($search);
   # --
+  
+  $Rs = $Rs->search_rs(
+    { 'post_tags.tag_name' => $tag },
+    { join => 'post_tags' }
+  ) if ($tag);
   
   return [ $Rs->all ]
 }

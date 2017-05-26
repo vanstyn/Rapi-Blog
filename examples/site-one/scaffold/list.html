@@ -2,11 +2,26 @@
 [%- WRAPPER site_wrapper.html 
   title = 'List'
 -%]
+[%- SET
+  search = c.req.query_params.search
+  tag    = c.req.query_params.tag
+-%]
 
   <div class="blog-post">
   
+  <div style="padding-bottom:5px;">
+    [% IF search %]
+      <h3>Posts containing "[% search %]"
+        [% IF tag %], and [% ELSE %] : [% END %]
+      </h3>
+    [% END %]
+    
+    [% IF tag %]
+      <h3>Tagged "[% tag %]":</h3>
+    [% END %]
+  </div>
     <ul>
-      [% FOREACH i IN list_posts( c.req.query_params.search ) %]
+      [% FOREACH i IN list_posts( search, tag ) %]
         <li>
           <a href="../post/[% i.name %]">[% i.title %]</a> 
           <i style="padding-left:3px;opacity:0.6;font-size:.9em;"> [% date.format(i.ts) %]</i>
