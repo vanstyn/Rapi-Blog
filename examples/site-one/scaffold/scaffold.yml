@@ -9,6 +9,7 @@ pages :
   - { title: Home,  path: /      }
   - { title: About, path: /about }
   - { title: List,  path: /list  }
+  - { title: Tags,  path: /tags  }
 
 view_wrappers:
   - { path: post/,      type: include, wrapper: private/post.html      }

@@ -29,6 +29,15 @@ __PACKAGE__->has_many(
 # Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-26 13:35:23
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:C93siCyHQ1D1co2F2bqQhg
 
+use RapidApp::Util ':all';
+
+sub posts_count {
+  my $self = shift;
+  # In case the ResultSet has pre-loaded this value, don't do another query:
+  my $preload = try{$self->get_column('posts_count')};
+  defined $preload ? $preload : $self->post_tags->count
+}
+
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;
