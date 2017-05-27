@@ -10,3 +10,4 @@
 
 requires 'RapidApp', 1.210101;
 
+requires 'HTML::Strip', 2.10;

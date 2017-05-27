@@ -268,6 +268,20 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
+          custom_summary => {
+            header => 'custom_summary',
+            width  => 160,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          summary => {
+            header     => 'summary',
+            width      => 160,
+            allow_add  => 0,
+            allow_edit => 0
+              #renderer => 'RA.ux.App.someJsFunc',
+              #profiles => [],
+          },
         },
       },
       PostTag => {

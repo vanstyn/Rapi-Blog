@@ -50,6 +50,10 @@ __PACKAGE__->add_columns(
   { data_type => "datetime", default_value => \"null", is_nullable => 1 },
   "size",
   { data_type => "integer", default_value => \"null", is_nullable => 1 },
+  "custom_summary",
+  { data_type => "text", default_value => \"null", is_nullable => 1 },
+  "summary",
+  { data_type => "text", default_value => \"null", is_nullable => 1 },
   "body",
   { data_type => "text", default_value => "", is_nullable => 1 },
 );
@@ -87,8 +91,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-26 13:35:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:LIq82FE/VMxrMeFwJaBQ0Q
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-26 20:14:03
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+wB/gMiOzQWJgAFXCwXQiw
 
 __PACKAGE__->has_many(
   "direct_comments",
@@ -101,6 +105,7 @@ __PACKAGE__->many_to_many( 'tags', 'post_tags', 'tag_name' );
 
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
+use HTML::Strip;
 
 sub schema { (shift)->result_source->schema }
 # This relies on us having been loaded via RapidApp::Util::Role::ModelDBIC
@@ -160,7 +165,14 @@ sub _set_column_defaults {
   
   # default title:
   $self->title($self->name) unless $self->title;
-  $self->size( length $self->get_column('body') );
+  
+  if ($for eq 'insert' || $self->is_column_changed('body') || $self->is_column_changed('custom_summary')) {
+    $self->size( length $self->body );
+    $self->summary( 
+      $self->custom_summary ? $self->custom_summary : $self->_generate_auto_summary
+    );
+    
+  }
   
   my $uid = Rapi::Blog::Util->get_uid;
   my $now_ts = Rapi::Blog::Util->now_ts;
@@ -208,6 +220,34 @@ sub _parse_social_entities {
 sub _extract_hashtags {
   my $self = shift;
   map { $_ =~ s/^#//; $_ } grep { $_ =~ /^#/ } $self->_parse_social_entities
+}
+
+
+sub _generate_auto_summary {
+  my $self = shift;
+  
+  my $num_words = 70;
+  
+  my $body = $self->body;
+  
+  # Convert ![], [] and () to <> so they will look like tags and get stripped in the next step
+  $body =~ s/\!?[\[\(]/\</g;
+  $body =~ s/[\]\)]/\>/g;
+  
+  # Strip HTML markup from body
+  my $text = HTML::Strip->new->parse( $body );
+  
+  my $i = 0;
+  my $buf = '';
+  for my $line (split(/\r?\n/,$text)) {
+    for my $word (split(/\s+/,$line)) {
+      next if ($word =~ /^\W+$/);
+      $buf .= "$word ";
+      return $buf if (++$i >= $num_words);
+    }
+  }
+  
+  return $buf
 }
 
 

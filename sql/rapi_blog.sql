@@ -39,6 +39,8 @@ CREATE TABLE [post] (
   [published] BOOLEAN NOT NULL DEFAULT 0,
   [publish_ts] datetime DEFAULT NULL,
   [size] INTEGER DEFAULT NULL,
+  [custom_summary] text default NULL,
+  [summary] text default NULL,
   [body] text default '',
   
   FOREIGN KEY ([author_id]) REFERENCES [user]              ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
