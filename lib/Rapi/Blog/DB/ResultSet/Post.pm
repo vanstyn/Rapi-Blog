@@ -20,6 +20,17 @@ sub newest_published_first {
 
 }
 
+sub _all_columns_except {
+  my ($self, @exclude) = @_;
+  scalar(@exclude) > 0 or return $self;
+  
+  my %excl = map {$_=>1} @exclude;
+  my @cols = grep { ! $excl{$_} } $self->result_source->columns;
+
+  $self->search_rs(undef,{ columns => \@cols });
+}
+
+
 # Method exposed to templates:
 sub list_posts {
   my ($self, $search, $tag) = @_;
@@ -29,11 +40,7 @@ sub list_posts {
   my $Rs = $self
     ->published
     ->newest_published_first
-    #->search_rs(undef,{
-    #  columns     => [qw/name    create_ts/]
-    #
-    #})
-    ->search_rs(undef,{ result_class => 'DBIx::Class::ResultClass::HashRefInflator' });
+    ->_all_columns_except('body');
   
   # -- example of how a query could work --
   $Rs = $Rs->search_rs(

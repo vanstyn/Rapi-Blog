@@ -25,6 +25,11 @@
         <li>
           <a href="../post/[% i.name %]">[% i.title %]</a> 
           <i style="padding-left:3px;opacity:0.6;font-size:.9em;"> [% date.format(i.ts) %]</i>
+          
+          <div style="font-size:0.7em;padding: 5px 0px 15px 5px;">
+            [% i.summary %] ... <a href="../post/[% i.name %]">read more</a> 
+          </div>
+          
         </li>
       [% END %]
     </ul>
