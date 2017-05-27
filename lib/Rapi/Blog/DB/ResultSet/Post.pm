@@ -12,12 +12,18 @@ sub published {
 
 }
 
+sub newest_first {
+  (shift)
+    ->search_rs(undef,{ 
+      order_by => { -desc => 'me.ts' }
+    })
+}
+
 sub newest_published_first {
   (shift)
     ->search_rs(undef,{ 
       order_by => { -desc => 'me.publish_ts' }
     })
-
 }
 
 sub _all_columns_except {
@@ -39,7 +45,7 @@ sub list_posts {
   
   my $Rs = $self
     ->published
-    ->newest_published_first
+    ->newest_first
     ->_all_columns_except('body');
   
   # -- example of how a query could work --
