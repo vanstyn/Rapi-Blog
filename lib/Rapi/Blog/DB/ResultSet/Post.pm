@@ -40,6 +40,7 @@ sub _all_columns_except {
 
 
 # Method exposed to templates:
+
 sub list_posts {
   my ($self, $search, $tag, $page, $limit) = @_;
   
@@ -56,23 +57,29 @@ sub list_posts {
     ->published
     ->newest_first
     ->_all_columns_except('body')
-    ->search_rs();
+    ->search_rs(undef, { 
+      join     => 'post_tags',
+      group_by => 'me.id'
+    })
+  ;
   
-  # -- example of how a query could work --
-  $Rs = $Rs->search_rs(
-    { 'me.name' => { like => join('','%',$search,'%') } }
-  ) if ($search);
-  # --
+  if($search) {
+    my $as_tag = lc($search);
+    $as_tag =~ s/\s+/\-/g;
+    $as_tag =~ s/\_/\-/g;
+    
+    $Rs = $Rs->search_rs({ -or => [
+      { 'post_tags.tag_name' => $as_tag },
+      { 'me.name' => { like => join('','%',$search,'%') } }
+    ]});
+  }
   
-  $Rs = $Rs->search_rs(
-    { 'post_tags.tag_name' => $tag },
-    { join => 'post_tags' }
-  ) if ($tag);
+  $Rs = $Rs->search_rs({ 'post_tags.tag_name' => $tag }) if ($tag);
   
   my @rows = ();
   my $pages = 1;
 
-  my $total = $Rs->count;
+  my $total = $Rs->_safe_count;
   if($total > 0) {
     my $pages = int($total/$limit);
     $pages++ if ($total % $limit);
@@ -128,6 +135,33 @@ sub list_posts {
     # The limit of Posts per page
     limit     => $limit
   }
+}
+
+
+sub _safe_count {
+  my $self = shift;
+  
+  # There seems to be a DBIC bug in count -
+  # Get errors like: 
+  #  Single parameters to new() must be a HASH ref data => DBIx::Class::ResultSource::Table=HASH(0xc8ce240)
+  # When we try to call ->count when we have { join => 'post_tags', group_by => 'me.id' } in the attrs.
+  # The line which is barfing is:
+  #  https://metacpan.org/source/RIBASUSHI/DBIx-Class-0.082840/lib/DBIx/Class/ResultSet.pm#L3389
+  # Which is DBIC trying to create a fresh_rs where it passes $self->result_source to ->new() so
+  # it seems to be an internal inconsistency. I don't have time to deal with it now so I created this
+  # ugly fallback for now. FIXME
+  
+  
+  my $count = try{ $self->count };
+  return $count if (defined $count);
+  
+  # Do a manual query and count the results, but try to make it least expensive as possible
+  my @rows = $self->search_rs(undef, {
+    columns => [], select => ['me.id'], as => ['id'],
+    result_class => 'DBIx::Class::ResultClass::HashRefInflator'
+  })->all;
+  
+  return scalar(@rows);
 }
 
 
