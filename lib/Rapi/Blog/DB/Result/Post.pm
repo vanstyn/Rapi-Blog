@@ -230,6 +230,9 @@ sub _generate_auto_summary {
   
   my $body = $self->body;
   
+  # Convert markdown links to plain text (labels) (provided by @deven)
+  $body =~ s/(!?)\[(.*?)\]\((.*?)\)/$1 ? "" : $2/ge;
+  
   # Convert ![], [] and () to <> so they will look like tags and get stripped in the next step
   $body =~ s/\!?[\[\(]/\</g;
   $body =~ s/[\]\)]/\>/g;
