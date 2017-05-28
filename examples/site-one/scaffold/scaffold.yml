@@ -2,7 +2,7 @@
 
 static_paths  : [ css/, js/, fonts/, img/ ]
 private_paths : [ private/, scaffold.yml ]
-landing_page  : post/gotalk.md
+landing_page  : recent_posts
 favicon       : img/favicon.ico
 
 pages : 

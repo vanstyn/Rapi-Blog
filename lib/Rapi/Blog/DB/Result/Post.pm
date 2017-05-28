@@ -276,6 +276,8 @@ sub record_hit {
   }
   
   $self->hits->create_from_request(@args);
+  
+  return "";
 }
 
 
