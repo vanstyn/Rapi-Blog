@@ -40,16 +40,16 @@ sub _all_columns_except {
 
 __PACKAGE__->load_components('+Rapi::Blog::DB::Component::ResultSet::ListAPI');
 
-sub _default_limit { 20 }
-sub _default_page  { 1 }
-sub _param_arg_order { [qw/search tag page limit/] } 
+sub _api_default_params {{ limit => 20 }}
+sub _api_param_arg_order { [qw/search tag page limit/] } 
+
 
 # Method exposed to templates:
 
 sub list_posts {
   my ($self, @args) = @_;
   
-  my %P = %{ $self->_list_api_params(@args) };
+  my $P = $self->_list_api_params(@args);
   
   my $Rs = $self
     ->published
@@ -61,20 +61,20 @@ sub list_posts {
     })
   ;
   
-  if($P{search}) {
-    my $as_tag = $P{search};
+  if($P->{search}) {
+    my $as_tag = $P->{search};
     $as_tag =~ s/\s+/\-/g;
     $as_tag =~ s/\_/\-/g;
     
     $Rs = $Rs->search_rs({ -or => [
       { 'post_tags.tag_name' => lc($as_tag) },
-      { 'me.name'    => { like => join('','%',$P{search},'%') } },
-      { 'me.summary' => { like => join('','%',$P{search},'%') } },
-      { 'me.body'    => { like => join('','%',$P{search},'%') } }
+      { 'me.name'    => { like => join('','%',$P->{search},'%') } },
+      { 'me.summary' => { like => join('','%',$P->{search},'%') } },
+      { 'me.body'    => { like => join('','%',$P->{search},'%') } }
     ]});
   }
   
-  $Rs = $Rs->search_rs({ 'post_tags.tag_name' => $P{tag} }) if ($P{tag});
+  $Rs = $Rs->search_rs({ 'post_tags.tag_name' => $P->{tag} }) if ($P->{tag});
   
   return $Rs->_list_api
 }

@@ -2,14 +2,28 @@
 [%- WRAPPER site_wrapper.html 
   title = 'Tags'
 -%]
+[%- SET 
+ p      = c.req.query_params
+ result = list_tags( p )
+ tags  = result.rows
+-%]
 
   <div class="blog-post">
+    <div style="padding-bottom:15px;">
+      [% IF result.params.sort == 'alphabetical' %]
+        <h3>Tags (alphabetical)</h3>
+        <a href="?[% this_qs %]&new_sort=popularity">Sort by popularity</a>
+      [% ELSE %]
+        <h3>Tags (by popularity)</h3>
+        <a href="?[% this_qs %]&new_sort=alphabetical">Sort alphabetically</a>
+      [% END %]
+     </div>
   
     <ul>
-      [% FOREACH i IN list_tags( c.req.query_params.search ) %]
+      [% FOREACH tag IN tags %]
         <li>
-          <a href="../list?tag=[% i.name %]">[% i.name %]</a> 
-          ([% i.posts_count %])
+          <a href="../list?tag=[% tag.name %]">[% tag.name %]</a> 
+          ([% tag.posts_count %])
         </li>
       [% END %]
     </ul>
