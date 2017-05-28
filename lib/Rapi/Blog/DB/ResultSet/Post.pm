@@ -167,7 +167,10 @@ sub list_posts {
     next_qs   => $next_qs,
     
     # Expressed as a query string, the params that would return this same page
-    this_qs   => $this_qs
+    this_qs   => $this_qs,
+    
+    # The current params for this page as a HashRef
+    params    => \%P
   );
 
   return { %meta, rows => \@rows }
