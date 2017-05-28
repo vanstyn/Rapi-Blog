@@ -6,6 +6,8 @@ use warnings;
 use Moo;
 extends 'DBIx::Class::ResultSet';
 
+use RapidApp::Util ':all';
+
 __PACKAGE__->load_components(qw(Helper::ResultSet::CorrelateRelationship));
 
 sub most_used {
@@ -18,10 +20,19 @@ sub most_used {
 }
 
 
+__PACKAGE__->load_components('+Rapi::Blog::DB::Component::ResultSet::ListAPI');
+
+sub _default_limit { 200 }
+sub _default_page  { 1 }
+sub _param_arg_order { [qw/search post_id/] } 
+
+
 # Method exposed to templates:
 sub list_tags {
-  my ($self, $search, $post_id) = @_;
-    
+  my ($self, @args) = @_;
+  
+  my %P = %{ $self->_list_api_params(@args) };
+  
   my $Rs = $self
     ->most_used
     ->search_rs(undef,{ '+columns' => {
@@ -30,15 +41,15 @@ sub list_tags {
     }});
     
   $Rs = $Rs->search_rs(
-    { 'post_tags.post_id' => $post_id },
+    { 'post_tags.post_id' => $P{post_id} },
     { join => 'post_tags' }
-  ) if ($post_id);
+  ) if ($P{post_id});
   
   $Rs = $Rs->search_rs(
-    { 'me.name' => { like => join('','%',$search,'%') } }
-  ) if ($search);
+    { 'me.name' => { like => join('','%',$P{search},'%') } }
+  ) if ($P{search});
   
-  return [ $Rs->all ]
+  return $Rs->_list_api->{rows};
 }
 
 
