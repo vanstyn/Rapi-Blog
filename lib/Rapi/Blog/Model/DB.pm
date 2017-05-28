@@ -87,6 +87,10 @@ __PACKAGE__->config(
       },
       PostKeyword => {
         include_colspec => [ '*', '*.*' ],
+      },
+      Hit => {
+        updatable_colspec => undef,
+        creatable_colspec => undef,
       }
     },
 
@@ -282,6 +286,13 @@ __PACKAGE__->config(
               #renderer => 'RA.ux.App.someJsFunc',
               #profiles => [],
           },
+          hits => {
+            header => 'hits',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
         },
       },
       PostTag => {
@@ -474,6 +485,86 @@ __PACKAGE__->config(
           parent => {
             header => 'parent',
             #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+        },
+      },
+      Hit => {
+        display_column => 'id',
+        title          => 'Hit',
+        title_multi    => 'Hits',
+        iconCls        => 'icon-world-go',
+	      multiIconCls   => 'icon-world-gos',
+        columns        => {
+          id => {
+            allow_add => 0,
+            header    => 'id',
+            width => 60,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          post_id => {
+            header => 'post_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => ['hidden'],
+          },
+          ts => {
+            header => 'ts',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          client_ip => {
+            header => 'client_ip',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          client_hostname => {
+            header => 'client_hostname',
+            hidden => 1
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          uri => {
+            header => 'uri',
+            width => 250,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          method => {
+            header => 'method',
+            width => 60,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          user_agent => {
+            header => 'user_agent',
+            width => 150,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          referer => {
+            header => 'referer',
+            width => 250,
+            hidden => 1
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          serialized_request => {
+            header => 'serialized_request',
+            width => 200,
+            hidden => 1,
+            allow_add => 0, allow_edit => 0,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          post => {
+            header => 'post',
+            width => 180,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },

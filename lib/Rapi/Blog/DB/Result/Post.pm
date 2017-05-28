@@ -78,6 +78,12 @@ __PACKAGE__->belongs_to(
   { is_deferrable => 0, on_delete => "RESTRICT", on_update => "CASCADE" },
 );
 __PACKAGE__->has_many(
+  "hits",
+  "Rapi::Blog::DB::Result::Hit",
+  { "foreign.post_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
   "post_tags",
   "Rapi::Blog::DB::Result::PostTag",
   { "foreign.post_id" => "self.id" },
@@ -91,8 +97,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-26 20:14:03
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:+wB/gMiOzQWJgAFXCwXQiw
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-28 12:05:29
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dbSY8wLT8DI4YvczNjpgsA
 
 __PACKAGE__->has_many(
   "direct_comments",
@@ -259,6 +265,18 @@ sub _generate_auto_summary {
   return $buf
 }
 
+
+
+sub record_hit {
+  my $self = shift;
+  
+  my @args = ({ post_id => $self->id, ts => Rapi::Blog::Util->now_ts });
+  if(my $c = RapidApp->active_request_context) {
+    push @args, $c->request;
+  }
+  
+  $self->hits->create_from_request(@args);
+}
 
 
 

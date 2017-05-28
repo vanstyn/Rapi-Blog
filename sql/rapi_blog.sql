@@ -81,3 +81,19 @@ CREATE TABLE [comment] (
   FOREIGN KEY ([user_id])   REFERENCES [user] ([id])    ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+
+DROP TABLE IF EXISTS [hit];
+CREATE TABLE [hit] (
+  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [post_id] INTEGER NOT NULL,
+  [ts] datetime NOT NULL,
+  [client_ip] varchar(16),
+  [client_hostname] varchar(255),
+  [uri] varchar(512),
+  [method] varchar(8),
+  [user_agent] varchar(1024),
+  [referer] varchar(512),
+  [serialized_request] text,
+  
+  FOREIGN KEY ([post_id])   REFERENCES [post] ([id])    ON DELETE CASCADE ON UPDATE CASCADE
+);
