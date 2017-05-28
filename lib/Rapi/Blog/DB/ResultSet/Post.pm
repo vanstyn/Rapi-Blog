@@ -58,6 +58,12 @@ sub list_posts {
     ($P{search}, $P{tag}, $P{page}, $P{limit}) = @args;
   }
   
+  for my $key (grep { $_ =~ /^new\_/ } keys %P) {
+    my $new_val = delete $P{$key};
+    $key =~ s/^new_//;
+    $P{$key} = $new_val;
+  }
+  
   $P{limit} = $self->_default_limit unless ($P{limit} && $P{limit} =~ /^\d+$/);
   $P{page}  = $self->_default_page  unless ($P{page}  && $P{page}  =~ /^\d+$/);
 
@@ -108,6 +114,7 @@ sub list_posts {
   
   my $last_page = $P{page} == $pages ? 1 : 0;
   
+  my $this_qs  = $self->_to_query_string(%P);
   my $prev_qs  = $P{page} > 1          ? $self->_to_query_string(%P, page => $P{page}-1 ) : undef;
   my $next_qs  = !$last_page           ? $self->_to_query_string(%P, page => $P{page}+1 ) : undef;
   my $first_qs = $P{page} > 2          ? $self->_to_query_string(%P, page => 1          ) : undef;
@@ -157,7 +164,10 @@ sub list_posts {
     prev_qs   => $prev_qs,
     
     # Expressed as a query string, the params that would return the next page (undef if N/A)
-    next_qs   => $next_qs
+    next_qs   => $next_qs,
+    
+    # Expressed as a query string, the params that would return this same page
+    this_qs   => $this_qs
   );
 
   return { %meta, rows => \@rows }
