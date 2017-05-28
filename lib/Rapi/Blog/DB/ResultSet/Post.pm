@@ -42,6 +42,7 @@ __PACKAGE__->load_components('+Rapi::Blog::DB::Component::ResultSet::ListAPI');
 
 sub _default_limit { 20 }
 sub _default_page  { 1 }
+sub _param_arg_order { [qw/search tag page limit/] } 
 
 # Method exposed to templates:
 

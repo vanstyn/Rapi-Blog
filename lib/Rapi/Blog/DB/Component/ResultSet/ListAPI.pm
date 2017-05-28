@@ -8,8 +8,10 @@ use parent 'DBIx::Class::ResultSet';
 use RapidApp::Util ':all';
 use URI::Escape qw/uri_escape uri_unescape/;
 
-sub _default_limit { (shift)->maybe::next::method(@_) // 500 }
-sub _default_page  { (shift)->maybe::next::method(@_) // 1   }
+sub _default_limit   { (shift)->maybe::next::method(@_) // 500 }
+sub _default_page    { (shift)->maybe::next::method(@_) // 1   }
+
+sub _param_arg_order { (shift)->maybe::next::method(@_) // [qw/search/] } 
 
 sub _list_api_params {
   my ($self, @args) = @_;
@@ -22,7 +24,11 @@ sub _list_api_params {
     } 
     else {
       # Also support ordered list arguments:
-      ($P{search}, $P{tag}, $P{page}, $P{limit}) = @args;
+      my @order = @{$self->_param_arg_order};
+      for my $value (@args) {
+        my $param = shift(@order) or last;
+        $P{$param} = $value;
+      }
     }
     
     for my $key (grep { $_ =~ /^new\_/ } keys %P) {
@@ -139,6 +145,9 @@ sub _to_query_string {
   
   delete $params{limit} if ($params{limit} && $params{limit} == $self->_default_limit);
   delete $params{page}  if ($params{page}  && $params{page}  == $self->_default_page);
+  
+  # strip empty string values (false values are expected to use '0')
+  $params{$_} eq '' and delete $params{$_} for (keys %params);
   
   # Put the page back in - even if its already at its default value - if there 
   # are no other params to ensure we return a "true" value
