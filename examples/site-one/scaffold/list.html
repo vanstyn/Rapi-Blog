@@ -82,5 +82,18 @@
     </ul>
   
   </div>
+  
+  <div style="text-align:center;padding-bottom:10px;">
+    [%- SET page_choices = [20,50,100,200,500] -%]
+    Max results per page: &nbsp;&nbsp;[%- FOREACH size IN page_choices -%]
+      [% IF size == result.limit %]
+        <b>[% size %]</b>
+      [% ELSE %]
+        <a href="?[% result.this_qs %]&new_limit=[% size %]&new_page=1">[% size %]</a>
+      [% END %]
+      &nbsp;&nbsp;
+    [%- END -%]
+  </div>
+  
 
 [% END %]
