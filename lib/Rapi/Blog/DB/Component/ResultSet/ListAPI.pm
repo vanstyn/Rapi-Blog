@@ -8,11 +8,19 @@ use parent 'DBIx::Class::ResultSet';
 use RapidApp::Util ':all';
 use URI::Escape qw/uri_escape uri_unescape/;
 
-sub _default_limit   { (shift)->maybe::next::method(@_) // 500 }
-sub _default_page    { (shift)->maybe::next::method(@_) // 1   }
 
-sub _param_arg_order { (shift)->maybe::next::method(@_) // [qw/search/] } 
+sub _api_param_arg_order { undef; }
+sub _get_api_param_arg_order { (shift)->_api_param_arg_order(@_) // [qw/search/] } 
 
+
+sub _api_default_params  { undef; }
+sub _get_api_default_params {
+  my $params = (shift)->_api_default_params(@_) || {};
+  { page => 1, limit => 500, %$params }
+}
+
+
+# get/set accessor:
 sub _list_api_params {
   my ($self, @args) = @_;
   
@@ -24,7 +32,7 @@ sub _list_api_params {
     } 
     else {
       # Also support ordered list arguments:
-      my @order = @{$self->_param_arg_order};
+      my @order = @{$self->_get_api_param_arg_order};
       for my $value (@args) {
         my $param = shift(@order) or last;
         $P{$param} = $value;
@@ -37,8 +45,18 @@ sub _list_api_params {
       $P{$key} = $new_val;
     }
     
-    $P{limit} = $self->_default_limit unless ($P{limit} && $P{limit} =~ /^\d+$/);
-    $P{page}  = $self->_default_page  unless ($P{page}  && $P{page}  =~ /^\d+$/);
+    my $defaults = $self->_get_api_default_params;
+    exists $P{$_} or $P{$_} = $defaults->{$_} for (keys %$defaults);
+    
+    # Extra checks to make sure limit and page are not only defined but positive integers,
+    # and if the consumer class has set
+    $P{limit} = $defaults->{limit} unless ($P{limit} && $P{limit} =~ /^\d+$/);
+    $P{page}  = $defaults->{page}  unless ($P{page}  && $P{page}  =~ /^\d+$/);
+    
+    # Finally, fallback defaults in case the consumer class _api_default_params doesn't
+    # return correct/valid limit and page params (abundance of caution)
+    $P{limit} = 500 unless ($P{limit} && $P{limit} =~ /^\d+$/);
+    $P{page}  = 1   unless ($P{page}  && $P{page}  =~ /^\d+$/);
     
     $self->{attrs}{___list_api_params} = \%P;
   }
@@ -50,7 +68,7 @@ sub _list_api_params {
 sub _list_api {
   my ($self, @args) = @_;
   
-  my %P = %{ $self->_list_api_params(@args) };
+  my $P = $self->_list_api_params(@args);
   
   my $Rs = $self;
 
@@ -59,28 +77,28 @@ sub _list_api {
 
   my $total = $Rs->_safe_count;
   if($total > 0) {
-    $pages = int($total/$P{limit});
-    $pages++ if ($total % $P{limit});
+    $pages = int($total/$P->{limit});
+    $pages++ if ($total % $P->{limit});
   }
   
-  $P{page} = $pages if ($P{page} > $pages);
+  $P->{page} = $pages if ($P->{page} > $pages);
   
   @rows = $Rs
-    ->search_rs(undef,{ page => $P{page}, rows => $P{limit} })
+    ->search_rs(undef,{ page => $P->{page}, rows => $P->{limit} })
     ->all if ($total > 0);
     
   my $count = (scalar @rows);
   
-  my $thru = $P{page} == 1 ? $count : ($P{page}-1) * $P{limit} + $count;
+  my $thru = $P->{page} == 1 ? $count : ($P->{page}-1) * $P->{limit} + $count;
   my $remaining = $total - $thru;
   
-  my $last_page = $P{page} == $pages ? 1 : 0;
+  my $last_page = $P->{page} == $pages ? 1 : 0;
   
-  my $this_qs  = $self->_to_query_string(%P);
-  my $prev_qs  = $P{page} > 1          ? $self->_to_query_string(%P, page => $P{page}-1 ) : undef;
-  my $next_qs  = !$last_page           ? $self->_to_query_string(%P, page => $P{page}+1 ) : undef;
-  my $first_qs = $P{page} > 2          ? $self->_to_query_string(%P, page => 1          ) : undef;
-  my $last_qs  = $P{page} < ($pages-1) ? $self->_to_query_string(%P, page => $pages     ) : undef;
+  my $this_qs  = $self->_to_query_string(%$P);
+  my $prev_qs  = $P->{page} > 1          ? $self->_to_query_string(%$P, page => $P->{page}-1 ) : undef;
+  my $next_qs  = !$last_page             ? $self->_to_query_string(%$P, page => $P->{page}+1 ) : undef;
+  my $first_qs = $P->{page} > 2          ? $self->_to_query_string(%$P, page => 1            ) : undef;
+  my $last_qs  = $P->{page} < ($pages-1) ? $self->_to_query_string(%$P, page => $pages       ) : undef;
   
   my %meta = (
     # Number of items returned (this page)
@@ -90,13 +108,13 @@ sub _list_api {
     total     => $total,
     
     # Page number of current page
-    page      => $P{page},
+    page      => $P->{page},
     
     # Total number of pages
     pages     => $pages,
     
     # True is the current page is the last page
-    last_page => $P{page} == $pages ? 1 : 0,
+    last_page => $P->{page} == $pages ? 1 : 0,
     
     # True if this page already contains all items
     complete  => $total == $count ? 1 : 0,
@@ -114,7 +132,7 @@ sub _list_api {
     before    => $thru - $count,
     
     # The limit of items per page
-    limit     => $P{limit},
+    limit     => $P->{limit},
     
     # Expressed as a query string, the params that would return the first page (undef if N/A)
     first_qs  => $first_qs,
@@ -132,7 +150,7 @@ sub _list_api {
     this_qs   => $this_qs,
     
     # The current params for this page as a HashRef
-    params    => \%P
+    params    => $P
   );
 
   return { %meta, rows => \@rows }
@@ -142,16 +160,19 @@ sub _list_api {
 sub _to_query_string {
   my $self = shift;
   my %params = (ref($_[0]) eq 'HASH') ? %{ $_[0] } : @_; # <-- arg as hash or hashref
-  
-  delete $params{limit} if ($params{limit} && $params{limit} == $self->_default_limit);
-  delete $params{page}  if ($params{page}  && $params{page}  == $self->_default_page);
+
+  # remove params already at their default values in order to provide a cleaner url:
+  my $defaults = $self->_get_api_default_params;
+  for my $key (keys %$defaults) {
+    delete $params{$key} if (defined $params{$key} && "$params{$key}" eq "$defaults->{$key}");
+  }
   
   # strip empty string values (false values are expected to use '0')
   $params{$_} eq '' and delete $params{$_} for (keys %params);
   
   # Put the page back in - even if its already at its default value - if there 
   # are no other params to ensure we return a "true" value
-  $params{page} = $self->_default_page unless (scalar(keys %params) > 0);
+  $params{page} = $defaults->{page} || 1 unless (scalar(keys %params) > 0);
   
   my %encP = map { $_ => uri_escape($params{$_}) } keys %params;
   
