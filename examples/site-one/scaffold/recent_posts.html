@@ -31,6 +31,13 @@
         </li>
       [% END %]
     </ul>
+    
+    [% IF result.next_qs %]
+    <div style="text-align:center;">
+      
+      <a href="../list?[% result.next_qs %]&summary=1">Older Posts</a>
+    </div>
+    [% END %]
   
   </div>
   
