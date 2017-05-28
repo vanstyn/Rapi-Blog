@@ -39,7 +39,7 @@ sub _all_columns_except {
   $self->search_rs(undef,{ columns => \@cols });
 }
 
-sub _default_limit { 500 }
+sub _default_limit { 20 }
 sub _default_page  { 1 }
 
 
@@ -108,10 +108,10 @@ sub list_posts {
   
   my $last_page = $P{page} == $pages ? 1 : 0;
   
-  my $first_qs = $P{page} > 1 ? $self->_to_query_string(%P, page => 1            ) : undef;
-  my $last_qs  = !$last_page  ? $self->_to_query_string(%P, page => $pages       ) : undef;
-  my $prev_qs  = $P{page} > 1 ? $self->_to_query_string(%P, page => $P{page} - 1 ) : undef;
-  my $next_qs  = !$last_page  ? $self->_to_query_string(%P, page => $P{page} + 1 ) : undef;
+  my $prev_qs  = $P{page} > 1          ? $self->_to_query_string(%P, page => $P{page}-1 ) : undef;
+  my $next_qs  = !$last_page           ? $self->_to_query_string(%P, page => $P{page}+1 ) : undef;
+  my $first_qs = $P{page} > 2          ? $self->_to_query_string(%P, page => 1          ) : undef;
+  my $last_qs  = $P{page} < ($pages-1) ? $self->_to_query_string(%P, page => $pages     ) : undef;
   
   my %meta = (
     # Number of Posts returned (this page)
@@ -169,6 +169,10 @@ sub _to_query_string {
   
   delete $params{limit} if ($params{limit} && $params{limit} == $self->_default_limit);
   delete $params{page}  if ($params{page}  && $params{page}  == $self->_default_page);
+  
+  # Put the page back in - even if its already at its default value - if there 
+  # are no other params to ensure we return a "true" value
+  $params{page} = $self->_default_page unless (scalar(keys %params) > 0);
   
   my %encP = map { $_ => uri_escape($params{$_}) } keys %params;
   

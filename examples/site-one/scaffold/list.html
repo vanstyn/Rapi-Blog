@@ -25,6 +25,24 @@
       No posts found.
     [% END %]
   </h4>
+  
+  <div>
+    [% IF result.first_qs %]
+      <a style="padding-left:15px;" href="?[% result.first_qs %]" alt="First Page"><b>&lt;&lt;</b></a>
+    [% END %]
+    [% IF result.prev_qs %]
+      <a style="padding-left:15px;" href="?[% result.prev_qs %]" alt="Previous Page"><b>&lt;</b></a>
+    [% END %]
+    [% IF result.next_qs %]
+      <a style="padding-left:35px;" href="?[% result.next_qs %]" alt="Next Page"><b>&gt;</b></a>
+    [% END %]
+    [% IF result.last_qs %]
+      <a style="padding-left:15px;" href="?[% result.last_qs %]" alt="Last Page"><b>&gt;&gt;</b></a>
+    [% END %]
+  </div>
+  
+  
+  
   </div>
     <ul>
       [% FOREACH Post IN posts %]
