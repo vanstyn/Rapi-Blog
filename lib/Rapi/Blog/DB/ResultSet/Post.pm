@@ -7,6 +7,7 @@ use Moo;
 extends 'DBIx::Class::ResultSet';
 
 use RapidApp::Util ':all';
+use URI::Escape qw/uri_escape uri_unescape/;
 
 sub published {
   (shift)
@@ -38,6 +39,9 @@ sub _all_columns_except {
   $self->search_rs(undef,{ columns => \@cols });
 }
 
+sub _default_limit { 500 }
+sub _default_page  { 1 }
+
 
 # Method exposed to templates:
 
@@ -54,8 +58,8 @@ sub list_posts {
     ($P{search}, $P{tag}, $P{page}, $P{limit}) = @args;
   }
   
-  $P{limit} = 500 unless ($P{limit} && $P{limit} =~ /^\d+$/);
-  $P{page}  = 1   unless ($P{page}  && $P{page}  =~ /^\d+$/);
+  $P{limit} = $self->_default_limit unless ($P{limit} && $P{limit} =~ /^\d+$/);
+  $P{page}  = $self->_default_page  unless ($P{page}  && $P{page}  =~ /^\d+$/);
 
   my $Rs = $self
     ->published
@@ -87,7 +91,7 @@ sub list_posts {
 
   my $total = $Rs->_safe_count;
   if($total > 0) {
-    my $pages = int($total/$P{limit});
+    $pages = int($total/$P{limit});
     $pages++ if ($total % $P{limit});
   }
   
@@ -104,10 +108,12 @@ sub list_posts {
   
   my $last_page = $P{page} == $pages ? 1 : 0;
   
-  return {
-    # ArrayRef of Posts (this page)
-    rows      => \@rows,
-    
+  my $first_qs = $P{page} > 1 ? $self->_to_query_string(%P, page => 1            ) : undef;
+  my $last_qs  = !$last_page  ? $self->_to_query_string(%P, page => $pages       ) : undef;
+  my $prev_qs  = $P{page} > 1 ? $self->_to_query_string(%P, page => $P{page} - 1 ) : undef;
+  my $next_qs  = !$last_page  ? $self->_to_query_string(%P, page => $P{page} + 1 ) : undef;
+  
+  my %meta = (
     # Number of Posts returned (this page)
     count     => $count,
     
@@ -139,8 +145,34 @@ sub list_posts {
     before    => $thru - $count,
     
     # The limit of Posts per page
-    limit     => $P{limit}
-  }
+    limit     => $P{limit},
+    
+    # Expressed as a query string, the params that would return the first page (undef if N/A)
+    first_qs  => $first_qs,
+    
+    # Expressed as a query string, the params that would return the last page (undef if N/A)
+    last_qs   => $last_qs,
+    
+    # Expressed as a query string, the params that would return the previous page (undef if N/A)
+    prev_qs   => $prev_qs,
+    
+    # Expressed as a query string, the params that would return the next page (undef if N/A)
+    next_qs   => $next_qs
+  );
+
+  return { %meta, rows => \@rows }
+}
+
+sub _to_query_string {
+  my $self = shift;
+  my %params = (ref($_[0]) eq 'HASH') ? %{ $_[0] } : @_; # <-- arg as hash or hashref
+  
+  delete $params{limit} if ($params{limit} && $params{limit} == $self->_default_limit);
+  delete $params{page}  if ($params{page}  && $params{page}  == $self->_default_page);
+  
+  my %encP = map { $_ => uri_escape($params{$_}) } keys %params;
+  
+  join('&',map { join('=',$_,$encP{$_}) } keys %encP)
 }
 
 
