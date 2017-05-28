@@ -2,9 +2,11 @@
 [%- WRAPPER site_wrapper.html 
   title = 'List'
 -%]
-[%- SET p      = c.req.query_params                              -%]
-[%- SET result = list_posts( p.search, p.tag, p.page, p.limit )  -%]
-[%- SET posts  = result.rows                                     -%]
+[%- SET 
+ p      = c.req.query_params
+ result = list_posts( p )
+ posts  = result.rows
+-%]
 
   <div class="blog-post">
   

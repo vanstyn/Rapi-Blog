@@ -42,16 +42,20 @@ sub _all_columns_except {
 # Method exposed to templates:
 
 sub list_posts {
-  my ($self, $search, $tag, $page, $limit) = @_;
+  my ($self, @args) = @_;
   
-  # support alternate hashref named key/val argument
-  if(ref($search) && ref($search) eq 'HASH') {
-    my $h = $search;
-    ($search, $tag, $page, $limit) = ($h->{search}, $h->{tag}, $h->{page}, $h->{limit});
+  my %P = ();
+  if((ref($args[0])||'') eq 'HASH') {
+    # Our caller has supplied arguments already as name/values:
+    %P = %{ $args[0] };
+  } 
+  else {
+    # Also support ordered list arguments:
+    ($P{search}, $P{tag}, $P{page}, $P{limit}) = @args;
   }
   
-  $limit = 500 unless ($limit && $limit =~ /^\d+$/);
-  $page  = 1   unless ($page  && $page  =~ /^\d+$/);
+  $P{limit} = 500 unless ($P{limit} && $P{limit} =~ /^\d+$/);
+  $P{page}  = 1   unless ($P{page}  && $P{page}  =~ /^\d+$/);
 
   my $Rs = $self
     ->published
@@ -63,40 +67,42 @@ sub list_posts {
     })
   ;
   
-  if($search) {
-    my $as_tag = lc($search);
+  if($P{search}) {
+    my $as_tag = $P{search};
     $as_tag =~ s/\s+/\-/g;
     $as_tag =~ s/\_/\-/g;
     
     $Rs = $Rs->search_rs({ -or => [
-      { 'post_tags.tag_name' => $as_tag },
-      { 'me.name' => { like => join('','%',$search,'%') } }
+      { 'post_tags.tag_name' => lc($as_tag) },
+      { 'me.name'    => { like => join('','%',$P{search},'%') } },
+      { 'me.summary' => { like => join('','%',$P{search},'%') } },
+      { 'me.body'    => { like => join('','%',$P{search},'%') } }
     ]});
   }
   
-  $Rs = $Rs->search_rs({ 'post_tags.tag_name' => $tag }) if ($tag);
+  $Rs = $Rs->search_rs({ 'post_tags.tag_name' => $P{tag} }) if ($P{tag});
   
   my @rows = ();
   my $pages = 1;
 
   my $total = $Rs->_safe_count;
   if($total > 0) {
-    my $pages = int($total/$limit);
-    $pages++ if ($total % $limit);
+    my $pages = int($total/$P{limit});
+    $pages++ if ($total % $P{limit});
   }
   
-  $page  = $pages if ($page > $pages);
+  $P{page} = $pages if ($P{page} > $pages);
   
   @rows = $Rs
-    ->search_rs(undef,{ page => $page, rows => $limit })
+    ->search_rs(undef,{ page => $P{page}, rows => $P{limit} })
     ->all if ($total > 0);
     
   my $count = (scalar @rows);
   
-  my $thru = $page == 1 ? $count : ($page-1) * $limit + $count;
+  my $thru = $P{page} == 1 ? $count : ($P{page}-1) * $P{limit} + $count;
   my $remaining = $total - $thru;
   
-  my $last_page = $page == $pages ? 1 : 0;
+  my $last_page = $P{page} == $pages ? 1 : 0;
   
   return {
     # ArrayRef of Posts (this page)
@@ -109,13 +115,13 @@ sub list_posts {
     total     => $total,
     
     # Page number of current page
-    page      => $page,
+    page      => $P{page},
     
     # Total number of pages
     pages     => $pages,
     
     # True is the current page is the last page
-    last_page => $page == $pages ? 1 : 0,
+    last_page => $P{page} == $pages ? 1 : 0,
     
     # True if this page already contains all Posts
     complete  => $total == $count ? 1 : 0,
@@ -133,7 +139,7 @@ sub list_posts {
     before    => $thru - $count,
     
     # The limit of Posts per page
-    limit     => $limit
+    limit     => $P{limit}
   }
 }
 
