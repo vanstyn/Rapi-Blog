@@ -157,6 +157,12 @@ sub update {
   $self->next::method;
 }
 
+sub image_url {
+  my $self = shift;
+  $self->{_image_url} //= $self->image 
+    ? join('/','_ra-rel-mnt_','simplecas','fetch_content',$self->image) 
+    : undef
+}
 
 
 sub _set_column_defaults {

@@ -144,7 +144,7 @@ __PACKAGE__->config(
             header => 'image',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
+            profiles => ['cas_img'],
           },
           create_ts => {
             header     => 'create_ts',
