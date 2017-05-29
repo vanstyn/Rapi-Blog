@@ -89,6 +89,7 @@ has 'scaffold_cnf', is => 'ro', init_arg => undef, lazy => 1, default => sub {
     favicon            => 'favicon.ico',
     landing_page       => 'index.html',
     internal_post_path => 'private/post/',
+    not_found          => 'rapidapp/public/http-404.html'
   
   };
   

@@ -3,6 +3,7 @@
 static_paths  : [ css/, js/, fonts/, img/ ]
 private_paths : [ private/, scaffold.yml ]
 landing_page  : recent_posts
+not_found     : private/404.html
 favicon       : img/favicon.ico
 
 pages : 

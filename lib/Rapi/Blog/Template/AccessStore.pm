@@ -11,6 +11,8 @@ use Types::Standard ':all';
 
 use Plack::App::File;
 
+sub _cache_slots { (shift)->local_cache->{template_row_slot} //= {} }
+
 has 'scaffold_dir',  is => 'ro', isa => InstanceOf['Path::Class::Dir'], required => 1;
 has 'scaffold_cnf',  is => 'ro', isa => HashRef, required => 1;
 has 'static_paths',  is => 'ro', isa => ArrayRef[Str], default => sub {[]};
@@ -70,25 +72,34 @@ sub _compile_path_list_regex {
 }
 
 
-
 sub _is_static_path {
   my ($self, $template) = @_;
-  my $Regexp = $self->_static_path_regexp or return 0;
-  $template =~ $Regexp
+  $self->_cache_slots->{$template}{_is_static_path} //= do {
+    my $Regexp = $self->_static_path_regexp;
+    $Regexp ? $template =~ $Regexp : 0
+  }
 }
 
 sub _is_private_path {
   my ($self, $template) = @_;
-  my $Regexp = $self->_private_path_regexp or return 0;
-  $template =~ $Regexp
+  $self->_cache_slots->{$template}{_is_private_path} //= do {
+    my $Regexp = $self->_private_path_regexp;
+    $Regexp ? $template =~ $Regexp : 0
+  }
 }
 
 sub _resolve_scaffold_file {
+  my ($self, $template) = @_;
+  $self->_cache_slots->{$template}{_resolve_scaffold_file} //= 
+    $self->__resolve_scaffold_file($template)
+}
+
+sub __resolve_scaffold_file {
   my ($self, $template,$recur) = @_;
   my $File = $self->scaffold_dir->file($template);
   # temp hack: simulate function of 'default_template_extension' just for scaffold files:
   # TODO: something else, or, make configurable option
-  return $self->_resolve_scaffold_file($template.'.html',1) unless ($recur || -f $File);
+  return $self->__resolve_scaffold_file($template.'.html',1) unless ($recur || -f $File);
   -f $File ? $File : undef
 }
 
@@ -118,11 +129,10 @@ sub _File_content {
   scalar $File->slurp
 }
 
-
 sub templateData {
   my ($self, $template) = @_;
   die 'template name argument missing!' unless ($template);
-  $self->local_cache->{template_row_slot}{$template} //= do {
+  $self->_cache_slots->{$template}{templateData} //= do {
     my $data = {};
     if(my $name = $self->local_name($template)) {
       $data->{Row} = $self->Model->resultset('Post')
@@ -225,14 +235,16 @@ sub split_name_wrapper {
   
   $name ||= $self->_match_path($self->internal_post_path, $template);
 
-  return ($name, $wrapper);
+  ($name, $wrapper);
 }
 
 
 sub local_name {
   my ($self, $template) = @_;
-  my ($name, $wrapper) = $self->split_name_wrapper($template);
-  return $name;
+  $self->_cache_slots->{$template}{local_name} //= do {
+    my ($name, $wrapper) = $self->split_name_wrapper($template);
+    $name
+  }
 }
 
 sub wrapper_def {
@@ -244,13 +256,20 @@ sub wrapper_def {
 
 sub owns_tpl {
   my ($self, $template) = @_;
-  $self->local_name($template) 
-    || $self->_is_static_path($template) 
-    || $self->_resolve_scaffold_file($template) 
-  ? 1 : 0
+  $self->_cache_slots->{$template}{owns_tpl} //= do {
+    $self->local_name($template) 
+      || $self->_is_static_path($template) 
+      || $self->_resolve_scaffold_file($template) 
+    ? 1 : 0
+  }
 }
 
 sub template_exists {
+  my ($self, $template) = @_;
+  $self->_cache_slots->{$template}{template_exists} //= do { $self->_template_exists($template) }
+}
+
+sub _template_exists {
   my ($self, $template) = @_;
   
   return 1 if ($self->_resolve_scaffold_file($template));
@@ -263,6 +282,11 @@ sub template_exists {
 }
 
 sub template_mtime {
+  my ($self, $template) = @_;
+  $self->_cache_slots->{$template}{template_mtime} //= $self->_template_mtime($template)
+}
+
+sub _template_mtime {
   my ($self, $template) = @_;
   
   if (my $File = $self->_resolve_scaffold_file($template)) {
@@ -282,6 +306,11 @@ sub template_mtime {
 }
 
 sub template_content {
+  my ($self, $template) = @_;
+  $self->_cache_slots->{$template}{template_content} //= $self->_template_content($template)
+}
+
+sub _template_content {
   my ($self, $template) = @_;
   
   if (my $File = $self->_resolve_scaffold_file($template)) {
@@ -398,22 +427,40 @@ around 'template_post_processor_class' => sub {
 sub template_psgi_response {
   my ($self, $template, $c) = @_;
   
+  return undef unless ($self->owns_tpl($template));
+  
   # Return 404 for private paths:
   if ($self->_is_private_path($template)) {
-    return [ 404, [ 'Post-Type' => 'text/plain' ], [ '404 not found' ] ] unless (
+    return $self->_forward_to_404_template($c) unless (
       $c->req->action =~ /^\/rapidapp\/template\// # does not apply to internal tpl reqs
+      || $c->stash->{__forward_to_404_template} # because the 404 can be a private path
     );
   }
   
-  my $tpl = $self->_resolve_static_path($template) or return undef;
+  if(my $tpl = $self->_resolve_static_path($template)) {
+    my $env = {
+      %{ $c->req->env },
+      PATH_INFO   => "/$tpl",
+      SCRIPT_NAME => ''
+    };
+    return $self->static_path_app->($env)
+  }
   
-  my $env = {
-    %{ $c->req->env },
-    PATH_INFO   => "/$tpl",
-    SCRIPT_NAME => ''
-  };
-  
-  return $self->static_path_app->($env)
+  $self->template_exists($template) ? undef : $self->_forward_to_404_template($c)
 }
+
+sub _forward_to_404_template {
+  my $self = shift;
+  my $c = shift || RapidApp->active_request_context;
+  
+  my $tpl = $self->scaffold_cnf->{not_found} || 'rapidapp/public/http-404.html';
+  
+  # catch deep recursion:
+  die "Error dispatching 404 not found template" if ($c->stash->{__forward_to_404_template}++);
+  
+  $c->res->status(404);
+  $c->detach( '/rapidapp/template/view', [$tpl] )
+}
+
 
 1;
