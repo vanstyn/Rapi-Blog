@@ -10,6 +10,8 @@ extends 'RapidApp::Template::AccessStore';
 use Types::Standard ':all';
 
 use Plack::App::File;
+use Plack::Builder;
+use Plack::Middleware::ConditionalGET;
 
 sub _cache_slots { (shift)->local_cache->{template_row_slot} //= {} }
 
@@ -34,7 +36,19 @@ around 'template_external_tpl' => sub {
 
 has 'static_path_app', is => 'ro', lazy => 1, default => sub {
   my $self = shift;
-  Plack::App::File->new(root => $self->scaffold_dir)->to_app
+  my $app = builder {
+    enable "ConditionalGET";
+    Plack::App::File->new(root => $self->scaffold_dir)->to_app;
+  };
+  
+  sub {
+    my $env = shift;
+    my $res = $app->($env);
+    # limit caching to 10 minutes now that we return 304s
+    push @{$res->[1]}, 'Cache-Control', 'public, max-age=600';
+    
+    $res
+  }
 };
 
 
