@@ -36,15 +36,87 @@ around 'get_add_edit_form_items' => sub {
   my @items = $self->$orig(@args);
 
   if($self->ResultSource->source_name eq 'Post') {
+
+    my @sets = (
+    
+      $self->_collect_to_fieldset(
+        \@items, [qw/name title author ts published/], {
+          width => 400,
+          title => 'Attributes',
+          labelWidth => 60
+      }),
+
+      $self->_collect_to_fieldset(
+        \@items, [qw/image/], {
+          width => 150,
+          title => 'Image',
+      },{hideLabel => \1}), 
+      
+      $self->_collect_to_fieldset(
+        \@items, [qw/custom_summary/], {
+          width => 400,
+          title => join('',
+            'Custom Summary ',
+            '<span style="font-size:.9em;">',
+              '(leave blank for auto-generated summary)',
+            '</span>'),
+      },{hideLabel => \1, growMax => 110, growMin => 110, anchor => '-5' })
+    );
+    
+    my $wrap = {
+      xtype => 'fieldset',
+      layout => 'hbox',
+      anchor => '-20',
+      hideBorders => \1,
+      collapsible => \1,
+      items => \@sets
+    };
+    
+    @items = ($wrap,@items);
+  
     my $eF = $items[$#items] || {}; # last element
     if($eF->{xtype} eq 'ra-md-editor') {
       $eF->{_noAutoHeight} = 1;
       $eF->{plugins} = 'ra-parent-gluebottom';
+      $eF->{hideLabel} = \1;
     }
   }
 
   return @items;
 };
+
+
+
+sub _collect_to_fieldset {
+  my ($self, $items, $cols, $opt, $ovr) = @_;
+  
+  my %colndx = map {$_=>1} @$cols;
+  my %pulled = ();
+  my @remaining = ();
+  for my $itm (@$items) {
+    $colndx{$itm->{name}} 
+      ? $pulled{$itm->{name}} = $itm
+      : push @remaining, $itm
+  }
+  
+  @$items = @remaining;
+  
+  if($ovr) {
+    $pulled{$_} = { %{$pulled{$_}}, %$ovr } for (keys %pulled);
+  }
+  
+  my @f_items = map { $pulled{$_} || () } @$cols;
+  
+  return {
+    xtype => 'fieldset',
+    #style => 'float:left;margin-right:10px;',
+  
+    %{$opt||{}},
+    items => \@f_items
+  }
+}
+
+
 
 
 before 'load_saved_search' => sub { (shift)->apply_permissions };
