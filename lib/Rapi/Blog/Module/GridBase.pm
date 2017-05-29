@@ -16,6 +16,7 @@ sub BUILD {
 
     $self->apply_extconfig(
       reload_on_show => \1,
+      autoload_added_record => \1,
       store_button_cnf => {
         add => {
           text     => 'New Post',
