@@ -129,3 +129,17 @@
 .rapi-blog-postview .appdv-tt-generated .edit-record-toggle .edit {
   visibility:visible;
 }
+
+
+.banner-home-link {
+  height:30px;
+  width:30px;
+  display:inline-block;
+  background-size: 30px 30px;
+  background-repeat: no-repeat;
+  opacity: 0.3;
+}
+
+.banner-home-link:hover {
+  opacity: 1.0;
+}
