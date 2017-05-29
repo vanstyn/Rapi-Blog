@@ -54,15 +54,15 @@
       
       
         <nav class="blog-nav">
-				
-					[% FOREACH page IN scaffold.pages %]
-					  [%- IF page.path == request_path %]
-							<a class="blog-nav-item active" href="[%- page.path -%]">[%- page.title -%]</a>
-						[%- ELSE %]
-						  <a class="blog-nav-item" href="[%- page.path -%]">[%- page.title -%]</a>
-						[%- END %]
-					[% END %]
-				
+        
+          [% FOREACH page IN scaffold.pages %]
+            [%- IF page.path == request_path %]
+              <a class="blog-nav-item active" href="[%- page.path -%]">[%- page.title -%]</a>
+            [%- ELSE %]
+              <a class="blog-nav-item" href="[%- page.path -%]">[%- page.title -%]</a>
+            [%- END %]
+          [% END %]
+        
           <form class="navbar-form navbar-right" action="/list">
             <div class="form-group">
               <input type="text" class="form-control" name="search">
@@ -81,7 +81,7 @@
     <div class="container">
 
       <div class="blog-header">
-        <h1 class="blog-title">Site-One Example</h1>
+        <h1 class="blog-title" style="margin-top:5px;">Site-One Example</h1>
         <p class="lead blog-description">WIP example Rapi::Blog site</p>
       </div>
 
@@ -97,17 +97,35 @@
           <div class="sidebar-module sidebar-module-inset">
             <h4>About</h4>
             <p>
-						  This is an example site/scaffold for Rapi::Blog - [% request_path %]
-						</p>
+              This is an example site/scaffold for Rapi::Blog - [% request_path %]
+            </p>
           </div>
+
           
           <div class="sidebar-module">
+          
+            <h4>Tags</h4>
+            <ol class="list-unstyled">
+              [%- SET tags_result = list_tags({limit => 10}) -%]
+              [% FOREACH tag IN tags_result.rows %]
+                <li>
+                  <a href="/list?tag=[% tag.name %]">[% tag.name %]</a> 
+                  ([% tag.posts_count %])
+                </li>
+               [% END %]
+               [% IF tags_result.remaining %]
+                <b style="padding-left:10px;"> ... <a href="/tags">see all [[% tags_result.total %]]</a></b>
+               [% END %]
+            </ol>
+            
+            <br>
+          
             <h4>Some Links</h4>
             <ol class="list-unstyled">
               <li><a target="_blank" href="http://www.rapidapp.info">RapidApp</a></li>
               <li><a target="_blank" href="http://www.metacpan.org">Metacpan</a></li>
               <li><a target="_blank" href="http://github.com">GitHub</a></li>
-							<li><a target="_blank" href="http://twitter.com/PerlRapidApp">@PerlRapidApp (Twitter)</a></li>
+              <li><a target="_blank" href="http://twitter.com/PerlRapidApp">@PerlRapidApp (Twitter)</a></li>
             </ol>
           </div>
         </div><!-- /.blog-sidebar -->
