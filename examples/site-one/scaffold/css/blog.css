@@ -173,3 +173,17 @@ h6, .h6 {
   height: auto;
   max-width: 100%;
 }
+
+.cog-link {
+  float:left;
+  height:35px;
+  margin:7px;
+  opacity: 0.3;
+}
+
+.cog-link:hover {
+  opacity: 1.0;
+}
+
+
+
