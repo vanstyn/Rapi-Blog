@@ -71,6 +71,23 @@ sub add_comment {
   return $c->res->redirect( $url, 307 );
 }
 
+sub changepw :Local :Args(0) {
+  my ($self, $c, $arg) = @_;
+  
+  my $User = $c->user->linkedRow;
+  
+  # Redirect a non POST to the admin area
+  $c->req->method eq 'POST' or return $User
+    ? $c->res->redirect( $c->mount_url.'/adm/main/db/db_user/item/'.$User->id, 307 )
+    : $c->res->redirect( $c->mount_url.'/adm', 307 );
+  
+ 
+  # TDB
+  ...
+
+}
+
+
 
 # placeholder for later
 sub error_response {
