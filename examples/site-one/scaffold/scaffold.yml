@@ -7,10 +7,11 @@ not_found     : private/404.html
 favicon       : img/favicon.ico
 
 pages : 
-  - { title: Home,  path: /      }
-  - { title: About, path: /about }
-  - { title: List,  path: /list  }
-  - { title: Tags,  path: /tags  }
+  - { title: Home,    path: /         }
+  - { title: About,   path: /about    }
+  - { title: List,    path: /list     }
+  - { title: Tags,    path: /tags     }
+  - { title: Authors, path: /authors  }
 
 view_wrappers:
   - { path: post/,      type: include, wrapper: private/post.html      }

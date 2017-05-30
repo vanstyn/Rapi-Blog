@@ -76,6 +76,11 @@ sub list_posts {
   
   $Rs = $Rs->search_rs({ 'post_tags.tag_name' => $P->{tag} }) if ($P->{tag});
   
+  $Rs = $Rs->search_rs(
+    { 'author.username' => $P->{username} },
+    { join => 'author' }
+  ) if ($P->{username});
+  
   return $Rs->_list_api
 }
 

@@ -18,6 +18,11 @@
     [% END %]
     [% IF p.tag %]Tagged "[% p.tag %]" [% END %]
   </h3>
+  
+  [% IF result.params.username %]
+    <h3>written by [% result.params.username %]</h3>
+  [% END %]
+  
   <h4>
     [% IF result.total > 0 %]
       [% result.start %] - [% result.end %] of [% result.total %] posts:
