@@ -9,5 +9,6 @@
 # --
 
 requires 'RapidApp', 1.210101;
-
+requires 'YAML::XS', 0.65;
+requires 'DBIx::Class::Helpers', 2.033003;
 requires 'HTML::Strip', 2.10;
