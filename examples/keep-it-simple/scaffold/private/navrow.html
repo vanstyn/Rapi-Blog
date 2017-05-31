@@ -33,7 +33,7 @@
   },
 ] -%]
 
-<ul id="nav" class="nav">
+<ul id="nav" class="nav" style="width:100%;">
 [% FOREACH i IN nav %]
   [% SET cls = '' %]
   [% SET cls = cls _ 'current' IF i.path == request_path %]
@@ -50,9 +50,43 @@
       </ul>
     [% END %]
   </li>
-  
-
 [% END %]
+
+
+[%- IF User -%]
+  <li class="has_children" style="float:right;">
+    <a style="cursor:pointer;"><i class="fa fa-user"></i>
+    &nbsp;[% User.username %] <span style="font-size:.8em;">&#9660;</span></a>
+    <ul>
+      <li><a href="[% c.mount_url %]/adm/#!/adm/main/db/db_post/add">
+        <i class="fa fa-plus"></i>&nbsp;
+        New Post
+      </a></li>
+      <li><a href="[% c.mount_url %]/adm">
+        <i class="fa fa-gear"></i>&nbsp;
+        Admin area
+      </a></li>
+      <li><a href="[% c.mount_url %]/adm/#!/adm/main/db/db_user/item/1">
+        <i class="fa fa-user"></i>&nbsp;
+        User Profile
+      </a></li>
+      <li><a href="[% c.mount_url %]/auth/logout_to_referer">
+        <i class="fa fa-sign-out"></i>&nbsp;
+        Sign out
+      </a></li>
+    </ul>
+  </li>
+
+[%- ELSE -%]
+  <li style="float:right;">
+    <a href="[% c.mount_url %]/auth/to_referer">
+    <i class="fa fa-sign-in"></i>&nbsp;Sign in
+   </a>
+  </li>
+
+[%- END -%]
+
+
 </ul>
 
 
