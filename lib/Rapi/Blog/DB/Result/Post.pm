@@ -120,6 +120,7 @@ sub Access { (shift)->parent_app_class->template_controller->Access }
 
 sub public_url_path {
   my $self = shift;
+  return undef unless $self->Access->default_view_path;
   $self->{_public_url_path} //= do {
     my $app = $self->parent_app_class;
     my $path = join('',$app->mount_url,'/',$self->Access->default_view_path);
@@ -130,7 +131,8 @@ sub public_url_path {
 
 sub public_url {
   my $self = shift;
- return join('',$self->public_url_path,$self->name)
+  my $path = $self->public_url_path or return undef;
+ return join('',$path,$self->name)
 }
 
 

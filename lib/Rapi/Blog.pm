@@ -89,7 +89,8 @@ has 'scaffold_cnf', is => 'ro', init_arg => undef, lazy => 1, default => sub {
     favicon            => 'favicon.ico',
     landing_page       => 'index.html',
     internal_post_path => 'private/post/',
-    not_found          => 'rapidapp/public/http-404.html'
+    not_found          => 'rapidapp/public/http-404.html',
+    view_wrappers      => []
   
   };
   
@@ -118,7 +119,10 @@ has 'default_view_path', is => 'ro', lazy => 1, default => sub {
   $def ||= List::Util::first { $_->{type} eq 'include' } @wrappers;
   $def ||= $self->scaffold_cnf->{view_wrappers}[0];
   
-  $def or die "No suitable view_wrappers to use as 'default_view_path'";
+  unless($def) {
+    warn "\n ** Waring: scaffold has no suitable view_wrappers to use as 'default_view_path'\n\n";
+    return undef;
+  }
 
   return $def->{path}
 };
