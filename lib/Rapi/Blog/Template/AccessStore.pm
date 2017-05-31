@@ -19,6 +19,7 @@ has 'scaffold_dir',  is => 'ro', isa => InstanceOf['Path::Class::Dir'], required
 has 'scaffold_cnf',  is => 'ro', isa => HashRef, required => 1;
 has 'static_paths',  is => 'ro', isa => ArrayRef[Str], default => sub {[]};
 has 'private_paths', is => 'ro', isa => ArrayRef[Str], default => sub {[]};
+has 'default_ext',   is => 'ro', isa => Maybe[Str],    default => sub {undef};
 
 around 'template_external_tpl' => sub {
   my ($orig,$self,@args) = @_;
@@ -116,9 +117,10 @@ sub _resolve_scaffold_file {
 sub __resolve_scaffold_file {
   my ($self, $template,$recur) = @_;
   my $File = $self->scaffold_dir->file($template);
-  # temp hack: simulate function of 'default_template_extension' just for scaffold files:
-  # TODO: something else, or, make configurable option
-  return $self->__resolve_scaffold_file($template.'.html',1) unless ($recur || -f $File);
+  # If not found, try once more by appending the default file extenson:
+  return $self->__resolve_scaffold_file(join('.',$template,$self->default_ext),1) unless (
+    $recur || -f $File || ! $self->default_ext
+  );
   -f $File ? $File : undef
 }
 

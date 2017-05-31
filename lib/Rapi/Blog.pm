@@ -92,7 +92,8 @@ has 'scaffold_cnf', is => 'ro', init_arg => undef, lazy => 1, default => sub {
     not_found          => 'rapidapp/public/http-404.html',
     view_wrappers      => [],
     static_paths       => ['/'],
-    private_paths      => []
+    private_paths      => [],
+    default_ext        => 'html',
   
   };
   
@@ -180,7 +181,7 @@ sub _build_base_config {
       nav_title => 'Administration',
       banner_template => file($tpl_dir,'banner.html')->stringify,
       dashboard_url => '/tpl/dashboard.md',
-      template_navtree_regex => $tpl_regex
+      #template_navtree_regex => $tpl_regex
     },
     
     'Controller::RapidApp::Template' => {
@@ -192,14 +193,15 @@ sub _build_base_config {
       include_paths => [ $tpl_dir ],
       access_class => 'Rapi::Blog::Template::AccessStore',
       access_params => {
-        writable_regex      => $tpl_regex,
-        creatable_regex     => $tpl_regex,
-        deletable_regex     => $tpl_regex,
+        #writable_regex      => $tpl_regex,
+        #creatable_regex     => $tpl_regex,
+        #deletable_regex     => $tpl_regex,
         
         scaffold_dir  => $self->scaffold_dir,
         scaffold_cnf  => $self->scaffold_cnf,
         static_paths  => $self->scaffold_cnf->{static_paths},
         private_paths => $self->scaffold_cnf->{private_paths},
+        default_ext   => $self->scaffold_cnf->{default_ext},
         
         internal_post_path => $self->scaffold_cnf->{internal_post_path},
         view_wrappers      => $self->scaffold_cnf->{view_wrappers},
