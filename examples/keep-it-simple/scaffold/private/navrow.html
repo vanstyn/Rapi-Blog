@@ -35,8 +35,18 @@
 
 <ul id="nav" class="nav" style="width:100%;">
 [% FOREACH i IN nav %]
+
+  [% SET is_current = 0 %]
+  [% IF i.path == request_path %]
+    [% SET is_current = 1 %]
+  [% ELSIF i.children %]
+    [% FOREACH child IN i.children %]
+      [% SET is_current = 1 IF child.path == request_path %]
+    [% END %]
+  [% END %]
+  
   [% SET cls = '' %]
-  [% SET cls = cls _ 'current' IF i.path == request_path %]
+  [% SET cls = cls _ 'current' IF is_current %]
   [% SET cls = cls _ ' has_children' IF i.children %]
   [% SET href = i.path || '#' %]
   
