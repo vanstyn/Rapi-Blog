@@ -1,7 +1,7 @@
 [%- SET nav = [
   { 
     title => 'Home', 
-    path  => 'index' 
+    path  => '/' 
   },
   { 
     title => 'Dropdown', 
@@ -13,30 +13,30 @@
   },
   { 
     title => 'Demo', 
-    path  => 'demo' 
+    path  => '/demo' 
   },
   { 
     title => 'Archives', 
-    path  => 'archives' 
+    path  => '/archives' 
   },
   { 
     title => 'Blog',
-    path  => 'single',
+    path  => '/single',
     children => [
-      { title => 'Blog Entries', path => 'blog' },
-      { title => 'Single Blog',  path => 'single' },
+      { title => 'Blog Entries', path => '/blog' },
+      { title => 'Single Blog',  path => '/single' },
     ]
   },
   { 
     title => 'Page', 
-    path  => 'page' 
+    path  => '/page' 
   },
 ] -%]
 
 <ul id="nav" class="nav">
 [% FOREACH i IN nav %]
   [% SET cls = '' %]
-  [% SET cls = cls _ 'current' IF '/' _ i.path == request_path %]
+  [% SET cls = cls _ 'current' IF i.path == request_path %]
   [% SET cls = cls _ ' has_children' IF i.children %]
   [% SET href = i.path || '#' %]
   
