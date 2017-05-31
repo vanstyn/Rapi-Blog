@@ -1,25 +1,29 @@
 
          <div id="sidebar" class="four columns">
+         
 
             <div class="widget widget_search">
                   <h3>Search</h3> 
-                  <form action="#">
+                  <form action="/blog">
 
-                     <input type="text" value="Search here..." onblur="if(this.value == '') { this.value = 'Search here...'; }" onfocus="if (this.value == 'Search here...') { this.value = ''; }" class="text-search">
+                     <input type="text" name="search" value="Search here..." onblur="if(this.value == '') { this.value = 'Search here...'; }" onfocus="if (this.value == 'Search here...') { this.value = ''; }" class="text-search">
                      <input type="submit" value="" class="submit-search">
 
                   </form>
                </div>
 
             <div class="widget widget_categories group">
-               <h3>Categories.</h3> 
+               <h3>Popular Tags</h3> 
                <ul>
-                  <li><a href="#" title="">Wordpress</a> (2)</li>
-                  <li><a href="#" title="">Ghost</a> (14)</li>
-                  <li><a href="#" title="">Joomla</a> (5)</li>
-                  <li><a href="#" title="">Drupal</a> (3)</li>
-                  <li><a href="#" title="">Magento</a> (2)</li>
-                  <li><a href="#" title="">Uncategorized</a> (9)</li>                  
+               
+                [%- SET tags_result = list_tags({limit => 10}) -%]
+                [% FOREACH tag IN tags_result.rows %]
+                  <li>
+                    <a href="/blog?tag=[% tag.name %]">[% tag.name %]</a> 
+                    ([% tag.posts_count %])
+                  </li>
+                 [% END %]
+        
                </ul>
             </div>
 

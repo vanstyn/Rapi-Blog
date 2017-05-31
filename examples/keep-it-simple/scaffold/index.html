@@ -1,115 +1,48 @@
 [% WRAPPER wrap_sidebar.html %]
 
-            <article class="entry">
+[%- USE date(format = '%B %e, %Y') -%]
+[%- SET 
+ result = list_posts({ limit => 10 })
+ posts  = result.rows
+-%]
 
-               <header class="entry-header">
+[% FOREACH Post IN posts %]
+  <article class="entry">
 
-                  <h2 class="entry-title">
-                     <a href="single.html" title="">Hey, We Love Open Sans!</a>
-                  </h2>              
-               
-                  <div class="entry-meta">
-                     <ul>
-                        <li>July 12, 2014</li>
-                        <span class="meta-sep">&bull;</span>                        
-                        <li><a href="#" title="" rel="category tag">Ghost</a></li>
-                        <span class="meta-sep">&bull;</span>
-                        <li>John Doe</li>
-                     </ul>
-                  </div> 
-                
-               </header> 
-               
-               <div class="entry-content">
-                  <p>Duis ex ad cupidatat tempor Excepteur cillum cupidatat fugiat nostrud cupidatat dolor sunt sint sit nisi est eu exercitation incididunt adipisicing veniam velit id fugiat enim mollit amet anim veniam dolor dolor irure velit commodo cillum sit nulla ullamco magna amet magna cupidatat qui labore cillum sit in tempor veniam consequat non laborum adipisicing aliqua ea nisi sint ut quis proident ullamco ut dolore culpa occaecat ut laboris in sit minim cupidatat ut dolor voluptate enim veniam consequat occaecat fugiat in adipisicing in amet Ut nulla nisi non ut enim aliqua laborum mollit quis nostrud sed sed.</p>
-               </div> 
+    <header class="entry-header">
 
-            </article> <!-- end entry -->
+        [% IF Post.image_url %]
+          <img 
+            src="[% Post.image_url %]" 
+            style="max-height:66px;max-width:150px;float:left;padding-right:10px;" 
+          />
+        [% END %]
+    
+      <div style="float-left;">
+        <h2 class="entry-title">
+           <a href="[% Post.public_url %]" title="">[% Post.title %]</a>
+        </h2>              
 
-            <article class="entry">
-               
-               <header class="entry-header">
+        <div class="entry-meta">
+           <ul>
+              <li>[% date.format(Post.ts) %]</li>
+              <span class="meta-sep">&bull;</span>
+              <li>[% Post.author.full_name || Post.author.username %]</li>
+           </ul>
+        </div> 
+      </div>
+      
+    </header> 
+    
+    <div class="entry-content">
+      [% Post.summary %] ... <a href="[% Post.public_url %]">read more</a> 
+    </div>
 
-                  <h2 class="entry-title">
-                     <a href="single.html" title="">We All Love Good Typography.</a>
-                  </h2>              
-               
-                  <div class="entry-meta">
-                     <ul>
-                        <li>July 11, 2014</li>
-                        <span class="meta-sep">&bull;</span>                     
-                        <li>
-                           <a href="#" title="" rel="category tag">Wordpress</a>,
-                           <a href="#" title="" rel="category tag">Ghost</a>  
-                        </li>
-                        <span class="meta-sep">&bull;</span>
-                        <li>Jane Doe</li>
-                     </ul>
-                  </div>
-                
-               </header>          
+  </article>
+      
+[% END %]
 
-               <div class="entry-content">
-                  <p>Duis ex ad cupidatat tempor Excepteur cillum cupidatat fugiat nostrud cupidatat dolor sunt sint sit nisi est eu exercitation incididunt adipisicing veniam velit id fugiat enim mollit amet anim veniam dolor dolor irure velit commodo cillum sit nulla ullamco magna amet magna cupidatat qui labore cillum sit in tempor veniam consequat non laborum adipisicing aliqua ea nisi sint ut quis proident ullamco ut dolore culpa occaecat ut laboris in sit minim cupidatat ut dolor voluptate enim veniam consequat occaecat fugiat in.</p>
-               </div> 
 
-            </article> <!-- end entry -->
 
-            <article class="entry">
-               
-               <header class="entry-header">
-
-                  <h2 class="entry-title">
-                     <a href="single.html" title="">White Space Everywhere.</a>
-                  </h2>              
-               
-                  <div class="entry-meta">
-                     <ul>
-                        <li>July 10, 2014</li>
-                        <span class="meta-sep">&bull;</span>                        
-                        <li>
-                           <a href="#" title="" rel="category tag">Joomla</a>,
-                           <a href="#" title="" rel="category tag">Drupal</a>  
-                        </li>
-                        <span class="meta-sep">&bull;</span>
-                        <li>Naruto Uzumaki</li>
-                     </ul>
-                  </div> 
-                
-               </header>          
-
-               <div class="entry-content">
-                  <p>Duis ex ad cupidatat tempor Excepteur cillum cupidatat fugiat nostrud cupidatat dolor sunt sint sit nisi est eu exercitation incididunt adipisicing veniam velit id fugiat enim mollit amet anim veniam dolor dolor irure velit commodo cillum sit nulla ullamco magna amet magna cupidatat qui labore cillum sit in tempor veniam consequat non laborum adipisicing aliqua ea nisi sint ut quis proident ullamco ut dolore culpa occaecat ut laboris in sit minim cupidatat ut dolor voluptate enim veniam consequat occaecat fugiat in adipisicing in amet Ut nulla nisi non ut enim aliqua laborum mollit quis nostrud sed sed.</p>
-               </div> 
-
-            </article> <!-- end entry -->  
-
-            <article class="entry">
-               
-               <header class="entry-header">
-
-                  <h2 class="entry-title">
-                     <a href="single.html" title="">Simple And Minimalist Designs.</a>
-                  </h2>              
-               
-                  <div class="entry-meta">
-                     <ul>
-                        <li>July 09, 2014</li>
-                        <span class="meta-sep">&bull;</span>                        
-                        <li>
-                           <a href="#" title="" rel="category tag">Ghost</a>  
-                        </li>
-                        <span class="meta-sep">&bull;</span>
-                        <li>Naruto Uzumaki</li>
-                     </ul>
-                  </div> 
-                
-               </header>          
-
-               <div class="entry-content">
-                  <p>Duis ex ad cupidatat tempor Excepteur cillum cupidatat fugiat nostrud cupidatat dolor sunt sint sit nisi est eu exercitation incididunt adipisicing veniam velit id fugiat enim mollit amet anim veniam dolor dolor irure velit commodo cillum sit nulla ullamco magna amet magna cupidatat qui labore cillum sit in tempor veniam consequat non laborum adipisicing aliqua ea nisi sint ut quis proident ullamco ut dolore culpa occaecat ut laboris in sit minim cupidatat ut dolor voluptate enim veniam consequat occaecat fugiat in adipisicing in amet Ut nulla nisi non ut enim aliqua laborum mollit quis nostrud sed sed.</p>
-               </div> 
-
-            </article> <!-- end entry -->     
                   
 [% END %]
