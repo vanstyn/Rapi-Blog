@@ -19,6 +19,8 @@
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <link href="css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    
+    <link href="fonts/font-awesome.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="css/blog.css" rel="stylesheet">
@@ -70,7 +72,7 @@
             <button type="submit" class="btn btn-success">Search</button>
             
             <div style="padding-left:10px;display:inline-block;">
-              [% INCLUDE rapidapp/public/log_in_out_control_referer.tt %]
+              [% INCLUDE private/login_control.html %]
             </div>
             
           </form>
