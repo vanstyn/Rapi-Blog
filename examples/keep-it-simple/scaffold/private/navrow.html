@@ -1,0 +1,58 @@
+[%- SET nav = [
+  { 
+    title => 'Home', 
+    path  => 'index' 
+  },
+  { 
+    title => 'Dropdown', 
+    children => [
+      { title => 'Submenu 01' },
+      { title => 'Submenu 02' },
+      { title => 'Submenu 02' },
+    ]
+  },
+  { 
+    title => 'Demo', 
+    path  => 'demo' 
+  },
+  { 
+    title => 'Archives', 
+    path  => 'archives' 
+  },
+  { 
+    title => 'Blog',
+    path  => 'single',
+    children => [
+      { title => 'Blog Entries', path => 'blog' },
+      { title => 'Single Blog',  path => 'single' },
+    ]
+  },
+  { 
+    title => 'Page', 
+    path  => 'page' 
+  },
+] -%]
+
+<ul id="nav" class="nav">
+[% FOREACH i IN nav %]
+  [% SET cls = '' %]
+  [% SET cls = cls _ 'current' IF '/' _ i.path == request_path %]
+  [% SET cls = cls _ ' has_children' IF i.children %]
+  [% SET href = i.path || '#' %]
+  
+  <li class="[% cls %]">
+    <a href="[% i.path %]">[% i.title %]</a>
+    [% IF i.children %]
+      <ul>
+      [% FOREACH child IN i.children %]
+        <li><a href="[% child.path %]">[% child.title %]</a></li>
+      [% END %]
+      </ul>
+    [% END %]
+  </li>
+  
+
+[% END %]
+</ul>
+
+

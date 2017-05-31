@@ -1,0 +1,6 @@
+## scaffold.yml - Rapi::Blog scaffold config file
+
+static_paths  : [ css/, js/, images/, favicon.png ]
+private_paths : [ private/, scaffold.yml ]
+landing_page  : index
+favicon       : favicon.png
