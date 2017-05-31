@@ -42,14 +42,35 @@
       
 [% END %]
 
+  <hr />
 
+  <nav class="pagination add-bottom">
+  
+    [% IF result.first_qs %]
+      <a href="?[% result.first_qs %]" class="page-numbers prev" title="First Page">First</a>
+    [% ELSE %]
+      <span class="page-numbers prev inactive">First</span>
+    [% END %]
+    
+    [% IF result.prev_qs %]
+      <a href="?[% result.prev_qs %]" class="page-numbers prev" title="Previous Page">Prev</a>
+    [% ELSE %]
+      <span class="page-numbers prev inactive">Prev</span>
+    [% END %]
+    
+    [% IF result.next_qs %]
+      <a href="?[% result.next_qs %]" class="page-numbers next" title="Next Page">Next</a>
+    [% ELSE %]
+      <span class="page-numbers next inactive">Next</span>
+    [% END %]
+    
+    [% IF result.last_qs %]
+      <a href="?[% result.last_qs %]" class="page-numbers next" title="Last Page">Last</a>
+    [% ELSE %]
+      <span class="page-numbers next inactive">Last</span>
+    [% END %]
+  
+  </nav>
 
-
-            <div class="pagenav">
-               <p>
-               <a rel="prev" href="#">Prev</a>      
-               <a rel="next" href="#">Next</a>           
-               </p>
-            </div>    
 
 [% END %]
