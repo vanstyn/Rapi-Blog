@@ -78,8 +78,26 @@
        <li><a>[% result.start %] - [% result.end %]<em>Shown</em></a></li>
        <li><a>[% result.total %]<em>Total</em></a></li>
        <li><a>[% result.page %] <i style="font-size:.8em;">of</i> &nbsp;[% result.pages %]<em>Page</em></a></li>
-
     </ul>
+
+
+    <nav class="pagination add-bottom">
+  
+    [%- SET page_choices = [5,10, 20,50,100,200,500] -%]
+    [%- FOREACH size IN page_choices -%]
+    
+      [% IF size == result.limit %]
+        <span class="page-numbers current">[% size %]</span>
+      [% ELSE %]
+        <a class="page-numbers" href="?[% result.this_qs %]&new_limit=[% size %]&new_page=1">[% size %]</a>
+      [% END %]
+
+     [% END %]
+
+    </nav>
+    <h6 style="margin-top:-30px;">items per page</h6>
+
+
   
   </center>
   
