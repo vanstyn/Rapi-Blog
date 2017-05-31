@@ -68,6 +68,9 @@ sub _compile_path_list_regex {
   
   my @list = ();
   for my $path (@paths) {
+    next if ($path eq ''); # empty string match nothing
+    push @list, '^.*$' and next if($path eq '/') ; # special handling for '/' -- match everything
+
     $path =~ s/^\///; # strip and ignore leading /
     if ($path =~ /\/$/) {
       # ends in slash, matches begining of the path
@@ -79,6 +82,8 @@ sub _compile_path_list_regex {
       push @list, join('','^',$path,'$');
     }
   }
+  
+  return undef unless (scalar(@list) > 0);
   
   my $reStr = join('','(',join('|', @list ),')');
   
