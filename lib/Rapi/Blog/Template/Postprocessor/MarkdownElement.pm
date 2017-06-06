@@ -24,6 +24,8 @@ sub process {
     '<xmp style="display:none;" id="'.$markedId.'">',
       $$output_ref,
     '</xmp>',
+    # New: now self-contained, accessing our own copy of marked.js/markdown_elements.js
+    '<script src="_ra-rel-mnt_/assets/local/misc/static/js/marked-el.js"></script>',
     '<script>',
     '  processMarkdownElementById("'.$markedId.'")',
     '</script>'
