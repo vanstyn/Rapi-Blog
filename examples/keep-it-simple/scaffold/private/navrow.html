@@ -64,7 +64,7 @@
 
 
 [%- IF User -%]
-  <li class="has_children" style="float:right;">
+  <li class="has_children" style="float:right;min-width:120px;">
     <a style="cursor:pointer;"><i class="fa fa-user"></i>
     &nbsp;[% User.username %] <span style="font-size:.8em;">&#9660;</span></a>
     <ul>
@@ -76,7 +76,7 @@
         <i class="fa fa-gear"></i>&nbsp;
         Admin area
       </a></li>
-      <li><a href="[% c.mount_url %]/adm/#!/adm/main/db/db_user/item/1">
+      <li><a href="[% c.mount_url %]/adm/#!/adm/main/db/db_user/item/[% User.id %]">
         <i class="fa fa-user"></i>&nbsp;
         User Profile
       </a></li>
