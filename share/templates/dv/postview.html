@@ -57,6 +57,17 @@
       >Open URL (new window)</a></i>
       -->
       
+      <i><a 
+        class="with-icon ra-icon-tab-go tab-link preview"
+        style="vertical-align: text-bottom;font-size:.8em;padding-right:5px;"
+        onclick="rablActivateTab(event,'preview')"
+      >Preview</a></i>
+      <i><a 
+        class="with-icon ra-icon-page-white-world tab-link source active"
+        style="vertical-align: text-bottom;font-size:.8em;"
+        onclick="rablActivateTab(event,'source')"
+      >Source</a></i>
+      
 
     
     </h5>
@@ -65,19 +76,14 @@
   
   
   <div class="post-body-wrap">
-    <a 
-      class="with-icon ra-icon-tab-go"
-      style="vertical-align: text-bottom;font-size:.8em;padding-right:5px;"
-      onclick="rablActivateTab(event)"
-    >Toggle</a>
   
-    <div class="inner" style="display:block;">
+    <div class="inner tab-content source" style="display:block;">
       <div class="post-body appdv-fill-absolute">
         [% r.autofield.body %]
       </div>
     </div>
     
-    <div class="inner" style="display:none;">
+    <div class="inner tab-content preview" style="display:none;">
       <!-- see onload: universal disable click/links within the iframe: -->
       <iframe
         style="height:100%;width:100%;" frameborder=0

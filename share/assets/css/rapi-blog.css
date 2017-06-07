@@ -157,3 +157,7 @@
 .banner-home-link:hover {
   opacity: 1.0;
 }
+
+.rapi-blog-postview .tab-link.active {
+  color:red;
+}
