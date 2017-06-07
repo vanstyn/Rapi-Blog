@@ -95,7 +95,7 @@
 
 .rapi-blog-postview div.post-body-wrap {
   border: 1px solid #dddddd;
-  border-radius: 6px;
+  border-radius: 0px 6px 6px 6px;
   padding: 5px;
   
   position: absolute;
@@ -105,6 +105,30 @@
   right: 5px;
 
 }
+
+.rapi-blog-postview div.post-body-wrap div.tab-row {
+  position: absolute;
+  top: -25px;
+  height: 24px;
+  left: 0px;
+  right: 0px;
+}
+
+.rapi-blog-postview div.post-body-wrap div.tab-row a {
+  display: inline;
+  float: left;
+  height: 100%;
+  border: 1px solid #dddddd;
+  border-bottom: 0px;
+  padding: 0px 15px;
+  margin-left: -1px;
+  
+}
+
+.rapi-blog-postview div.post-body-wrap div.tab-row a.active {
+  background-color: white;
+}
+
 
 .rapi-blog-postview div.post-body-wrap .inner {
   position: relative;
