@@ -119,6 +119,12 @@
   padding: 0px 25px;
   margin-left: -1px;
   padding-top:1px;
+  
+  /* disable text highight */
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .rapi-blog-postview div.post-body-wrap div.tab-row a.active,
