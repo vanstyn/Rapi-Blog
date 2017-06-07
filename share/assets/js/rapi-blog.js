@@ -26,6 +26,11 @@ function rablActivateTab(event,name) {
   for (i = 0; i < conts.length; i++) {
     var el = conts[i];
     if(el.classList.contains(name)) {
+      var iframe = el.getElementsByTagName('iframe')[0];
+      if(iframe) {
+        // reload the iframe:
+        iframe.src = iframe.src;
+      }
       el.style.display = 'block';
     }
     else {

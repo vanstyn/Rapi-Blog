@@ -112,12 +112,23 @@
   width: 100%;
 }
 
-.rapi-blog-postview div.post-body {
+.rapi-blog-postview div.post-body-wrap .inner h5 {
+  margin-bottom:0px;
+  margin-top:-5px;
+}
+
+.rapi-blog-postview div.post-body, 
+.rapi-blog-postview div.iframe-wrap {
   position: absolute;
-  top: 0px;
+  top: 30px;
   bottom: 0px;
   left: 0px;
   right: 0px;
+}
+
+.rapi-blog-postview div.iframe-wrap iframe {
+  height: 100%;
+  width: 100%;
 }
 
 

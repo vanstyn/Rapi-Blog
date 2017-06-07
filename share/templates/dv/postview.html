@@ -41,7 +41,7 @@
 
   <div class="post-body-head">
     <h5 style="padding-top:5px;margin-bottom:-2px;">
-      <span style="padding-right:85px;">Body (markdown): [% r.toggle.edit %]</span>
+
     
       <!--
       <i><a 
@@ -78,18 +78,21 @@
   <div class="post-body-wrap">
   
     <div class="inner tab-content source" style="display:block;">
+      <h5>Body (markdown): [% r.toggle.edit %]</h5>
       <div class="post-body appdv-fill-absolute">
         [% r.autofield.body %]
       </div>
     </div>
     
     <div class="inner tab-content preview" style="display:none;">
-      <!-- see onload: universal disable click/links within the iframe: -->
-      <iframe
-        style="height:100%;width:100%;" frameborder=0
-        src="[% Row.preview_url %]"
-        onload="this.contentDocument.addEventListener('click',function(e){ e.stopPropagation(); e.preventDefault(); })"
-      ></iframe>
+      <h5>Live Preview:</h5>
+      <div class="iframe-wrap">
+        <!-- see onload: universal disable click/links within the iframe: -->
+        <iframe
+          src="[% Row.preview_url %]" frameborder=0
+          onload="this.contentDocument.addEventListener('click',function(e){ e.stopPropagation(); e.preventDefault(); })"
+        ></iframe>
+      </div>
     </div>
     
   </div>
