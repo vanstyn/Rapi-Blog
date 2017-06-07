@@ -87,12 +87,6 @@
 }
 
 
-.rapi-blog-postview div.post-body-head {
-  position: absolute;
-  top: 170px;
-  height: 20px;
-}
-
 .rapi-blog-postview div.post-body-wrap {
   border: 1px solid #dddddd;
   border-radius: 0px 0px 6px 6px;
@@ -139,6 +133,12 @@
   border: 1px solid #dddddd;
   padding-top:0px;
   border-bottom: 0px;
+}
+
+
+.record-update .rapi-blog-postview div.post-body-wrap div.tab-row .inactive {
+  opacity: 0.3;
+  cursor: default;
 }
 
 .rapi-blog-postview div.post-body-wrap div.tab-row a:first-child {
@@ -206,4 +206,9 @@
 
 .banner-home-link:hover {
   opacity: 1.0;
+}
+
+/* disable individual field edit control for the body -- only allow whole-record edit*/
+.rapi-blog-postview div.post-body .appdv-edit-bigfield .icons {
+  display: none;
 }

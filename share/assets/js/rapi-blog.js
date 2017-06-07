@@ -4,13 +4,17 @@ function rablActivateTab(event,name) {
   var fn;
   fn = function(node) {
     if(!node) { return null; }
-    return node.classList.contains('rapi-blog-postview')
+    return node.classList.contains('ra-rowdv-select')
       ? node
       : fn(node.parentElement);
   };
   
   var topEl = fn(event.target);
-  if(!topEl) { return false; }
+  
+  if(
+    // Do not process tab change during record update
+    !topEl || topEl.classList.contains('editing-record')
+  ) { return false; }
   
   var links = topEl.getElementsByClassName('tab-link');
   var conts = topEl.getElementsByClassName('tab-content');
@@ -18,8 +22,12 @@ function rablActivateTab(event,name) {
   for (i = 0; i < links.length; i++) {
     var el = links[i];
     el.classList.remove('active');
+    el.classList.remove('inactive');
     if(el.classList.contains(name)) {
       el.classList.add('active');
+    }
+    else {
+      el.classList.add('inactive');
     }
   }
   
