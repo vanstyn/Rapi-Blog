@@ -95,7 +95,7 @@
 
 .rapi-blog-postview div.post-body-wrap {
   border: 1px solid #dddddd;
-  border-radius: 0px 6px 6px 6px;
+  border-radius: 0px 0px 6px 6px;
   padding: 5px;
   
   position: absolute;
@@ -108,27 +108,42 @@
 
 .rapi-blog-postview div.post-body-wrap div.tab-row {
   position: absolute;
-  top: -25px;
+  top: -36px;
   height: 24px;
-  left: 0px;
-  right: 0px;
+  left: -1px;
+  right: -1px;
+  border: 1px solid #dddddd;
+  border-bottom: 0px;
+  padding-top:10px;
+  background-color: rgb(246,248,250);
 }
 
 .rapi-blog-postview div.post-body-wrap div.tab-row a {
   display: inline;
   float: left;
   height: 100%;
-  border: 1px solid #dddddd;
-  border-bottom: 0px;
-  padding: 0px 15px;
+  padding: 0px 25px;
   margin-left: -1px;
-  
+  padding-top:1px;
 }
+
+.rapi-blog-postview div.post-body-wrap div.tab-row a.active,
+.rapi-blog-postview div.post-body-wrap div.tab-row a:hover {
+  color: rgb(88,96,105);
+}
+
 
 .rapi-blog-postview div.post-body-wrap div.tab-row a.active {
   background-color: white;
+  color: rgb(36,41,46);
+  border: 1px solid #dddddd;
+  padding-top:0px;
+  border-bottom: 0px;
 }
 
+.rapi-blog-postview div.post-body-wrap div.tab-row a:first-child {
+  margin-left: 10px;
+}
 
 .rapi-blog-postview div.post-body-wrap .inner {
   position: relative;
@@ -191,8 +206,4 @@
 
 .banner-home-link:hover {
   opacity: 1.0;
-}
-
-.rapi-blog-postview .tab-link.active {
-  color:red;
 }
