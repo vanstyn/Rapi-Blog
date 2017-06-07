@@ -78,9 +78,11 @@
     </div>
     
     <div class="inner" style="display:none;">
+      <!-- see onload: universal disable click/links within the iframe: -->
       <iframe
         style="height:100%;width:100%;" frameborder=0
         src="[% Row.preview_url %]"
+        onload="this.contentDocument.addEventListener('click',function(e){ e.stopPropagation(); e.preventDefault(); })"
       ></iframe>
     </div>
     
