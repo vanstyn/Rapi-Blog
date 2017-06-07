@@ -135,6 +135,23 @@ sub public_url {
  return join('',$path,$self->name)
 }
 
+sub preview_url_path {
+  my $self = shift;
+  return undef unless $self->Access->preview_path;
+  $self->{_preview_url_path} //= do {
+    my $app = $self->parent_app_class;
+    my $path = join('',$app->mount_url,'/',$self->Access->preview_path);
+    $path =~ s/\/?$/\//; # make sure there is a trailing '/';
+    $path
+  }
+}
+
+sub preview_url {
+  my $self = shift;
+  my $path = $self->preview_url_path or return undef;
+ return join('',$path,$self->name)
+}
+
 
 sub insert {
   my $self = shift;

@@ -130,6 +130,11 @@ has 'default_view_path', is => 'ro', lazy => 1, default => sub {
   return $def->{path}
 };
 
+has 'preview_path', is => 'ro', lazy => 1, default => sub {
+  my $self = shift;
+  return $self->scaffold_cnf->{preview_path} || $self->default_view_path
+};
+
 
 sub _build_version { $VERSION }
 sub _build_plugins { [qw/
@@ -206,6 +211,7 @@ sub _build_base_config {
         internal_post_path => $self->scaffold_cnf->{internal_post_path},
         view_wrappers      => $self->scaffold_cnf->{view_wrappers},
         default_view_path  => $self->default_view_path,
+        preview_path       => $self->preview_path,
 
         get_Model => sub { $self->base_appname->model('DB') } 
       } 
