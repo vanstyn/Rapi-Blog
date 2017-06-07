@@ -2,19 +2,31 @@
 function rablActivateTab(event,name) {
 
   var fn;
-  fn = function(node) {
-    if(!node) { return null; }
-    return node.classList.contains('ra-rowdv-select')
+  fn = function(node,cls) {
+    if(!node || !cls) { return null; }
+    return node.classList.contains(cls)
       ? node
-      : fn(node.parentElement);
+      : fn(node.parentElement,cls);
   };
   
-  var topEl = fn(event.target);
+  var topEl = fn(event.target,'ra-rowdv-select');
   
   if(
     // Do not process tab change during record update
     !topEl || topEl.classList.contains('editing-record')
   ) { return false; }
+  
+  // This is a reliable way to get the parent appdv element since we know datastore 'create'
+  // is not allowed in this context (and this is the element we want to munge the cls flag for)
+  var appdvEl = fn(topEl,'ra-dsapi-deny-create');
+  if(!appdvEl) { throw "unable to find appdv element (unexpected error)"; }
+  
+  if(name == 'preview') {
+    appdvEl.classList.add('ra-dsapi-deny-update');
+  }
+  else {
+    appdvEl.classList.remove('ra-dsapi-deny-update');
+  }
   
   var links = topEl.getElementsByClassName('tab-link');
   var conts = topEl.getElementsByClassName('tab-content');
