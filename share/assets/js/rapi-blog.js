@@ -158,10 +158,3 @@ function rablGetAppDV(el) {
   }
   return AppDV;
 }
-
-// Uses RapidApp's mutation observers to dynamically initialize the tab state
-ready('.rapi-blog-postview', function(el) {
-  rablGetAppDV(el);
-  //rablActivateTab(el,'preview');
-});
-
