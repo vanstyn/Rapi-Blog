@@ -157,10 +157,23 @@
   width: 100%;
 }
 
+.rapi-blog-postview div.post-body-wrap .inner .headline {
+  margin-left: -5px;
+  margin-right:-5px;
+  border-bottom: 1px dashed #dddddd;
+  padding: 0px 5px 5px 5px;
+}
+
 .rapi-blog-postview div.post-body-wrap .inner h5 {
   margin-bottom:0px;
-  margin-top:-5px;
+  margin-top:0px;
 }
+
+.rapi-blog-postview div.post-body-wrap .inner .headline a {
+  display:inline-block;
+}
+
+
 
 .rapi-blog-postview div.post-body, 
 .rapi-blog-postview div.iframe-wrap {
@@ -226,6 +239,9 @@
 
 .rapi-blog-postview a.preview-edit {
   color: blue;
+  margin-left:10px;
+  margin-bottom:4px;
+  font-size:15px;
 
 }
 

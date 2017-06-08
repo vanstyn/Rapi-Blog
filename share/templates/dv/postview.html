@@ -42,52 +42,54 @@
   <div class="post-body-wrap">
   
     <div class="tab-row">
-      <a 
-        class="tab-link source active"
-        onclick="rablActivateTab(event.target,'source')"
-      >Source</a>
-      
+
       <a 
         class="tab-link preview inactive"
         onclick="rablActivateTab(event.target,'preview')"
-      >Preview</a>
+      >View</a>
       
-      
+      <a 
+        class="tab-link source active"
+        onclick="rablActivateTab(event.target,'source')"
+      >Plain text</a>
       
     </div>
     
   
     <div class="inner tab-content source">
-      <h5>Body (markdown): [% r.toggle.edit %]</h5>
+      <div class="headline">
+        <h5>Post body (text/markdown): [% r.toggle.edit %]</h5>
+      </div>
       <div class="post-body appdv-fill-absolute">
         [% r.autofield.body %]
       </div>
     </div>
     
     <div class="inner tab-content preview" style="display:none;">
-      <h5>Live Preview:
-      <a 
-        class="preview-edit"
-        onclick="rablActivateTab(event.target,'source','edit')"
-      >Edit</a>
-      
-      </h5>
-      <div class="iframe-wrap">
-        <!-- see onload: universal disable click/links within the iframe: -->
+      <div class="headline">
+        <h5>Public preview
+        <a 
+          class="preview-edit with-icon ra-icon-pencil"
+          onclick="rablActivateTab(event.target,'source','edit')"
+          title="Edit this post"
+        >Edit</a>
         
+        <i><a 
+          class="with-icon ra-icon-tab-go"
+          style="margin-left:20px;vertical-align: text-bottom;font-size:.8em;"
+          href="[% Row.public_url_path %]{name}"
+          target="_blank"
+        >Visit URL (new window)</a></i>
+        
+        </h5>
+      </div>
+      
+      <div class="iframe-wrap">
         <iframe
           class="preview-iframe"
           src="about:blank" frameborder=0
           onload='rablInitPreviewIframe(this,"[% Row.preview_url_path %]{name}")'
         ></iframe>
-        
-        <!--
-        <iframe
-          class="preview-iframe"
-          src="[% Row.preview_url_path %]{name}" frameborder=0
-          onload="this.contentDocument.addEventListener('click',function(e){ e.stopPropagation(); e.preventDefault(); })"
-        ></iframe>
-        -->
       </div>
     </div>
     
