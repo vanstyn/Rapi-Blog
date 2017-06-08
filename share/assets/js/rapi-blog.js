@@ -29,7 +29,10 @@ function rablInitPreviewIframe(iframe,src) {
       xreq.open("GET", src);
       xreq.send();
     }
-    iframe.rablDoAjaxLoad();
+    if(!AppDV.rablFirstLoad) {
+      iframe.rablDoAjaxLoad();
+      AppDV.rablFirstLoad = true;
+    }
   }
 }
 
@@ -123,12 +126,10 @@ function rablGetAppDV(el) {
           rablActivateTab(el,'preview');
         }
       },AppDV);
-      
-      // we don't actually need to do this because the update operation which re-inserts
-      // the <iframe> does it automatically
-      //AppDV.store.on('save',function() {
-      //  AppDV.rablIframeReloadTask.delay(50);
-      //},AppDV);
+
+      AppDV.store.on('save',function() {
+        AppDV.rablIframeReloadTask.delay(50);
+      },AppDV);
 
       AppDV.rablInitialized = true;
     }
