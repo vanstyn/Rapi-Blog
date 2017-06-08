@@ -1,5 +1,5 @@
 
-function rablActivateTab(event,name) {
+function rablActivateTab(target,name) {
 
   var fn;
   fn = function(node,cls) {
@@ -9,7 +9,7 @@ function rablActivateTab(event,name) {
       : fn(node.parentElement,cls);
   };
   
-  var topEl = fn(event.target,'ra-rowdv-select');
+  var topEl = fn(target,'ra-rowdv-select');
   
   if(
     // Do not process tab change during record update
@@ -51,3 +51,11 @@ function rablActivateTab(event,name) {
   }
   
 }
+
+// Uses RapidApp's mutation observers to dynamically initialize the tab state
+ready('.rapi-blog-postview', function(el) {
+
+  rablActivateTab(el,'preview');
+
+});
+
