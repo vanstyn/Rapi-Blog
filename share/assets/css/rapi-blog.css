@@ -110,6 +110,7 @@
   border-bottom: 0px;
   padding-top:10px;
   background-color: rgb(246,248,250);
+  
 }
 
 .rapi-blog-postview div.post-body-wrap div.tab-row a {
@@ -119,6 +120,7 @@
   padding: 0px 25px;
   margin-left: -1px;
   padding-top:1px;
+  vertical-align: bottom;
   
   /* disable text highight */
   user-select: none;
@@ -126,6 +128,28 @@
   -moz-user-select: none;
   -ms-user-select: none;
 }
+
+.rapi-blog-postview div.post-body-wrap div.tab-row svg {
+  vertical-align: middle;
+  color:#0366d6;
+}
+
+
+.rapi-blog-postview div.post-body-wrap div.tab-row .label {
+  display:block;
+  height:25px;
+  line-height:16px;
+  font-size:12px;
+  vertical-align: middle !important;
+  color:  #1b4f72;
+}
+
+.rapi-blog-postview div.post-body-wrap div.tab-row .label span {
+  line-height:24px;
+  font-size:12px;
+  vertical-align: middle !important;
+}
+
 
 .rapi-blog-postview div.post-body-wrap div.tab-row a.active,
 .rapi-blog-postview div.post-body-wrap div.tab-row a:hover {
@@ -139,6 +163,8 @@
   border: 1px solid #dddddd;
   padding-top:0px;
   border-bottom: 0px;
+  font-weight:bold;
+  border-top: 2px solid orange;
 }
 
 
