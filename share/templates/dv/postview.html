@@ -51,6 +51,9 @@
         class="tab-link preview inactive"
         onclick="rablActivateTab(event.target,'preview')"
       >Preview</a>
+      
+      
+      
     </div>
     
   
@@ -62,7 +65,13 @@
     </div>
     
     <div class="inner tab-content preview" style="display:none;">
-      <h5>Live Preview:</h5>
+      <h5>Live Preview:
+      <a 
+        class="preview-edit"
+        onclick="rablActivateTab(event.target,'source','edit')"
+      >Edit</a>
+      
+      </h5>
       <div class="iframe-wrap">
         <!-- see onload: universal disable click/links within the iframe: -->
         <iframe

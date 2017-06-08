@@ -1,5 +1,5 @@
 
-function rablActivateTab(target,name) {
+function rablActivateTab(target,name,extra) {
 
   var fn;
   fn = function(node,cls) {
@@ -48,6 +48,18 @@ function rablActivateTab(target,name) {
     else {
       el.style.display = 'none';
     }
+  }
+  
+  if(name == 'source' && extra == 'edit') {
+    var controlEl = topEl.getElementsByClassName('edit-record-toggle')[0];
+    if(controlEl) {
+      var editEl = controlEl.getElementsByClassName('edit')[0];
+      if(editEl) {
+        editEl.click();
+      }
+    
+    }
+  
   }
   
 }

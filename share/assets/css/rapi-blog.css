@@ -223,3 +223,14 @@
 .rabl-preview-mode .appdv-tt-generated .edit-record-toggle {
   display:none;
 }
+
+.rapi-blog-postview a.preview-edit {
+  color: blue;
+
+}
+
+.rapi-blog-postview a.preview-edit:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+
+}
