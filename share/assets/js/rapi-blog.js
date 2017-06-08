@@ -32,6 +32,7 @@ function rablInitPreviewIframe(iframe,src) {
     if(!AppDV.rablFirstLoad) {
       iframe.rablDoAjaxLoad();
       AppDV.rablFirstLoad = true;
+      rablActivateTab(iframe,'preview');
     }
   }
 }
@@ -45,10 +46,16 @@ function rablGetParentEl(node,cls) {
 }
 
 
-function rablActivateTab(target,name,extra) {
+function rablActivateTab(target,name,extra,robot) {
   //console.log(' --> rablActivateTab ('+name+')');
   
   var topEl = rablGetParentEl(target,'rapi-blog-postview');
+  var AppDV = rablGetAppDV(topEl);
+  if(!AppDV) { throw "no AppDV"; }
+  
+  if(!robot) {
+    delete AppDV._editFromPreviewCleared;
+  }
   
   if(
     // Do not process tab change during record update
@@ -90,23 +97,30 @@ function rablActivateTab(target,name,extra) {
     if(controlEl) {
       var editEl = controlEl.getElementsByClassName('edit')[0];
       if(editEl) {
-        topEl._editFromPreview = true;
+        AppDV._editFromPreview = true;
         editEl.click();
       }
-    
     }
-  
   }
   
+  AppDV.rablActiveTabName = name;
 }
 
 
 function rablGetAppDV(el) {
   var AppDV = null;
   var appdvEl = rablGetParentEl(el,'ra-dsapi-deny-create');
+  if(!appdvEl) { console.dir(el); }
   if(appdvEl) {
     AppDV = Ext.getCmp(appdvEl.id);
     if(AppDV && !AppDV.rablInitialized) {
+    
+    //Ext.ux.RapidApp.util.logEveryEvent(AppDV.store);
+    
+      AppDV.rablActivateTab = function(name,extra,robot) {
+        var target = AppDV.el.dom.getElementsByClassName('rapi-blog-postview')[0]
+        return rablActivateTab(target,name,extra,robot);
+      }
     
       AppDV.getPreviewIframe = function() {
         return AppDV.el.dom.getElementsByClassName('preview-iframe')[0];
@@ -120,15 +134,23 @@ function rablGetAppDV(el) {
         }
       },AppDV);
       
-      AppDV.store.on('buttontoggle',function() {
-        if(el._editFromPreview && !this.currentEditRecord) {
-          delete el._editFromPreview;
-          rablActivateTab(el,'preview');
+      AppDV.handleEndEdit = function() {
+        if(AppDV._editFromPreview && (AppDV.rablActiveTabName != 'preview' || !AppDV.currentEditRecord)) {
+          delete AppDV._editFromPreview;
+          AppDV._editFromPreviewCleared = true;
+          AppDV.rablActivateTab('preview',null,true);
         }
-      },AppDV);
+      };
+      
+      AppDV.store.on('buttontoggle',AppDV.handleEndEdit,AppDV);
 
       AppDV.store.on('save',function() {
         AppDV.rablIframeReloadTask.delay(50);
+        if(AppDV._editFromPreview || AppDV._editFromPreviewCleared) {
+          delete AppDV._editFromPreviewCleared;
+          delete AppDV._editFromPreview;
+          AppDV.rablActivateTab('preview',null,true);
+        }
       },AppDV);
 
       AppDV.rablInitialized = true;
@@ -140,6 +162,6 @@ function rablGetAppDV(el) {
 // Uses RapidApp's mutation observers to dynamically initialize the tab state
 ready('.rapi-blog-postview', function(el) {
   rablGetAppDV(el);
-  rablActivateTab(el,'preview');
+  //rablActivateTab(el,'preview');
 });
 
