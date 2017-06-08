@@ -16,15 +16,9 @@ function rablActivateTab(event,name) {
     !topEl || topEl.classList.contains('editing-record')
   ) { return false; }
   
-  // This is a reliable way to get the parent appdv element since we know 
-  // datastore 'create' is not allowed in this context (and this is the 
-  // element we want to munge the dsapi css class flag for)
-  var appdvEl = fn(topEl,'ra-dsapi-deny-create');
-  if(!appdvEl) { throw "unable to find appdv element (unexpected error)"; }
-  
   name == 'preview'
-    ? appdvEl.classList.add   ('ra-dsapi-deny-update')
-    : appdvEl.classList.remove('ra-dsapi-deny-update');
+    ? topEl.classList.add   ('rabl-preview-mode')
+    : topEl.classList.remove('rabl-preview-mode');
   
   var links = topEl.getElementsByClassName('tab-link');
   var conts = topEl.getElementsByClassName('tab-content');
