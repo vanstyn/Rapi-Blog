@@ -1,15 +1,51 @@
 
-function rablActivateTab(target,name,extra) {
+function rablInitPreviewIframe(iframe,src) {
+  if(!src) { throw "rablInitPreviewIframe() requires src as second argument"; }
 
-  var fn;
-  fn = function(node,cls) {
-    if(!node || !cls) { return null; }
-    return node.classList.contains(cls)
-      ? node
-      : fn(node.parentElement,cls);
-  };
+  var AppDV = rablGetAppDV(iframe);
   
-  var topEl = fn(target,'ra-rowdv-select');
+  if(!iframe.rablDoAjaxLoad) {
+  
+    // this disables click/nav events
+    iframe.contentDocument.addEventListener('click',function(e){ 
+      e.stopPropagation(); 
+      e.preventDefault(); 
+    });
+  
+    // We're doing this manually instead of just setting src to ensure we have control
+    // of exactly when and why requests happen. This is important for dev, but may not
+    // actually be needed and we can do it the normal way
+    iframe.rablDoAjaxLoad = function() {
+      var xreq = new XMLHttpRequest();
+      xreq.onload = function() {
+        iframe.contentWindow.document.open('text/html', 'replace');
+        iframe.contentWindow.document.write([
+          '<base href="',src,'"/>',
+          xreq.responseText
+        ].join(""));
+        iframe.contentWindow.document.write();
+        iframe.contentWindow.document.close();
+      };
+      xreq.open("GET", src);
+      xreq.send();
+    }
+    iframe.rablDoAjaxLoad();
+  }
+}
+
+
+function rablGetParentEl(node,cls) {
+  if(!node || !cls) { return null; }
+  return node.classList.contains(cls)
+    ? node
+    : rablGetParentEl(node.parentElement,cls);
+}
+
+
+function rablActivateTab(target,name,extra) {
+  //console.log(' --> rablActivateTab ('+name+')');
+  
+  var topEl = rablGetParentEl(target,'rapi-blog-postview');
   
   if(
     // Do not process tab change during record update
@@ -38,11 +74,7 @@ function rablActivateTab(target,name,extra) {
   for (i = 0; i < conts.length; i++) {
     var el = conts[i];
     if(el.classList.contains(name)) {
-      var iframe = el.getElementsByTagName('iframe')[0];
-      if(iframe) {
-        // reload the iframe:
-        iframe.src = iframe.src;
-      }
+      //rablReloadPreviewIframe(el,500);
       el.style.display = 'block';
     }
     else {
@@ -55,6 +87,7 @@ function rablActivateTab(target,name,extra) {
     if(controlEl) {
       var editEl = controlEl.getElementsByClassName('edit')[0];
       if(editEl) {
+        topEl._editFromPreview = true;
         editEl.click();
       }
     
@@ -64,10 +97,48 @@ function rablActivateTab(target,name,extra) {
   
 }
 
+
+function rablGetAppDV(el) {
+  var AppDV = null;
+  var appdvEl = rablGetParentEl(el,'ra-dsapi-deny-create');
+  if(appdvEl) {
+    AppDV = Ext.getCmp(appdvEl.id);
+    if(AppDV && !AppDV.rablInitialized) {
+    
+      AppDV.getPreviewIframe = function() {
+        return AppDV.el.dom.getElementsByClassName('preview-iframe')[0];
+      };
+    
+      AppDV.rablIframeReloadTask = new Ext.util.DelayedTask(function(){
+        var iframe = AppDV.getPreviewIframe();
+        if(iframe && iframe.rablDoAjaxLoad) {
+           // Call the special, manual ajax load function:
+           iframe.rablDoAjaxLoad();
+        }
+      },AppDV);
+      
+      AppDV.store.on('buttontoggle',function() {
+        if(el._editFromPreview && !this.currentEditRecord) {
+          delete el._editFromPreview;
+          rablActivateTab(el,'preview');
+        }
+      },AppDV);
+      
+      // we don't actually need to do this because the update operation which re-inserts
+      // the <iframe> does it automatically
+      //AppDV.store.on('save',function() {
+      //  AppDV.rablIframeReloadTask.delay(50);
+      //},AppDV);
+
+      AppDV.rablInitialized = true;
+    }
+  }
+  return AppDV;
+}
+
 // Uses RapidApp's mutation observers to dynamically initialize the tab state
 ready('.rapi-blog-postview', function(el) {
-
+  rablGetAppDV(el);
   rablActivateTab(el,'preview');
-
 });
 

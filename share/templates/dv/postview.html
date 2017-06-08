@@ -57,7 +57,7 @@
     </div>
     
   
-    <div class="inner tab-content source" style="display:block;">
+    <div class="inner tab-content source">
       <h5>Body (markdown): [% r.toggle.edit %]</h5>
       <div class="post-body appdv-fill-absolute">
         [% r.autofield.body %]
@@ -74,10 +74,20 @@
       </h5>
       <div class="iframe-wrap">
         <!-- see onload: universal disable click/links within the iframe: -->
+        
         <iframe
-          src="[% Row.preview_url %]" frameborder=0
+          class="preview-iframe"
+          src="about:blank" frameborder=0
+          onload='rablInitPreviewIframe(this,"[% Row.preview_url_path %]{name}")'
+        ></iframe>
+        
+        <!--
+        <iframe
+          class="preview-iframe"
+          src="[% Row.preview_url_path %]{name}" frameborder=0
           onload="this.contentDocument.addEventListener('click',function(e){ e.stopPropagation(); e.preventDefault(); })"
         ></iframe>
+        -->
       </div>
     </div>
     
