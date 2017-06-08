@@ -58,7 +58,7 @@
   
     <div class="inner tab-content source">
       <div class="headline">
-        <h5>Post body (text/markdown): [% r.toggle.edit %]</h5>
+        <h5><span class="title">Post body (text/markdown):</span> [% r.toggle.edit %]</h5>
       </div>
       <div class="post-body appdv-fill-absolute">
         [% r.autofield.body %]
@@ -67,7 +67,7 @@
     
     <div class="inner tab-content preview" style="display:none;">
       <div class="headline">
-        <h5>Public preview
+        <h5><span class="title">Public preview</span>
         <a 
           class="preview-edit with-icon ra-icon-pencil"
           onclick="rablActivateTab(event.target,'source','edit')"

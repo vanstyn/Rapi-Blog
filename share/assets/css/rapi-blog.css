@@ -134,7 +134,7 @@
 
 
 .rapi-blog-postview div.post-body-wrap div.tab-row a.active {
-  background-color: white;
+  background-color: #F8F8F8;
   color: rgb(36,41,46);
   border: 1px solid #dddddd;
   padding-top:0px;
@@ -160,25 +160,40 @@
 .rapi-blog-postview div.post-body-wrap .inner .headline {
   margin-left: -5px;
   margin-right:-5px;
+  margin-top:-5px;
   border-bottom: 1px dashed #dddddd;
-  padding: 0px 5px 5px 5px;
+  padding: 5px 5px 3px 5px;
+  background-color: #F8F8F8;
+  height:22px;
 }
 
 .rapi-blog-postview div.post-body-wrap .inner h5 {
   margin-bottom:0px;
   margin-top:0px;
+  height:100%;
 }
 
 .rapi-blog-postview div.post-body-wrap .inner .headline a {
   display:inline-block;
 }
 
+.rapi-blog-postview div.post-body-wrap .inner .headline .title {
+  display:inline;
+  color: #24292e;
+  font-weight: 600;
+  white-space: nowrap;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  padding-right:10px;
+}
 
+.rapi-blog-postview div.post-body-wrap .inner  pre.ra-pre-wrap {
+  margin: 0px;
+}
 
 .rapi-blog-postview div.post-body, 
 .rapi-blog-postview div.iframe-wrap {
   position: absolute;
-  top: 30px;
+  top: 38px;
   bottom: 0px;
   left: 0px;
   right: 0px;
