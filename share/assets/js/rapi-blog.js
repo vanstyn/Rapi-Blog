@@ -2,16 +2,15 @@
 function rablInitPreviewIframe(iframe,src) {
   if(!src) { throw "rablInitPreviewIframe() requires src as second argument"; }
 
+  // this disables click/nav events
+  iframe.contentDocument.addEventListener('click',function(e){ 
+    e.stopPropagation(); 
+    e.preventDefault(); 
+  });
+
   var AppDV = rablGetAppDV(iframe);
   
   if(!iframe.rablDoAjaxLoad) {
-  
-    // this disables click/nav events
-    iframe.contentDocument.addEventListener('click',function(e){ 
-      e.stopPropagation(); 
-      e.preventDefault(); 
-    });
-  
     // We're doing this manually instead of just setting src to ensure we have control
     // of exactly when and why requests happen. This is important for dev, but may not
     // actually be needed and we can do it the normal way
@@ -50,7 +49,8 @@ function rablActivateTab(target,name,extra,robot) {
   //console.log(' --> rablActivateTab ('+name+')');
   
   var topEl = rablGetParentEl(target,'rapi-blog-postview');
-  var AppDV = rablGetAppDV(topEl);
+  var selEl = rablGetParentEl(target,'ra-rowdv-select');
+  var AppDV = rablGetAppDV(selEl);
   if(!AppDV) { throw "no AppDV"; }
   
   if(!robot) {
@@ -59,7 +59,7 @@ function rablActivateTab(target,name,extra,robot) {
   
   if(
     // Do not process tab change during record update
-    !topEl || topEl.classList.contains('editing-record')
+    !selEl || selEl.classList.contains('editing-record')
   ) { return false; }
   
   name == 'preview'
