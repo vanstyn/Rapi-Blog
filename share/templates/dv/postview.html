@@ -81,7 +81,17 @@
   
     <div class="inner tab-content source">
       <div class="headline">
-        <h5><span class="title">Post body (text/markdown):</span> [% r.toggle.edit %]</h5>
+        <h5>
+          <span class="title">Post body [text/markdown]</span>
+          
+           [% r.toggle.edit %]
+        
+        
+        </h5>
+        
+        <div class="body-size">([% r.autofield.size %])</div>
+        
+        
       </div>
       <div class="post-body appdv-fill-absolute">
         [% r.autofield.body %]
