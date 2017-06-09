@@ -651,13 +651,16 @@ display: table;
 	width:calc(100% + 2px);
 }
 
-.rapi-blog-postview .attr-content .tile.props table.r-simple-table11 * {
-	vertical-align:middle;
-}
-
 .rapi-blog-postview .attr-content .tile.props table.r-simple-table td {
 	position:relative;
-	height:26px;
+	height:22px;
+	padding-top:8px;
+
+}
+
+.rapi-blog-postview .attr-content .tile.props table.r-simple-table th {
+	padding-left:20px;
+	width:110px;
 
 }
 
