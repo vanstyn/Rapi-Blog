@@ -7,6 +7,7 @@
   line-height: 20px;
   color: #333333;
   background-color: #ffffff;
+  min-width:750px;
 }
 
 .rapi-blog-postview h1,
@@ -424,4 +425,59 @@
   padding-top:0px;
   margin-top:-5px;
 
+}
+
+.rapi-blog-postview .topmost-row {
+  width:100%;
+	min-width:750px;
+  height:45px;
+  position:relative;
+}
+
+.rapi-blog-postview .topmost-row .title-icon {
+  display:inline-block;
+	width:32px;
+	height:32px;
+	margin-top:6px;
+	margin-right:6px;
+}
+
+.rapi-blog-postview .responsive-title {
+	height:100%;
+  font-size: calc(0.55em + 1vmin);
+	display:        table-cell;
+  vertical-align: middle;
+	display: table;
+	margin-right:6px;
+}
+
+.rapi-blog-postview .responsive-title > p {
+	display:        table-cell;
+  vertical-align: middle;
+	color: maroon;
+	font-family: "Comic Sans MS", cursive, sans-serif
+
+}
+
+/* this centers! 
+.rapi-blog-postview .info-block {
+position: absolute;
+left: 50%;
+-webkit-transform: translateX(-50%);
+transform: translateX(-50%);
+}
+*/
+
+.rapi-blog-postview .info-block {
+float:right;
+top:2px;
+}
+
+.rapi-blog-postview .topmost-row  .toggle-controls {
+	float:right;
+	width:100px;
+}
+
+.rapi-blog-postview .topmost-row table.row-table td {
+	vertical-align:top;
 }

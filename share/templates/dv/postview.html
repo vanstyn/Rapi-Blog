@@ -5,58 +5,57 @@
 
 <div class="rapi-blog-postview" style="font-size:12px;">
 
-  <div style="float:left;padding-left:3px;padding-right:10px;padding-top:3px;">
-    <div style="height:32px;width:32px;" class="icon-text-rich-marked-32x32">
-    </div>
-  </div>
+  <div class="topmost-row">
   
-  <div style="float:left;">
-    <h4 style="margin-bottom:2px; ">
-        <span class="bigger">
-          <span
-            style="padding-right:15px;"
-          >{title}</span>
+    <table class="row-table" style="width:100%;win-width:750px;margin-top:-3px;"><tr>
+      <td style="width:30px;"><div class="title-icon icon-text-rich-marked-32x32"></div></td>
+    
+      <td style="vertical-align:middle;">      
+        
+        
+        <div class="responsive-title"><p>{title}</p></div>
+        
+      </td>
+      
+      <td style="width:360px;min-width:330px;">
+        <div class="info-block">
+         <table class="r-simple-table top-line" style="line-height:16px;border-radius: 7px;margin:2px;">
+
+            <tr class="vert">
+              <th rowspan="2" style="vertical-align:top;position:relative;width:125px;min-width:125px;">
+                <div style  ="position:absolute;left:5px; top:4px;font-size:13px;">
+                  <b style  ="position:absolute;left:5px; top:4px;color:#1b4f72;"><i>Published:</i></b> 
+                  <div style="position:absolute;left:75px;top:4px;">[% r.autofield.published %]</span></div>
+                </div>
+              </th>
+
+              <th>Post Date/Time           </th><th>Author                    </th>
+              
+            </tr>
+            <tr class="vert">
+              <td style="font-weight:normal;">[% r.renderfield.ts %]</td><td>[% r.renderfield.author %]</td>
+            </tr>
+            
+          </table>
+        </div>
+      </div>
+      </td>
+      
+      <td style="width:100px;min-width:100px;">
+        <div class="toggle-controls">
+            <div style="float: right; padding-top:5px;">
+            <div style="display:none;">[% r.delete_record %]</div>
+            <a class="delete-post" onclick="rablDeletePost(this)">Delete Post</a>
+          </div>
           
-        </span>
-      </h4>
-  </div>
-  
-  <div style="float:left;">
-  
-  
-  
-  
-  <table class="r-simple-table top-line" style="line-height:16px;border-radius: 7px;margin:2px;">
-
-        <tr class="vert">
-          <th rowspan="2" style="vertical-align:top;position:relative;width:110px;">
-            <div style  ="position:absolute;left:5px; top:4px;font-size:13px;">
-              <b style  ="position:absolute;left:5px; top:4px;color:#1b4f72;"><i>Published:</i></b> 
-              <div style="position:absolute;left:75px;top:4px;">[% r.autofield.published %]</span></div>
-            </div>
-          </th>
+          <div style="float:right;">[% r.toggle.edit %]</div>
         
         
-          <th>Post Date/Time           </th><th>Author                    </th>
-          
-        </tr>
-        <tr class="vert">
-          <td style="font-weight:normal;">[% r.renderfield.ts %]</td><td>[% r.renderfield.author %]</td>
-        </tr>
-        
-      </table>
+      </td>
+    </tr></table>
   
   </div>
   
-  
-
-
-  <div style="float: right; padding-top:5px;">
-    <div style="display:none;">[% r.delete_record %]</div>
-    <a class="delete-post" onclick="rablDeletePost(this)">Delete Post</a>
-  </div>
-  
-  <div style="float:right;">[% r.toggle.edit %]</div>
   
   
   
