@@ -6,37 +6,19 @@
 <div class="rapi-blog-postview" style="font-size:12px;">
 
 
-<div style="float:right;">[% r.toggle.edit %]</div>
-  <h4 style="margin-bottom:2px;">
-    <span class="bigger">
-      <span
-        style="padding-right:15px;"
-      >{title}</span><i class="grey" style="font-size:.7em;">([% r.autofield.size %])</i>
-      
-    </span>
-  </h4>
+
+
+  <div style="float:right;">[% r.toggle.edit %]</div>
   
-  <table class="r-simple-table">
-    <tr>
-      <th>Name</th>
-      <td colspan=4>
-        <div style="float: right; padding-top:5px;">[% r.delete_record %]</div>
-        <span class="with-icon icon-post bigger">[% r.autofield.name %]</span>
-        <span class="with-icon" style="margin-left:30px;"><b><i>Published:</i></b> [% r.autofield.published %]</span>
-        
-      </td>
-    </tr>
-    <tr>
-      <th>Title</th>
-      <td colspan=4>
-        <span class="with-icon icon-post bigger">[% r.autofield.title %]</span>
-      </td>
-    </tr>
-    
-    <tr class="vert"><td></td><th>Date/Time           </th><th>Created                    </th><th>Updated                    </th><th>Author                  </th></tr>
-    <tr class="vert"><td></td><td>[% r.autofield.ts %]</td><td>[% r.autofield.create_ts %]</td><td>[% r.autofield.update_ts %]</td><td>[% r.autofield.author %]</td></tr>
-    
-  </table>
+  <h4 style="margin-bottom:2px; ">
+        <span class="bigger">
+          <span
+            style="padding-right:15px;"
+          >{title}</span><i class="grey" style="font-size:.7em;">([% r.autofield.size %])</i>
+          
+        </span>
+      </h4>
+
   
   
   <div class="post-body-wrap">
@@ -165,6 +147,40 @@
         
         
         </h5>
+        
+        
+        <div style="position:absolute;top:25px;left:5px;right:5px;bottom:5px;">
+        
+        
+       
+        
+          
+      
+      <table class="r-simple-table">
+        <tr>
+          <th>Name</th>
+          <td colspan=4>
+            <div style="float: right; padding-top:5px;">[% r.delete_record %]</div>
+            <span class="with-icon icon-post bigger">[% r.autofield.name %]</span>
+            <span class="with-icon" style="margin-left:30px;"><b><i>Published:</i></b> [% r.autofield.published %]</span>
+            
+          </td>
+        </tr>
+        <tr>
+          <th>Title</th>
+          <td colspan=4>
+            <span class="with-icon icon-post bigger">[% r.autofield.title %]</span>
+          </td>
+        </tr>
+        
+        <tr class="vert"><td></td><th>Date/Time           </th><th>Created                    </th><th>Updated                    </th><th>Author                  </th></tr>
+        <tr class="vert"><td></td><td>[% r.autofield.ts %]</td><td>[% r.autofield.create_ts %]</td><td>[% r.autofield.update_ts %]</td><td>[% r.autofield.author %]</td></tr>
+        
+      </table>
+        
+        
+         </div>
+        
         
       </div>
 
