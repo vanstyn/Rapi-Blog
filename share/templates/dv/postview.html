@@ -203,22 +203,67 @@
     <div class="inner tab-content attribs">
       <div class="attr-content">
       
-        <div class="tile whole image-column">
-          <table class="image-table">
-            <tr>
-              <th style="width:60%;padding-left:10px;">
-                <h1>Post image:</h1>
-                <i class="remark" style="width:130px;">
-                  Will only be displayed where configured within scaffold/templates
+      
+      
+      
+      <div class="tile props">
+          <div class="heading">
+            Properties
+          </div>
+          <div class="body">
+            
+            
+            
+            <table class="r-simple-table">
+              <tr>
+                <th>
+                  <b style="font-size:1.2em;">Unique Post Name</b>
+                  <i class="remark" style="padding:0px;padding-left:5px;">This is used to generate<br>
+                   the URL</i>
+                </th>
+                <td>
+                  <div class="appdv-fill-absolute space-for-icons">[% r.autofield.name %]</div>
+                </td>
+              </tr>
+              <tr>
+                <th>
+                  <b style="font-size:1.2em;">Post Title</b>
+                  <i class="remark" style="padding:0px;padding-left:5px;">Human-friendly name - defaults <br>
+                  to 'name' if unset</i>
+                </th>
+                <td>
+                  <div class="appdv-fill-absolute space-for-icons">[% r.autofield.title %]</div>
+                </td>
+              </tr>
+              
+            </table>
+            
+            
+            
+          <div class="tile whole image-column">
+            <center><h1>Post image</h1></center>
+            
+            <div style="padding-left:20px;">
+              [% r.autofield.image %]
+              
+              <div style="padding-left:10px;padding-right:20px;">
+                <i class="remark">
+                 Will only be displayed where configured within scaffold/templates
                 </i>
-              </th>
-              <td style="padding-right:10px;">
-                [% r.autofield.image %]
-              </td>
-            </tr>
-          </table>
-        
-          <div class="summary-info">
+              </div>
+            
+            
+            </div>
+    
+            
+            
+            
+
+          </div>
+            
+           
+           
+           <div class="tile whole summary-info">
           
             
             <tpl if="!custom_summary">
@@ -260,78 +305,77 @@
             </div>
 
           </div>
+
+           
+           
+           
+            
+            
+            
+            
+          </div>
         </div>
-        
-        
-        <div class="tile props">
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+        <div class="tile props right">
           <div class="heading">
             Properties
           </div>
           <div class="body">
             
-            
-            
-            <table class="r-simple-table">
-              <tr>
-                <th>
-                  <b style="font-size:1.2em;">Unique Post Name</b>
-                  <i class="remark" style="padding:0px;padding-left:5px;">This is used to generate<br>
-                   the URL</i>
-                </th>
-                <td>
-                  <div class="appdv-fill-absolute space-for-icons">[% r.autofield.name %]</div>
-                </td>
-              </tr>
-              <tr>
-                <th>
-                  <b style="font-size:1.2em;">Post Title</b>
-                  <i class="remark" style="padding:0px;padding-left:5px;">Human-friendly name - defaults <br>
-                  to 'name' if unset</i>
-                </th>
-                <td>
-                  <div class="appdv-fill-absolute space-for-icons">[% r.autofield.title %]</div>
-                </td>
-              </tr>
-              
-              
-              
-            
-            
-            </table>
-            
-            <div style="padding-top:10px;"></div>
+
             
              <table class="r-simple-table dbl">
 
               <tr>
                 <th>Date/Time</th>
                 <td>[% r.autofield.ts %]</td>
-                
-                <th>Author</th>
-                <td>[% r.autofield.author %]</td>
-          
-                
+              </tr>
+              
+               <tr>
+                <th>Created</th>
+                <td>[% r.autofield.create_ts %]</td>
               </tr>
               
               <tr>
-                <th>Created</th>
-                <td>[% r.autofield.create_ts %]</td>
-                <th>Creator</th>
-                <td>[% r.autofield.creator %]</td>
-              </tr>
-              <tr>
                 <th>Updated</th>
                 <td>[% r.autofield.update_ts %]</td>
-                <th>Updater</th>
-                <td>[% r.autofield.updater %]</td>
               </tr>
               
               <tr>
                 <th>Published</th>
                 <td>[% r.autofield.publish_ts %]</td>
+              </tr>
+              
+              <tr>
                 <th>Is published?</th>
                 <td>[% r.autofield.published %]</td>
               </tr>
+              
+              <tr>
+                <th>Author</th>
+                <td>[% r.autofield.author %]</td>
+              </tr>
+              
+              <tr>
+                <th>Creator</th>
+                <td>[% r.autofield.creator %]</td>
+              </tr>
+
+              <tr>
+                <th>Updater</th>
+                <td>[% r.autofield.updater %]</td>
+              </tr>
+              
+              
               
             
             
