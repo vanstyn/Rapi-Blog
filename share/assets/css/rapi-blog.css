@@ -93,7 +93,7 @@
   padding: 5px;
   
   position: absolute;
-  top: 80px;
+  top: 85px;
   bottom: 5px;
   left: 5px;
   right: 5px;
@@ -109,6 +109,7 @@
   left: -1px;
   right: -1px;
   border: 1px solid #dddddd;
+  border-radius: 6px 6px 0px 0px;
   border-bottom: 0px;
   padding-top:5px;
   background-color: rgb(246,248,250);
@@ -417,4 +418,10 @@
   border-bottom-style: dotted;
   border-color: blue;
   color: blue;
+}
+
+.rapi-blog-postview table.top-line th {
+  padding-top:0px;
+  margin-top:-5px;
+
 }

@@ -5,6 +5,51 @@
 
 <div class="rapi-blog-postview" style="font-size:12px;">
 
+  <div style="float:left;padding-left:3px;padding-right:10px;padding-top:3px;">
+    <div style="height:32px;width:32px;" class="icon-text-rich-marked-32x32">
+    </div>
+  </div>
+  
+  <div style="float:left;">
+    <h4 style="margin-bottom:2px; ">
+        <span class="bigger">
+          <span
+            style="padding-right:15px;"
+          >{title}</span>
+          
+        </span>
+      </h4>
+  </div>
+  
+  <div style="float:left;">
+  
+  
+  
+  
+  <table class="r-simple-table top-line" style="line-height:16px;border-radius: 7px;margin:2px;">
+
+        <tr class="vert">
+          <th rowspan="2" style="vertical-align:top;position:relative;width:110px;">
+            <div style  ="position:absolute;left:5px; top:4px;font-size:13px;">
+              <b style  ="position:absolute;left:5px; top:4px;color:#1b4f72;"><i>Published:</i></b> 
+              <div style="position:absolute;left:75px;top:4px;">[% r.autofield.published %]</span></div>
+            </div>
+          </th>
+        
+        
+          <th>Post Date/Time           </th><th>Author                    </th>
+          
+        </tr>
+        <tr class="vert">
+          <td style="font-weight:normal;">[% r.renderfield.ts %]</td><td>[% r.renderfield.author %]</td>
+        </tr>
+        
+      </table>
+  
+  </div>
+  
+  
+
 
   <div style="float: right; padding-top:5px;">
     <div style="display:none;">[% r.delete_record %]</div>
@@ -14,14 +59,7 @@
   <div style="float:right;">[% r.toggle.edit %]</div>
   
   
-  <h4 style="margin-bottom:2px; ">
-        <span class="bigger">
-          <span
-            style="padding-right:15px;"
-          >{title}</span><i class="grey" style="font-size:.7em;">([% r.autofield.size %])</i>
-          
-        </span>
-      </h4>
+  
 
   
   
@@ -47,7 +85,7 @@
           <svg fill="#07a" aria-hidden="true" class="octicon octicon-code" height="16" version="1.1" viewBox="0 0 14 16" width="14">
             <path fill-rule="evenodd" d="M9.5 3L8 4.5 11.5 8 8 11.5 9.5 13 14 8 9.5 3zm-5 0L0 8l4.5 5L6 11.5 2.5 8 6 4.5 4.5 3z"/>
           </svg>
-          <span>&nbsp;Source Markdown&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
+          <span>&nbsp;Body Markdown&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
         </a>
        
        <a 
