@@ -65,7 +65,7 @@
         
         
         <div class="publink">
-          <div>&nbsp;&nbsp;&nbsp;Permalink / Published URL</div>
+          <div>&nbsp;&nbsp;&nbsp;Slug / Published URL</div>
           <a 
               class="with-icon icon-link"
               href="[% Row.public_url_path %]{name}" target="_blank"
@@ -82,7 +82,7 @@
     <div class="inner tab-content source">
       <div class="headline">
         <h5>
-          <span class="title">Post body [text/markdown]</span>
+          <span class="title">Raw body content [text/markdown]</span>
           
            [% r.toggle.edit %]
         
@@ -100,27 +100,34 @@
     
     <div class="inner tab-content preview" style="display:none;">
       <div class="headline">
+        <div class="edit-link-wrapper" style="float:left;">
         <h5>
-        <!--
-        <span class="title">Public preview</span>
-        -->
-        <a 
-          class="preview-edit with-icon ra-icon-pencil"
-          onclick="rablActivateTab(event.target,'source','edit')"
-          title="Edit this post"
-        >Click to Edit</a>
+          <a 
+            class="preview-edit with-icon ra-icon-pencil"
+            onclick="rablActivateTab(event.target,'source','edit')"
+            title="Edit this post"
+          >Click to Edit</a>
+        </h5>
+        </div>
         
-        <!--
-        <i><a 
-          class="with-icon ra-icon-tab-go"
-          style="margin-left:20px;vertical-align: text-bottom;font-size:.8em;"
-          href="[% Row.public_url_path %]{name}"
-          target="_blank"
-        >Visit URL (new window)</a></i>
-        -->
+        <div class="pub-status" style="float:left;">
+           <span class="label">Updated: </span>
+           <span class="ts">[% r.autofield.update_ts %]</span>
+        </div>
 
         
-        </h5>
+        <div class="pub-status" style="float:left;">
+          <tpl if="published">
+           <span class="label">Published: </span>
+           <span class="ts">[% r.autofield.publish_ts %]</span>
+          </tpl>
+          <tpl if="!published">
+            <span class="not-published">[NOT PUBLISHED]</span>
+          </tpl>
+        </div>
+        
+        
+        
         
         <a 
           class="preview-reloader with-icon ra-icon-refresh-tiny" 

@@ -330,6 +330,35 @@
 
 }
 
+.rapi-blog-postview div.post-body-wrap .inner .headline .edit-link-wrapper {
+  padding-right:20px;
+}
+
+
+.rapi-blog-postview div.post-body-wrap .inner .headline .pub-status {
+  padding-left:20px;
+  font-size:10px;
+}
+
+.rapi-blog-postview .pub-status .label {
+  font-weight:bold;
+  font-style: italic;
+  color: #666666;
+}
+
+.rapi-blog-postview .pub-status .ts {
+  font-size:11px;
+  letter-spacing:-.5px;
+}
+
+.rapi-blog-postview .pub-status .not-published {
+  font-weight:bolder;
+  font-family: "Lucida Console", Monaco, monospace;
+  color: darkred;
+  font-size:14px;
+}
+
+
 
 .rapi-blog-postview div.post-body-wrap .inner .headline .preview-reloader {
   display:block;
