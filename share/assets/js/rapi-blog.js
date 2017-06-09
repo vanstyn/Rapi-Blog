@@ -9,6 +9,7 @@ function rablInitPreviewIframe(iframe,src) {
   });
 
   var AppDV = rablGetAppDV(iframe);
+  var activateTab = AppDV.rablLastSelectedTabName;
   
   if(!iframe.rablDoAjaxLoad) {
     // We're doing this manually instead of just setting src to ensure we have control
@@ -31,8 +32,13 @@ function rablInitPreviewIframe(iframe,src) {
     if(!AppDV.rablFirstLoad) {
       iframe.rablDoAjaxLoad();
       AppDV.rablFirstLoad = true;
-      rablActivateTab(iframe,'preview');
+      activateTab = activateTab || 'preview';
+      
     }
+  }
+  
+  if(activateTab) {
+    rablActivateTab(iframe,activateTab);
   }
 }
 
@@ -52,7 +58,7 @@ function rablPreviewReload(el) {
 }
 
 function rablActivateTab(target,name,extra,robot) {
-  //console.log(' --> rablActivateTab ('+name+')');
+  //console.log(' --> rablActivateTab ('+name+','+extra+','+robot+')');
   
   var topEl = rablGetParentEl(target,'rapi-blog-postview');
   var selEl = rablGetParentEl(target,'ra-rowdv-select');
@@ -110,6 +116,9 @@ function rablActivateTab(target,name,extra,robot) {
   }
   
   AppDV.rablActiveTabName = name;
+  if(!robot) {
+    AppDV.rablLastSelectedTabName = name;
+  }
 }
 
 
@@ -146,6 +155,7 @@ function rablGetAppDV(el) {
         if(AppDV._editFromPreview && (AppDV.rablActiveTabName != 'preview' || !AppDV.currentEditRecord)) {
           delete AppDV._editFromPreview;
           AppDV._editFromPreviewCleared = true;
+          AppDV.rablLastSelectedTabName = 'preview';
           AppDV.rablActivateTab('preview',null,true);
         }
       };
