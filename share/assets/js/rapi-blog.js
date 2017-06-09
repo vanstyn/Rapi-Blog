@@ -129,7 +129,9 @@ function rablGetAppDV(el) {
       }
     
       AppDV.getPreviewIframe = function() {
-        return AppDV.el.dom.getElementsByClassName('preview-iframe')[0];
+        return AppDV.el.dom
+          ? AppDV.el.dom.getElementsByClassName('preview-iframe')[0]
+          : null;
       };
     
       AppDV.rablIframeReloadTask = new Ext.util.DelayedTask(function(){
@@ -163,4 +165,29 @@ function rablGetAppDV(el) {
     }
   }
   return AppDV;
+}
+
+
+function rablDeletePost(el) {
+  var realEl = el.parentElement.getElementsByClassName('delete-record')[0];
+  if(realEl) {
+    Ext.Msg.show({
+      title: 'Confirm delete post',
+      msg: [
+        '<div style="padding:10px;">',
+        '<b style="font-size:22px;">Really delete post?</b>',
+        '<br><br>This operation cannot be undone.<br>',
+        '</div>'
+      ].join(''),
+      buttons: Ext.Msg.YESNO,
+      icon: Ext.Msg.WARNING,
+      minWidth: 375,
+      fn: function(button_id) {
+        if(button_id == 'yes') {
+          realEl.click();
+        }
+      },
+      scope: this
+    });
+  }
 }

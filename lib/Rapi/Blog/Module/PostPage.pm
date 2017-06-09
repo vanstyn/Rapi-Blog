@@ -19,6 +19,7 @@ has '+tt_include_path', default => sub {
 
 has '+destroyable_relspec', default => sub {['*']};
 has '+close_on_destroy'   , default => 1;
+has '+confirm_on_destroy',  default => 0;
 
 before 'content' => sub { (shift)->apply_permissions };
 

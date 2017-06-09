@@ -6,9 +6,13 @@
 <div class="rapi-blog-postview" style="font-size:12px;">
 
 
-
-
+  <div style="float: right; padding-top:5px;">
+    <div style="display:none;">[% r.delete_record %]</div>
+    <a class="delete-post" onclick="rablDeletePost(this)">Delete Post</a>
+  </div>
+  
   <div style="float:right;">[% r.toggle.edit %]</div>
+  
   
   <h4 style="margin-bottom:2px; ">
         <span class="bigger">
