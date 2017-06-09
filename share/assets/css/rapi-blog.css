@@ -191,6 +191,8 @@
   padding: 5px 5px 3px 5px;
   background-color: #F8F8F8;
   height:22px;
+  position:relative;
+  user-select: none;
 }
 
 .rapi-blog-postview div.post-body-wrap .inner h5 {
@@ -291,3 +293,18 @@
   text-decoration: underline;
 
 }
+
+
+.rapi-blog-postview div.post-body-wrap .inner .headline .preview-reloader {
+  display:block;
+  position:absolute;
+  right:5px;
+  top:5px;
+  opacity: 0.3;
+  font-size:12px;
+}
+
+.rapi-blog-postview div.post-body-wrap .inner .headline .preview-reloader:hover {
+  opacity: 1;
+}
+

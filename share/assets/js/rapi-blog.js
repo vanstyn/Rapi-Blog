@@ -44,6 +44,12 @@ function rablGetParentEl(node,cls) {
     : rablGetParentEl(node.parentElement,cls);
 }
 
+function rablPreviewReload(el) {
+  var AppDV = rablGetAppDV(el);
+  if(AppDV) {
+    AppDV.rablIframeReloadTask.delay(0);
+  }
+}
 
 function rablActivateTab(target,name,extra,robot) {
   //console.log(' --> rablActivateTab ('+name+')');
