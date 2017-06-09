@@ -274,6 +274,7 @@
   bottom: 0px;
   left: 0px;
   right: 0px;
+	height:calc(100% - 38px);
 }
 
 .rapi-blog-postview div.iframe-wrap iframe {
