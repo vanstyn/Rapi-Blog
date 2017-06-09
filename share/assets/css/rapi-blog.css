@@ -481,3 +481,45 @@ top:2px;
 .rapi-blog-postview .topmost-row table.row-table td {
 	vertical-align:top;
 }
+
+
+.rapi-blog-postview .attr-content .tile {
+	margin:5px;
+	padding:5px;
+  border: 1px solid #dddddd;
+  border-radius: 6px;
+
+}
+
+.rapi-blog-postview .attr-content .image-column {
+	width: 200px;
+
+}
+
+
+.rapi-blog-postview .attr-content .image-column .cust-summary  {
+	width: 190px;
+  height: 130px;
+	position:relative;
+	border: 1px solid orange;
+
+}
+
+.rapi-blog-postview .attr-content .image-column .cust-summary  .data-holder {
+width: 185px;
+}
+
+
+.rapi-blog-postview .attr-content .image-column .cust-summary  .data-holder,
+.rapi-blog-postview .attr-content .image-column .cust-summary  .field-holder,
+.rapi-blog-postview .attr-content .image-column .cust-summary  .field-holder > * {
+	
+
+
+}
+
+
+
+
+
+
