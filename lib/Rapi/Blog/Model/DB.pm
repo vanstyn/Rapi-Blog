@@ -134,6 +134,12 @@ __PACKAGE__->config(
           },
           name => {
             header => 'name',
+            extra_properties => {
+              editor => {
+                vtype => 'rablPostName',
+              }
+            },
+
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],

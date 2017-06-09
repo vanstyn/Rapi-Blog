@@ -205,3 +205,13 @@ function rablDeletePost(el) {
     });
   }
 }
+
+
+Ext.apply(Ext.form.VTypes,{
+
+  rablPostName: function(v) { return /^[0-9a-z\.\-\_]+$/.test(v); },
+  rablPostNameMask: /[0-9a-z\.\-\_]+/,
+  rablPostNameText: 'Post names must be unique, can only contain lowercase alpha characters, dot (.), dash (-) or underscore (_)'
+
+});
+
