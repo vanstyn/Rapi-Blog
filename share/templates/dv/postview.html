@@ -273,50 +273,65 @@
             
             <table class="r-simple-table">
               <tr>
-                <th>Post Id</th>
-                <td>[% r.autofield.id %]</td>
-              </tr>
-              <tr>
-                <th>name</th>
+                <th>
+                  <b style="font-size:1.2em;">Unique Post Name</b>
+                  <i class="remark" style="padding:0px;padding-left:5px;">This is used to generate<br>
+                   the URL</i>
+                </th>
                 <td>
                   <div class="appdv-fill-absolute space-for-icons">[% r.autofield.name %]</div>
                 </td>
               </tr>
               <tr>
-                <th>title</th>
+                <th>
+                  <b style="font-size:1.2em;">Post Title</b>
+                  <i class="remark" style="padding:0px;padding-left:5px;">Human-friendly name - defaults <br>
+                  to 'name' if unset</i>
+                </th>
                 <td>
                   <div class="appdv-fill-absolute space-for-icons">[% r.autofield.title %]</div>
                 </td>
               </tr>
+              
+              
+              
+            
+            
+            </table>
+            
+            <div style="padding-top:10px;"></div>
+            
+             <table class="r-simple-table dbl">
+
               <tr>
                 <th>Date/Time</th>
                 <td>[% r.autofield.ts %]</td>
-              </tr>
-              <tr>
-                <th>author</th>
+                
+                <th>Author</th>
                 <td>[% r.autofield.author %]</td>
+          
+                
               </tr>
+              
               <tr>
-                <th>created at</th>
+                <th>Created</th>
                 <td>[% r.autofield.create_ts %]</td>
-              </tr>
-              <tr>
-                <th>created by</th>
+                <th>Creator</th>
                 <td>[% r.autofield.creator %]</td>
               </tr>
               <tr>
-                <th>updated at</th>
+                <th>Updated</th>
                 <td>[% r.autofield.update_ts %]</td>
-              </tr>
-              <tr>
-                <th>updated by</th>
-                <td>[% r.autofield.updator %]</td>
-              </tr>
-              <tr>
-                <th>published at</th>
-                <td>[% r.autofield.publish_ts %]</td>
+                <th>Updater</th>
+                <td>[% r.autofield.updater %]</td>
               </tr>
               
+              <tr>
+                <th>Published</th>
+                <td>[% r.autofield.publish_ts %]</td>
+                <th>Is published?</th>
+                <td>[% r.autofield.published %]</td>
+              </tr>
               
             
             

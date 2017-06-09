@@ -654,7 +654,7 @@ display: table;
 .rapi-blog-postview .attr-content .tile.props table.r-simple-table td {
 	position:relative;
 	height:22px;
-	padding-top:8px;
+	padding-top:18px;
 
 }
 
@@ -663,6 +663,22 @@ display: table;
 	width:110px;
 
 }
+
+.rapi-blog-postview .attr-content .tile.props table.r-simple-table.dbl th {
+	padding-right:10px;
+	text-align:right;
+	width:70px;
+
+}
+
+
+.rapi-blog-postview .attr-content .tile.props table.r-simple-table.dbl td {
+	position:relative;
+	height:19px;
+	padding-top:5px;
+
+}
+
 
 .tile.props table.r-simple-table  tr {
   background: #e9e9e9;
