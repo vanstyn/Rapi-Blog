@@ -49,8 +49,8 @@
           onclick="rablActivateTab(event.target,'preview')"
         >
         <span class="label">
-        <svg fill="#07a" aria-hidden="true" class="octicon octicon-eye" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M8.06 2C3 2 0 8 0 8s3 6 8.06 6C13 14 16 8 16 8s-3-6-7.94-6zM8 12c-2.2 0-4-1.78-4-4 0-2.2 1.8-4 4-4 2.22 0 4 1.8 4 4 0 2.22-1.78 4-4 4zm2-4c0 1.11-.89 2-2 2-1.11 0-2-.89-2-2 0-1.11.89-2 2-2 1.11 0 2 .89 2 2z"/></svg> 
-        <span>&nbsp;Publish Preview&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          <svg fill="#07a" aria-hidden="true" class="octicon octicon-eye" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M8.06 2C3 2 0 8 0 8s3 6 8.06 6C13 14 16 8 16 8s-3-6-7.94-6zM8 12c-2.2 0-4-1.78-4-4 0-2.2 1.8-4 4-4 2.22 0 4 1.8 4 4 0 2.22-1.78 4-4 4zm2-4c0 1.11-.89 2-2 2-1.11 0-2-.89-2-2 0-1.11.89-2 2-2 1.11 0 2 .89 2 2z"/></svg> 
+          <span>&nbsp;Publish Preview&nbsp;&nbsp;&nbsp;&nbsp;</span>
         </span>
         </a>
       
@@ -58,10 +58,21 @@
           class="tab-link source active"
           onclick="rablActivateTab(event.target,'source')"
         ><span class="label">
-          <svg fill="#07a" aria-hidden="true" class="octicon octicon-code" height="16" version="1.1" viewBox="0 0 14 16" width="14"><path fill-rule="evenodd" d="M9.5 3L8 4.5 11.5 8 8 11.5 9.5 13 14 8 9.5 3zm-5 0L0 8l4.5 5L6 11.5 2.5 8 6 4.5 4.5 3z"/></svg>
-        <span>&nbsp;Source Markdown&nbsp;&nbsp;&nbsp;&nbsp;</span></span></a>
-        </span>
-        
+          <svg fill="#07a" aria-hidden="true" class="octicon octicon-code" height="16" version="1.1" viewBox="0 0 14 16" width="14">
+            <path fill-rule="evenodd" d="M9.5 3L8 4.5 11.5 8 8 11.5 9.5 13 14 8 9.5 3zm-5 0L0 8l4.5 5L6 11.5 2.5 8 6 4.5 4.5 3z"/>
+          </svg>
+          <span>&nbsp;Source Markdown&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
+        </a>
+       
+       <a 
+          class="tab-link attribs inactive"
+          onclick="rablActivateTab(event.target,'attribs')"
+        ><span class="label">
+           <svg fill="#07a" aria-hidden="true" class="octicon octicon-book dashboard-event-icon" height="16" role="img" version="1.1" viewBox="0 0 16 16" width="16">
+            <path fill-rule="evenodd" d="M3 5h4v1H3V5zm0 3h4V7H3v1zm0 2h4V9H3v1zm11-5h-4v1h4V5zm0 2h-4v1h4V7zm0 2h-4v1h4V9zm2-6v9c0 .55-.45 1-1 1H9.5l-1 1-1-1H2c-.55 0-1-.45-1-1V3c0-.55.45-1 1-1h5.5l1 1 1-1H15c.55 0 1 .45 1 1zm-8 .5L7.5 3H2v9h6V3.5zm7-.5H9.5l-.5.5V12h6V3z"/>
+          </svg>
+          <span>&nbsp;Attributes&nbsp;&nbsp;&nbsp;&nbsp;</span></span>
+        </a>
         
         
         <div class="publink">
@@ -145,6 +156,21 @@
         ></iframe>
       </div>
     </div>
+    
+    
+    <div class="inner tab-content attribs">
+      <div class="attr-content">
+        <h5>
+          Attrs
+        
+        
+        </h5>
+        
+      </div>
+
+    </div>
+    
+    
     
   </div>
   
