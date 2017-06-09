@@ -469,7 +469,7 @@ transform: translateX(-50%);
 */
 
 .rapi-blog-postview .info-block {
-float:right;
+float: left;
 top:2px;
 }
 
@@ -505,6 +505,7 @@ top:2px;
 
 }
 
+/*
 .rapi-blog-postview .attr-content .image-column .cust-summary  .data-holder {
 width: 185px;
 }
@@ -517,9 +518,29 @@ width: 185px;
 
 
 }
+*/
 
+.rapi-blog-postview .title-block {
+	
+	margin-left:-2px;
+}
 
+.rapi-blog-postview .title-block  .label {
+	
+	padding-left:36px;
+	height:32px;
+}
+.rapi-blog-postview .title-block  .label > span {
+display: table;
+}
 
+.rapi-blog-postview .title-block  .label > span  > span {
+  display:        table-cell;
+  vertical-align: middle;
+	padding-left:5px;
+	font-family: "Lucida Console", Monaco, monospace;
+	font-weight: normal;
+}
 
 
 

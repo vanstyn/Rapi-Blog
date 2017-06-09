@@ -8,14 +8,32 @@
   <div class="topmost-row">
   
     <table class="row-table" style="width:100%;win-width:750px;margin-top:-3px;"><tr>
-      <td style="width:30px;"><div class="title-icon icon-text-rich-marked-32x32"></div></td>
-    
-      <td style="vertical-align:middle;">      
-        
-        
-        <div class="responsive-title"><p>{title}</p></div>
-        
+
+      
+      <td>
+        <div class="info-block title-block" style="width:100%;">
+         <table class="r-simple-table top-line" style="height:41px; line-height:16px;border-radius: 7px;margin:2px;margin-left:0px; width:100%;">
+
+            <tr class="vert">
+              <th  style="width:140px; font-size:22px; vertical-align:middle;text-align:right;padding-right:10px;" rowspan="2">
+                <div class="label with-icon icon-text-rich-marked-32x32">
+                  <span>Post <span style="font-size:12px;color:grey;">[id:{id}]</span></span>
+                </div>
+              </th>
+
+              <td class="title-td" rowspan="2" style="background-color: rgb(246,248,250);">
+                {title}
+              </td>
+              
+            </tr>
+
+            
+          </table>
+        </div>
+      
+      
       </td>
+      
       
       <td style="width:360px;min-width:330px;">
         <div class="info-block">
@@ -38,10 +56,9 @@
             
           </table>
         </div>
-      </div>
       </td>
       
-      <td style="width:100px;min-width:100px;">
+      <td >
         <div class="toggle-controls">
             <div style="float: right; padding-top:5px;">
             <div style="display:none;">[% r.delete_record %]</div>
