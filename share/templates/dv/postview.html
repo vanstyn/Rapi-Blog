@@ -162,8 +162,10 @@
         </div>
         
         <div class="pub-status" style="float:left;">
-           <span class="label">Updated: </span>
+           <span class="label">Last modified: </span>
            <span class="ts">[% r.autofield.update_ts %]</span>
+           <span class="label">&nbsp;&nbsp;by: </span>
+           <span class="ts">[% r.renderfield.updater %]</span>
         </div>
 
         
@@ -202,12 +204,67 @@
       <div class="attr-content">
       
         <div class="tile image-column">
+          <table class="image-table">
+            <tr>
+              <th style="width:60%;padding-left:10px;">
+                <h1>Post image:</h1>
+                <i class="remark" style="width:130px;">
+                  Will only be displayed where configured within scaffold/templates
+                </i>
+              </th>
+              <td style="padding-right:10px;">
+                [% r.autofield.image %]
+              </td>
+            </tr>
+          </table>
         
-        [% r.autofield.image %]
+          <div class="summary-info">
+          
+            
+            <tpl if="!custom_summary">
+              <div style="padding-left:5px;">
+                <h2>Post Summary (auto-generated)</h2>
+              </div>
+              
+              <div class="auto-summary-wrap">
+                <div class="auto-summary">
+                  [% r.autofield.summary %]
+                </div>
+              </div>
+              
+              <div style="padding-left:5px;padding-top:20px;">
+                <h2>Enter a custom summary</h2>
+                <i class="remark">Enter your own summary text to use instead below</i>
+              </div>
+              
+              
+            </tpl>
+            <tpl if="custom_summary">
+              <div style="padding-left:5px;">
+                <h2>Post Summary (custom)</h2>
+                <i class="remark">Delete all the text to use auto-generated summary</i>
+              </div>
+              
+            </tpl>
+            
+            <div class="cust-summary-wrap" >
+              <div class="cust-summary appdv-fill-absolute space-for-icons">
+                [% r.autofield.custom_summary %]
+              </div>
+            </div>
+            
+            <div style="padding-left:10px;padding-right:10px;">
+              <i class="remark">
+                Post summary will only be displayed where configured within scaffold/templates
+              </i>
+            </div>
+            
+
+            
+          
+          </div>
         
-        <div class="cust-summary appdv-fill-absolute space-for-icons">
-          [% r.autofield.custom_summary %]
-        </div>
+          
         
         
         

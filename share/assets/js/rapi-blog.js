@@ -1,4 +1,8 @@
 
+var rablDefaultTab = 'preview';
+
+rablDefaultTab = 'attribs';
+
 function rablInitPreviewIframe(iframe,src) {
   if(!src) { throw "rablInitPreviewIframe() requires src as second argument"; }
 
@@ -32,7 +36,7 @@ function rablInitPreviewIframe(iframe,src) {
     if(!AppDV.rablFirstLoad) {
       iframe.rablDoAjaxLoad();
       AppDV.rablFirstLoad = true;
-      activateTab = activateTab || 'preview';
+      activateTab = activateTab || rablDefaultTab;
       
     }
   }
