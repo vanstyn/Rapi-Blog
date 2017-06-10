@@ -652,7 +652,7 @@ display: table;
 
 .rapi-blog-postview .attr-content .tile.props.right {
 	width: 350px;
-	height: 500px;
+	height: auto;
 
 }
 
@@ -703,6 +703,12 @@ display: table;
 	padding-right:5px;
 	text-align:right;
 	width:50px;
+
+}
+
+.rapi-blog-postview .attr-content .tile.props table.r-simple-table.dbl.second th {
+	padding-right:15px;
+	width:45%;
 
 }
 
