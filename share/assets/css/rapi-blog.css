@@ -531,6 +531,12 @@ top:2px;
 	
 }
 
+.rapi-blog-postview .attr-content .tile > .body:first-child {
+	border-top:1px;
+	top:0px;
+	border-radius: 6px;
+}
+
 .rapi-blog-postview .attr-content .image-column {
 	width: 225px;
 
@@ -658,6 +664,26 @@ display: table;
 	background-color: #dddddd;
 	margin-left:-1px;
 	width:calc(100% + 2px);
+}
+
+.rapi-blog-postview .attr-content .tile.props > .body:first-child > table.r-simple-table,
+.rapi-blog-postview .attr-content .tile.props > .body:first-child > table.r-simple-table tbody
+
+ {
+  margin-top:0px;
+	border-radius: 8px 8px 0px 0px;
+}
+
+.rapi-blog-postview .attr-content .tile.props > .body:first-child > table.r-simple-table tr:first-child {
+	border-radius: 8px 8px 0px 0px;
+}
+
+.rapi-blog-postview .attr-content .tile.props > .body:first-child > table.r-simple-table tr:first-child *:first-child {
+	border-radius: 6px 0px 0px 0px;
+}
+
+.rapi-blog-postview .attr-content .tile.props > .body:first-child > table.r-simple-table tr:first-child > *:last-child{
+	border-radius: 0px 6px 0px 0px;
 }
 
 .rapi-blog-postview .attr-content .tile.props table.r-simple-table td {
