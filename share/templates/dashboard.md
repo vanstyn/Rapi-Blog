@@ -27,3 +27,54 @@
 
 <br>
 
+
+
+<div class="metro" >
+
+
+  <div class="col-sm-6 col-md-3">
+    <div class="thumbnail tile tile-medium tile-green">
+       <a href="#" class="fa-links">
+         <h1>RSS</h1>
+         <i class="fa fa-3x fa-rss-square"></i>
+      </a>
+    </div>
+  </div>
+  
+  <div class="col-sm-6 col-md-3">
+    <div class="thumbnail tile tile-medium tile-green">
+       <a href="#" class="fa-links">
+         <h1>RSS</h1>
+         <i class="fa fa-3x fa-rss-square"></i>
+      </a>
+    </div>
+  </div>
+  
+
+</div>
+
+<div style="clear:both;"></div>
+
+<div class="metro" style=max-width:600px;">
+
+  
+  <div class="col-sm-6 col-md-3">
+    <div class="thumbnail tile tile-200 tile-orange">
+       <a href="#" class="fa-links">
+         <h1>RSS</h1>
+         <i class="fa fa-5x fa-rss-square"></i>
+      </a>
+    </div>
+  </div>
+  
+  <div class="col-sm-6 col-md-3">
+    <div class="thumbnail tile tile-200 tile-red">
+       <a href="#" class="fa-links">
+         <h1>RSS</h1>
+         <i class="fa fa-5x fa-rss-square"></i>
+      </a>
+    </div>
+  </div>
+  
+  
+</div>
