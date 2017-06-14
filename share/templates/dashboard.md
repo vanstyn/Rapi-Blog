@@ -58,7 +58,7 @@
     </a>
 
      <a 
-       href="[% c.mount_url %]/" 
+       href="[% c.mount_url %]/" target="_blank"
        class="thumbnail tile tile-200 tile-orange fa-links"
      >
        <h1>Home page</h1>

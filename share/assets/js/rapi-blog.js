@@ -1,7 +1,7 @@
 
 var rablDefaultTab = 'preview';
 
-rablDefaultTab = 'attribs';
+//rablDefaultTab = 'attribs';
 
 function rablInitPreviewIframe(iframe,src) {
   if(!src) { throw "rablInitPreviewIframe() requires src as second argument"; }
