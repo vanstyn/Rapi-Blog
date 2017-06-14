@@ -64,6 +64,14 @@
        <h1>Home page</h1>
        <i class="fa fa-5x fa-home"></i>
     </a>
+    
+    <a 
+       href="#![% c.mount_url %]/adm/main/db/db_tag" 
+       class="thumbnail tile tile-200 tile-blue fa-links"
+     >
+       <h1>Tags</h1>
+       <i class="fa fa-5x fa-tags"></i>
+    </a>
 
      <a 
        href="#![% c.mount_url %]/adm/main/db/db_user" 
