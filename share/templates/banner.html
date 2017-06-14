@@ -20,7 +20,7 @@
   </div>
   
   
-  <div class="metro" style="position:absolute;top:0px;left:300px;font-size:14px;">
+  <div class="metro" style="position:absolute;top:0px;left:300px;font-size:13px;">
   
 
      <a 
@@ -44,8 +44,37 @@
         <i class="fa fa-user"></i>&nbsp;My Profile
     </a>
 
+    <div id='go-box' class="search-boxes" style="float:left;margin-left:10px;margin-top:2px;">
+      <table >
+        <tr>
+          <th><div style="margin-right:-2px;margin-bottom:1px;"></div></th>
+          <td class="middle" width="220px;">
 
-</div>
+            <div >
+
+              <div class='ra-search-box' style="min-width:200px;">
+                <form 
+                  class='ra-search-form' style="height:32px;"
+                  action="#!/adm/main/db/db_post" 
+                  onsubmit="return Ext.ux.RapidApp.HashNav.formSubmitHandler.apply(this,arguments);"
+                >
+                 <input class='ra-search-text' name='quick_search' type='text'/>
+                 <button class='ra-search-button' type='submit'><span><i class="fa fa-search"></i></span></button>
+                </form>
+              </div>
+
+            </div>
+            
+          </td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+  
+  
+  
+  
   
   
   

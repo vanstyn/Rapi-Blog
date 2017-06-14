@@ -123,9 +123,9 @@
 }
 
 .metro .tile.tile-long-tiny {
-  height: 30px;
-  min-height: 30px;
-  width: 130px;
+  height: 25px;
+  min-height: 25px;
+  width: 85px;
   border:0px;
 }
 
