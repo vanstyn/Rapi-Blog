@@ -157,6 +157,7 @@ sub templateData {
     my $data = {};
     if(my $name = $self->local_name($template)) {
       $data->{Row} = $self->Model->resultset('Post')
+        ->permission_filtered
         ->search_rs({ 'me.name' => $name })
         ->first; 
     }
@@ -300,6 +301,7 @@ sub _template_exists {
   my $name = $self->local_name($template) or return undef;
 
   $self->Model->resultset('Post')
+    ->permission_filtered
     ->search_rs({ 'me.name' => $name })
     ->count
 }
@@ -319,6 +321,7 @@ sub _template_mtime {
   my $name = $self->local_name($template) or return undef;
   
   my $Row = $self->Model->resultset('Post')
+    ->permission_filtered
     ->search_rs(undef,{
       columns => ['update_ts']
     })

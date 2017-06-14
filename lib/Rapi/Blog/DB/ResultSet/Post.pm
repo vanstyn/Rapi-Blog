@@ -7,6 +7,7 @@ use Moo;
 extends 'DBIx::Class::ResultSet';
 
 use RapidApp::Util ':all';
+use Rapi::Blog::Util;
 
 sub published {
   (shift)
@@ -26,6 +27,21 @@ sub newest_published_first {
       order_by => { -desc => 'me.publish_ts' }
     })
 }
+
+
+sub permission_filtered {
+  my $self = shift;
+  my $User = Rapi::Blog::Util->get_User or return $self->published;
+  
+  return $self if ($User->admin);
+  
+  $self->search_rs({ -or => [
+    { 'me.published' => 1 },
+    { 'me.author_id' => $User->id }
+  ]});
+}
+
+
 
 sub _all_columns_except {
   my ($self, @exclude) = @_;
