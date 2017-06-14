@@ -122,6 +122,13 @@
   width: 200px;
 }
 
+.metro .tile.tile-long-tiny {
+  height: 30px;
+  min-height: 30px;
+  width: 130px;
+  border:0px;
+}
+
 .metro a {
   background-image: initial;
   background-position-x: initial;

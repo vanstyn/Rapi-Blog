@@ -29,7 +29,7 @@
 
 -->
 
-<div class="metro" style=max-width:800px;">
+<div class="metro" style=max-width:800px;clear:both;">
   
   <div class="col-sm-6 col-md-3">
   
@@ -42,7 +42,7 @@
     </a>
   
     <a 
-      href="#![% c.mount_url %]/adm/main/db/db_post?quick_search_cols=author&quick_search=[% c.user.username %]" 
+      href="#![% c.mount_url %]/adm/main/db/db_post?quick_search_cols=author&quick_search=[% User.username %]" 
       class="thumbnail tile tile-200 tile-purple fa-links"
     >
        <h1>My Posts</h1>
@@ -84,3 +84,4 @@
   </div>
 
 </div>
+
