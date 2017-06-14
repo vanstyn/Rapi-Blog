@@ -1,0 +1,21 @@
+[%- USE date(format = '%a, %d-%b-%Y') -%]
+[%- WRAPPER site_wrapper.html 
+  title = Row.title
+-%]
+[%- Row.record_hit -%]
+
+  <div class="blog-post">
+  
+      <h2 class="blog-post-title">[% Row.title %]</h2>
+      <p class="blog-post-meta">
+        [% date.format(Row.ts) %] by <i>[% Row.author.username %]</i></a>
+      </p>
+
+      [% content %]
+      
+      [% INCLUDE private/post_comments.html %]
+    
+  
+  </div>
+
+[% END %]
