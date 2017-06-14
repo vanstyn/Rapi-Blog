@@ -1,36 +1,9 @@
-### Quick Links 
-
-<div style="padding-left:25px;">
-  <div><a 
-      class="with-icon icon-posts" 
-      style="text-decoration:none;font-weight:bold;" 
-      href="#![% c.mount_url %]/adm/main/db/db_post"
-  >View Posts</a></div>
-  <div><a 
-      class="with-icon icon-post-add" 
-      style="text-decoration:none;font-weight:bold;" 
-      href="#![% c.mount_url %]/adm/main/db/db_post/add"
-  >New Post</a></div>
-
-
-<br>  
-
-#### Site admin
-
-<div style="padding-left:25px;">
-  <a 
-    class="with-icon ra-icon-businessmen" 
-    style="text-decoration:none;font-weight:bold;" 
-    href="#![% c.mount_url %]/adm/main/db/rapidapp_coreschema_user"
-  >Manage Users</a> (won't work till we turn auth on)
-</div>
+## Quick Links 
 
 <br>
 
-
-
-<div class="metro" >
-
+<!--
+<div class="metro">
 
   <div class="col-sm-6 col-md-3">
     <div class="thumbnail tile tile-medium tile-green">
@@ -50,31 +23,41 @@
     </div>
   </div>
   
-
 </div>
 
 <div style="clear:both;"></div>
 
-<div class="metro" style=max-width:600px;">
+-->
 
+<div class="metro" style=max-width:800px;">
   
   <div class="col-sm-6 col-md-3">
-    <div class="thumbnail tile tile-200 tile-orange">
-       <a href="#" class="fa-links">
-         <h1>RSS</h1>
-         <i class="fa fa-5x fa-rss-square"></i>
-      </a>
-    </div>
+  
+    <a href="#![% c.mount_url %]/adm/main/db/db_post" class="thumbnail tile tile-200 tile-red fa-links">
+       <h1>All Posts</h1>
+       <i class="fa fa-5x fa-list"></i>
+    </a>
+  
+     <a href="#![% c.mount_url %]/adm/main/db/db_post" class="thumbnail tile tile-200 tile-purple fa-links">
+       <h1>My Posts</h1>
+       <i class="fa fa-5x fa-list-ul"></i>
+    </a>
+ 
+    <a href="#![% c.mount_url %]/adm/main/db/db_post/add" class="thumbnail tile tile-200 tile-green fa-links">
+      <h1>New Post</h1>
+      <i class="fa fa-5x fa-plus-square"></i>
+    </a>
+
+     <a href="[% c.mount_url %]/" class="thumbnail tile tile-200 tile-orange fa-links">
+       <h1>Home page</h1>
+       <i class="fa fa-5x fa-home"></i>
+    </a>
+
+     <a href="#![% c.mount_url %]/adm/main/db/db_user" class="thumbnail tile tile-200 tile-pink fa-links">
+       <h1>Users</h1>
+       <i class="fa fa-5x fa-users"></i>
+    </a>
+    
   </div>
-  
-  <div class="col-sm-6 col-md-3">
-    <div class="thumbnail tile tile-200 tile-red">
-       <a href="#" class="fa-links">
-         <h1>RSS</h1>
-         <i class="fa fa-5x fa-rss-square"></i>
-      </a>
-    </div>
-  </div>
-  
-  
+
 </div>

@@ -13,7 +13,9 @@
   padding-right: 4px;
   padding-bottom: 4px;
   padding-left: 4px;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
+  margin: 5px;
+  
   line-height: 1.42857;
   background-color: rgb(255, 255, 255);
   border-top-width: 1px;
@@ -185,7 +187,6 @@
 .metro .fa-3x {
   font-size: 3em;
 }
-.metro .fa-home::before {
-  content: "?";
-}
+
+
 
