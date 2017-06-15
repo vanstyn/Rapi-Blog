@@ -231,3 +231,93 @@ sub _build_base_config {
 }
 
 1;
+
+__END__
+
+=head1 NAME
+
+Rapi::Blog - Plack-compatable, RapidApp-based blog engine
+
+=head1 SYNOPSIS
+
+ use Rapi::Blog;
+ 
+ my $app = Rapi::Blog->new({
+  site_path     => '/path/to/some-site',
+  scaffold_path => '/path/to/some-site/scaffold', # default
+ });
+
+ # Plack/PSGI app:
+ $app->to_app
+
+Create a new site from scratch using the L<rabl.pl> utility script:
+
+ rabl.pl create /path/to/some-site
+
+=head1 DESCRIPTION
+
+This is a L<Plack>-compatible blogging platform written using L<RapidApp>. 
+
+=head1 CONFIGURATION
+
+C<Rapi::Blog> extends L<RapidApp::Builder> and supports all of its options, as well as the following
+params specific to this module:
+
+=head2 site_path
+
+Only required param - path to the directory containing the site.
+
+=head2 scaffold_path
+
+Path to the directory containing the "scaffold" of the site. This is like a document root with
+some extra functionality.
+
+If not supplied, defaults to C<'scaffold/'> within the C<site_path> directory.
+
+=head1 METHODS
+
+=head2 to_app
+
+PSGI C<$app> CodeRef. Derives from L<Plack::Component>
+
+=head1 SEE ALSO
+
+=over
+
+=item * 
+
+L<rabl.pl>
+
+=item * 
+
+L<RapidApp>
+
+=item * 
+
+L<RapidApp::Builder>
+
+=item * 
+
+L<Plack>
+
+=item *
+
+L<http://rapi.io/blog>
+
+=back
+
+
+=head1 AUTHOR
+
+Henry Van Styn <vanstyn@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2017 by IntelliTree Solutions llc.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
