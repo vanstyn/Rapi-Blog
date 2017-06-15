@@ -69,7 +69,7 @@ has '+inject_components', default => sub {
 has 'site_dir', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
   
-  my $Dir = dir( $self->site_path );
+  my $Dir = dir( $self->site_path )->absolute;
   -d $Dir or die "Scaffold directory '$Dir' not found.\n";
   
   return $Dir
@@ -226,7 +226,6 @@ sub _build_base_config {
     my $Fav = $self->scaffold_dir->file($favname);
     $config->{RapidApp}{default_favicon_url} = $Fav->stringify if (-f $Fav);
   }
-  
   
   return $config
 }
