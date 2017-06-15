@@ -23,7 +23,13 @@ before 'setup' => sub {
 
   unless ( -f $db_path ) {
     warn "  ** Auto-Deploy $db_path **\n";
-    $self->_one_off_connect->deploy;
+    my $db = $self->_one_off_connect;
+    $db->deploy;
+    # Make sure the built-in uid:0 system account exists:
+    $db->resultset('User')->find_or_create(
+      { id => 0, username => '(system)', full_name => '[System Acount]', admin => 1 },
+      { key => 'primary' }
+    );
   }
 
   my $diff =
