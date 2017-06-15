@@ -12,6 +12,7 @@ use Rapi::Blog;
 
 use Path::Class qw(file dir);
 use Scalar::Util 'blessed';
+use Term::ReadPassword;
 
 sub call {
   my $class = shift;
@@ -29,7 +30,7 @@ sub call {
     my $parent = $Dir->parent;
     die "Parent dir '$parent' not found; automatic creation of parent dirs is not supported.\n"
       unless (-d $parent);
-    print "==> creating '$Dir'";
+    print "==> creating directory '$Dir'";
     $Dir->mkpath;
     print "\n";
   }
@@ -45,12 +46,64 @@ sub call {
   
   my $TargScaf = $Dir->subdir('scaffold');
   
+  print "\nInitializing scaffold using the built-in skeleton '$scaffold_name':\n ";
   $class->_recursive_copy($ScafDir,$TargScaf);
   
-  print "\n\nCreating app.psgi: ";
+  print "\nCreating app.psgi: ";
   $Dir->file('app.psgi')->spew( $class->_app_psgi_content );
   print "done.\n\n";
   
+  my $pw = $class->prompt_password;
+  
+  my $App = Rapi::Blog->new({ site_path => "$Dir", debug => 0 });
+  
+  print "\nInitializing databases, please wait...\n";
+  $App->to_app;
+  
+  print "\n\n";
+  
+  my $AdminUser = $App
+    ->appname
+    ->model('RapidApp::CoreSchema::User')
+    ->search({ 'me.username' => 'admin' })
+    ->first;
+    
+  $AdminUser->update({ set_pw => $pw });
+  
+  print join("\n",
+    ' *** SUCCESS! ***','',
+    "New Rapi::Blog site sucessfully created in '$Dir' ... ",'',
+    "You may now 'plackup' the test server:",'',
+    "   plackup $Dir/app.psgi",'',
+    "Login to the admin section at: http://0:5000/adm (or whatever host/port you deploy to)",'',
+    "Next steps: ",'',
+    " - edit/customize your scaffold.yml and html files/content in '$TargScaf'",
+    '',"Happy blogging!",''
+  );
+}
+
+
+sub prompt_password {
+  my $self = shift;
+  
+  my $pw  = read_password("  Enter initial password for the 'admin' user: ",0,1);
+  if(! defined $pw) {
+    print "   aborting.\n";
+    exit;
+  }
+  return $self->prompt_password unless ($pw);
+  my $pw2 = read_password("                             Confirm password: ",0,1) || '';
+  if(! defined $pw2) {
+    print "   aborting.\n";
+    exit;
+  }
+  
+  unless($pw eq $pw2) {
+    print "  ** passwords don't match **\n";
+    return $self->prompt_password;
+  }
+  
+  return $pw;
 }
 
 

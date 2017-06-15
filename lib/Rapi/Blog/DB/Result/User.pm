@@ -119,7 +119,7 @@ sub _role_perm_sync {
 sub _apply_from_CoreUser {
   my ($self, $CoreUser) = @_;
   
-  my $cur_admin = $self->admin;
+  my $cur_admin = $self->admin || 0;
   
   $CoreUser = $CoreUser->get_from_storage if ($CoreUser->in_storage); # needed in case the username has changed
 
@@ -132,7 +132,7 @@ sub _apply_from_CoreUser {
     $self->admin(0);
   }
   
-  $self->update unless ($cur_admin == $self->admin);# {
+  $self->update unless ($cur_admin == $self->admin);
 }
 
 
