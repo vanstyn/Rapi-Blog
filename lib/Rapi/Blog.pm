@@ -253,6 +253,7 @@ Rapi::Blog - Plack-compatable, RapidApp-based blog engine
 Create a new site from scratch using the L<rabl.pl> utility script:
 
  rabl.pl create /path/to/some-site
+ cd /path/to/some-site && plackup
 
 =head1 DESCRIPTION
 

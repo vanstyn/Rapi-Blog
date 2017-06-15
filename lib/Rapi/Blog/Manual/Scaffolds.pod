@@ -9,7 +9,7 @@ of HTML and associated content.
 
 =head1 SCAFFOLD CONFIG
 
-The scaffold config is defined in a YAML file named B<scaffold.yml> is the root of the scaffold 
+The scaffold config is defined in a YAML text file named B<scaffold.yml> in the root of the scaffold 
 directory.
 
 The B<scaffold.yml> supports the following options:
@@ -26,11 +26,23 @@ The B<scaffold.yml> supports the following options:
 
 =head2 view_wrappers
 
+=head2 default_view_path
+
+=head2 internal_post_path
+
+=head2 default_ext
+
+
+=back
+
+You may also define any additional datapoints you like in the scaffold config which can be used by the
+scaffold templates internally.
+
 
 =head1 TEMPLATE DIRECTIVES
 
 Files within the scaffold (which are not defined as C<static_paths>) are processed as L<Template::Toolkit>
-templates with the following methods/parameters exposed in the tempalte variables (i.e. the L<Template::Stash>):
+templates with the following methods/parameters exposed in the template variables (i.e. the L<Template::Stash>):
 
 =head2 scaffold
 
@@ -52,7 +64,7 @@ C<summary>, C<body> and exact match on a C<tag>. Only Posts with at least one ma
 
 =head3 tag
 
-Limit posts to those containing the named <Ctag>.
+Limit posts to those containing the named C<tag>.
 
 =head3 limit
 
