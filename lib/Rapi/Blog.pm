@@ -256,7 +256,9 @@ Create a new site from scratch using the L<rabl.pl> utility script:
 
 =head1 DESCRIPTION
 
-This is a L<Plack>-compatible blogging platform written using L<RapidApp>. 
+This is a L<Plack>-compatible blogging platform written using L<RapidApp>.
+
+See L<Rapi::Blog::Manual> for more information and usage.
 
 =head1 CONFIGURATION
 

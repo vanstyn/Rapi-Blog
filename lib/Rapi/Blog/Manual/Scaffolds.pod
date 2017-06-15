@@ -1,0 +1,126 @@
+=head1 NAME
+ 
+Rapi::Blog::Manual::Scaffolds - Public-facing content for Rapi::Blog 
+ 
+=head1 DESCRIPTION
+
+L<Rapi::Blog> serves public facing content from a local "scaffold" which is a simple directory
+of HTML and associated content.
+
+=head1 SCAFFOLD CONFIG
+
+The scaffold config is defined in a YAML file named B<scaffold.yml> is the root of the scaffold 
+directory.
+
+The B<scaffold.yml> supports the following options:
+
+=head2 static_paths
+
+=head2 private_paths
+
+=head2 landing_page
+
+=head2 not_found
+
+=head2 favicon
+
+=head2 view_wrappers
+
+
+=head1 TEMPLATE DIRECTIVES
+
+Files within the scaffold (which are not defined as C<static_paths>) are processed as L<Template::Toolkit>
+templates with the following methods/parameters exposed in the tempalte variables (i.e. the L<Template::Stash>):
+
+=head2 scaffold
+
+The active scaffold config/data structure.
+
+=head2 list_posts
+
+Interface to retreive and filter Posts from the database. This is exposed with the 
+L<ListAPI|Rapi::Blog::DB::Component::ResultSet::ListAPI>
+interface which accepts several named params and returns a common
+L<ListAPI|Rapi::Blog::DB::Component::ResultSet::ListAPI> result packet.
+
+Accepted params (all optional):
+
+=head3 search
+
+String to search/filter results. The search will match substrings in the C<body>, C<name>, C<title>,
+C<summary>, C<body> and exact match on a C<tag>. Only Posts with at least one match will be returned.
+
+=head3 tag
+
+Limit posts to those containing the named <Ctag>.
+
+=head3 limit
+
+The maximum number of results to return (i.e. page size)
+
+=head3 page
+
+The page number to return, in conjunction with C<limit>.
+
+=head2 list_tags
+
+Interface to retreive and filter Tags from the database. This is exposed with the 
+L<ListAPI|Rapi::Blog::DB::Component::ResultSet::ListAPI>
+interface which accepts several named params and returns a common
+L<ListAPI|Rapi::Blog::DB::Component::ResultSet::ListAPI> result packet.
+
+Accepted params (all optional):
+
+=head3 search
+
+String to search/filter results. The search will match substrings of the tag name.
+
+=head3 post_id
+
+Limit results to Tags linked to the supplied post_id
+
+=head2 list_users
+
+Interface to retreive and filter Users from the database. This is exposed with the 
+L<ListAPI|Rapi::Blog::DB::Component::ResultSet::ListAPI>
+interface which accepts several named params and returns a common
+L<ListAPI|Rapi::Blog::DB::Component::ResultSet::ListAPI> result packet.
+
+Accepted params (all optional):
+
+=head3 search
+
+String to search/filter results. The search will match substrings of the C<username> or the C<full_name>.
+
+=head3 only
+
+Limit users to those with the matching named permission, which are currently 'authors' or 'commenters'
+
+=head2 User
+
+=head2 request_path
+
+=head2 remote_action_path
+
+URL path that a client can use to access the L<Remote|Rapi::Blog::Controller::Remote> controller which
+provides additional API end-points that can be used to post comments, etc.
+
+=head1 SEE ALSO
+
+=over
+
+=item *
+
+L<Rapi::Blog>
+
+=item *
+
+L<Rapi::Blog::Manual>
+
+=item *
+
+L<RapidApp>
+
+=back
+ 
+=cut

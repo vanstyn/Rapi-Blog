@@ -218,6 +218,130 @@ sub _safe_count {
   return scalar(@rows);
 }
 
-
-
 1;
+
+__END__
+
+=head1 NAME
+ 
+Rapi::Blog::DB::Component::ResultSet::ListAPI - Common "ListAPI" interface
+ 
+=head1 DESCRIPTION
+
+This is a L<DBIx::Class> component for L<ResultSet|DBIx::Class::ResultSet> classes that is used
+for the common list_* methods (such as C<list_posts>, C<list_users>) exposed to L<Rapi::Blog>
+scaffold templates. It provides a mechanism to define input params on a class-by-class basis, but
+returns a common result packet.
+
+=head1 RESULT PACKET
+
+The "ListAPI" call to methods such as C<list_posts> will always return a HashRef result packet 
+containing exactly two keys C<'rows'> which contains an ArrayRef of matching Row objects and C<'meta'>
+which contains additional params and details regarding the data set.
+
+The C<meta> packet is a HashRef containing the following params:
+
+=head2 count
+
+Number of items returned (this page)
+
+=head2 total
+
+Total number of items (all pages)
+
+=head2 page
+
+Page number of current page
+
+=head2 pages
+
+Total number of pages
+
+=head2 last_page
+
+True if the current page is the last page
+
+=head2 complete
+
+True if this page already contains all items
+
+=head2 start
+
+The number (out of total items) this page starts at
+
+=head2 end
+
+The number (out of total items) this page ends at
+
+=head2 remaining
+
+The number of items remaining after this page
+
+=head2 before
+
+The number of items in all the pages before this one
+
+=head2 limit
+
+The limit of items per page
+
+=head2 first_qs
+
+Expressed as a query string, the params that would return the first page (undef if N/A)
+
+=head2 last_qs
+
+Expressed as a query string, the params that would return the last page (undef if N/A)
+
+=head2 prev_qs
+
+Expressed as a query string, the params that would return the previous page (undef if N/A)
+
+=head2 next_qs
+
+Expressed as a query string, the params that would return the next page (undef if N/A)
+
+=head2 this_qs
+
+Expressed as a query string, the params that would return this same page
+
+=head2 params
+
+The current params for this page as a HashRef
+
+=head1 SEE ALSO
+
+=over
+
+=item * 
+
+L<Rapi::Blog>
+
+=item * 
+
+L<RapidApp>
+
+=item * 
+
+L<Rapi::Blog::Manual::Scaffolds>
+
+=back
+
+
+=head1 AUTHOR
+
+Henry Van Styn <vanstyn@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2017 by IntelliTree Solutions llc.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+
+
+
