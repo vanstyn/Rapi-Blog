@@ -23,11 +23,17 @@ my $HugoDir = dir( "$FindBin::Bin/external_data/frew_blog/content/posts" )->reso
 
 my $dir = $ARGV[0] or die "missing site_path argument";
 
-$dir = dir( $dir )->resolve->absolute->stringify;
+$dir = dir( $dir )->resolve->absolute;
 
 use Rapi::Blog;
 
-my $Blog = Rapi::Blog->new({ site_path => $dir });
+my $scaffold_dir = $dir->subdir('scaffold');
+
+
+my $Blog = Rapi::Blog->new({ 
+  site_path => "$dir", 
+  fallback_builtin_scaffold => 1 
+});
 
 $Blog->to_app; # init
 
