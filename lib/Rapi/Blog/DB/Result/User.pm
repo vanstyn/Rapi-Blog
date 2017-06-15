@@ -97,6 +97,13 @@ sub update {
 }
 
 
+# return the username if full_name is not set
+around 'full_name' => sub {
+  my ($orig,$self,@args) = @_;
+  $self->$orig(@args) || $self->username
+};
+
+
 
 sub _role_perm_sync {
   my $self = shift;
