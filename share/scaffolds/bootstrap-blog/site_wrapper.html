@@ -60,6 +60,12 @@
               <a class="blog-nav-item" href="[%- page.path -%]">[%- page.title -%]</a>
             [%- END %]
           [% END %]
+          
+          [% IF User %]
+            <a class="blog-nav-item" href="[%- add_post_path -%]">
+              <i class="fa fa-plus"></i>&nbsp;New Post
+            </a>
+          [% END %]
         
           <form class="navbar-form navbar-right" action="/list">
             <div class="form-group">

@@ -117,6 +117,11 @@ Limit users to those with the matching named permission, which are currently 'au
 URL path that a client can use to access the L<Remote|Rapi::Blog::Controller::Remote> controller which
 provides additional API end-points that can be used to post comments, etc.
 
+=head2 add_post_path
+
+URL path to directly load the "New Post" form. Useful if the scaffold wants to provide its own 
+"New Post" links(s).
+
 =head1 SEE ALSO
 
 =over

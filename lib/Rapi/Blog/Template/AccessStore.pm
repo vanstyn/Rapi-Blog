@@ -191,6 +191,11 @@ around 'get_template_vars' => sub {
     # Path to the 'Remote' controller
     remote_action_path => sub { $c ? join('',$c->mount_url,'/remote') : undef },
     
+    add_post_path => sub { 
+      my $ns = $c->module_root_namespace;
+      join('',$c->mount_url,'/',$ns,'/#!/',$ns,'/main/db/db_post/add')
+    }
+    
   };
   
   return $vars
