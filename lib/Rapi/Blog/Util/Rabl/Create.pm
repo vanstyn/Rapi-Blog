@@ -34,6 +34,8 @@ sub call {
     print "\n";
   }
   
+  die 'app.psgi already exists!' if (-e $Dir->file('app.psgi')); # redundant
+  
   my $share_dir = Rapi::Blog->_get_share_dir or die "Unable to identify ShareDir for Rapi::Blog.\n";
   
   my $Scafs = dir($share_dir)->subdir('scaffolds')->resolve;
@@ -45,9 +47,33 @@ sub call {
   
   $class->_recursive_copy($ScafDir,$TargScaf);
   
+  print "\n\nCreating app.psgi: ";
+  $Dir->file('app.psgi')->spew( $class->_app_psgi_content );
+  print "done.\n\n";
   
 }
 
+
+sub _app_psgi_content {
+  my $self = shift;
+  
+  return "# created by 'rabl.pl create'\n\nuse Rapi::Blog $Rapi::Blog::VERSION;\n\n" . 
+  
+  <<'--END--',
+use Path::Class qw/file dir/;
+my $dir = file($0)->parent->stringify;
+
+my $app = Rapi::Blog->new({
+  site_path     => $dir,
+  scaffold_path => "$dir/scaffold" 
+});
+
+# Plack/PSGI app:
+$app->to_app
+--END--
+;
+
+}
 
 
 sub _recursive_copy {
