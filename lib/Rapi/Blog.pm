@@ -25,6 +25,7 @@ our $TITLE = "Rapi::Blog v" . $VERSION;
 has 'site_path',        is => 'ro', required => 1;
 has 'scaffold_path',    is => 'ro', isa => Maybe[Str], default => sub { undef };
 has 'scaffold_config',  is => 'ro', isa => HashRef, default => sub {{}};
+has 'fallback_builtin_scaffold', is => 'ro', isa => Bool, default => sub {0};
 
 has '+base_appname', default => sub { 'Rapi::Blog::App' };
 has '+debug',        default => sub {1};
@@ -81,8 +82,23 @@ has 'scaffold_dir', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $path = $self->scaffold_path || $self->site_dir->subdir('scaffold');
   
   my $Dir = dir( $path );
-  -d $Dir or die "Scaffold directory '$Dir' not found.\n";
-  
+  if(!-d $Dir) {
+    if($self->fallback_builtin_scaffold) {
+      my $scaffold_name = 'bootstrap-blog';
+      warn join('', 
+        "\n ** WARNING: local scaffold directory not found;\n  --> using builtin ",
+        "scaffold '$scaffold_name' (fallback_builtin_scaffold is set to true)\n\n"
+      );
+      $Dir = dir( $self->share_dir )->subdir('scaffolds')->subdir($scaffold_name);
+      -d $Dir or die join('',
+        " Fatal error: fallback scaffold not found (this could indicate a ",
+        "problem with your Rapi::Blog installation)\n\n"
+      );
+    }
+    else {
+      die "Scaffold directory '$Dir' not found.\n";
+    }
+  }
   return $Dir
 }, isa => InstanceOf['Path::Class::Dir'];
 
@@ -276,6 +292,13 @@ Path to the directory containing the "scaffold" of the site. This is like a docu
 some extra functionality.
 
 If not supplied, defaults to C<'scaffold/'> within the C<site_path> directory.
+
+=head2 fallback_builtin_scaffold
+
+If set to true and the local scaffold directory doesn't exist, one of the builtin skeleton scaffolds
+will be used instead. Useful for testing and content-only scenarios.
+
+Defaults to false.
 
 =head1 METHODS
 
