@@ -85,6 +85,7 @@ sub list_posts {
     $Rs = $Rs->search_rs({ -or => [
       { 'post_tags.tag_name' => lc($as_tag) },
       { 'me.name'    => { like => join('','%',$P->{search},'%') } },
+      { 'me.title'   => { like => join('','%',$P->{search},'%') } },
       { 'me.summary' => { like => join('','%',$P->{search},'%') } },
       { 'me.body'    => { like => join('','%',$P->{search},'%') } }
     ]});
