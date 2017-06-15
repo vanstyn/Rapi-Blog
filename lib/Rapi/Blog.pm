@@ -31,7 +31,11 @@ has '+debug',        default => sub {1};
 
 has 'share_dir', is => 'ro', isa => Str, lazy => 1, default => sub {
   my $self = shift;
+  $self->_get_share_dir;
+};
 
+sub _get_share_dir {
+  my $self = shift || __PACKAGE__;
   $ENV{RAPI_BLOG_SHARE_DIR} || (
     try{dist_dir('Rapi-Blog')} || (
       -d "$FindBin::Bin/share" ? "$FindBin::Bin/share"       : 
@@ -39,7 +43,7 @@ has 'share_dir', is => 'ro', isa => Str, lazy => 1, default => sub {
       join('',$self->_module_locate_dir,'/../../share')
     )
   )
-};
+}
 
 sub _module_locate_dir {
   my $self = shift;
