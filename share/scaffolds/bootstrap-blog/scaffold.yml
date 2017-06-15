@@ -13,7 +13,7 @@ view_wrappers:
   - { path: post/, type: include, wrapper: private/post.html }
 
 ##
-## extra params (used by the scaffold, not Rapi::Blog itself)
+## extra params (used by *this* scaffold, but not Rapi::Blog itself)
 ##
 
 # Remove any of the following params to prevent them from displaying at all:
@@ -21,6 +21,9 @@ title          : My Blog
 subtitle       : Rapi::Blog using 'bootstrap-blog' default scaffold
 sidebar_blurb  : private/sidebar_blurb.html
 sidebar_bottom : private/sidebar_bottom.html
+
+# whether or not to show a public "New Post" link
+new_post_link  : 1
 
 # The pages are used to build the navigation header
 pages : 
