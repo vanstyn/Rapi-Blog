@@ -129,6 +129,21 @@ C<'Post'> template variable will also be available. This will be a reference to 
 (see L<Rapi::Blog::DB::Result::Post>). For non-post requests (i.e. requests to ordinary templates within
 the scaffold) this value will be undef.
 
+=head1 PRIVILEGED TEMPLATE DIRECTIVES
+
+Both scaffold templates as well as post templates are able to access the above template 
+directives/attributes, however, additional privileged directives are available to scaffold templates
+only (excludes view_wrappers which are processed in the role of a post)
+
+=head2 c
+
+A reference to the Catalyst context object for the current request. This provides an entrypoint to 
+the entire application which can be used to perform actions based on the query string params 
+(e.g. C<[% c.req.params.foo %]>, direct access to the database 
+(e.g. C<[% c.model('DB::Post').search_rs(...) %]>) or anything else which can be reached via the context.
+
+
+
 =head1 SEE ALSO
 
 =over
