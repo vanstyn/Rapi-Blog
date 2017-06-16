@@ -732,5 +732,29 @@ display: table;
 	background: #f0f3f5;
 }
 
+.topmost-row .title-td {
+  position:relative;
+  min-width: 300px;
+}
 
+.topmost-row table tr td .title-label {
+  position:absolute;
+  top:-4px;
+  left:1px;
+  font-size:.9em;
+  color:grey;
+}
+
+.topmost-row table tr td .title-value {
+  position:absolute;
+  top:12px;
+  left:10px;
+  right:0px;
+  bottom:0px;
+  word-wrap: break-word;
+  white-space: normal;
+  line-height: .95em;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
 
