@@ -35,13 +35,12 @@ around 'template_external_tpl' => sub {
 };
 
 
-# Only scaffold templates are considered 'admin' templates (i.e. with access to privileged
-# attributes such as the catalyst context object). This could be expanded later on to allow
-# only certain posts to be able to access these attributes.
+# Deny post templates access to to privileged attributes such as the catalyst context object). 
+# This could be expanded later on to allow only certain posts to be able to access these attributes.
 around 'template_admin_tpl' => sub {
   my ($orig,$self,@args) = @_;
   my $template = join('/',@args);
-  $self->_resolve_scaffold_file($template) ? 1 : 0;
+  $self->local_name($template) ? 0 : $self->$orig(@args)
 };
 
 
