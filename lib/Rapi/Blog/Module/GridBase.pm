@@ -72,7 +72,18 @@ around 'get_add_edit_form_items' => sub {
       items => \@sets
     };
     
-    @items = ($wrap,@items);
+    my $disp = {
+      xtype => 'label',
+      html => join('',
+        '<div class="rabl-add-form-body-label">',
+          '<span class="main">Post body:</span>',
+          '<span class="hashtag">(enter Tags in Twitter-style <i>#Hashtag</i> format)</span>',
+          '<span class="format">Markdown/HTML</span>',
+        '</div>'
+      )
+    };
+    
+    @items = ($wrap,$disp,@items);
   
     my $eF = $items[$#items] || {}; # last element
     if($eF->{xtype} eq 'ra-md-editor') {

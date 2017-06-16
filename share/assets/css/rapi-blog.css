@@ -758,3 +758,43 @@ display: table;
   overflow: hidden;
 }
 
+div.rabl-add-form-body-label {
+  font-size:15px;
+  font-weight:bold;
+  color:#777777;
+  position:relative;
+  height:30px;
+
+}
+
+div.rabl-add-form-body-label > * {
+  position:absolute;
+  bottom:3px;
+}
+
+div.rabl-add-form-body-label .main {
+  left:3px;
+  font-size:18px;
+  color:#333333;
+  opacity:0.8;
+}
+
+div.rabl-add-form-body-label .hashtag {
+  font-size:12px;
+  left:130px;
+  opacity:0.6;
+  bottom:5px;
+}
+
+
+div.rabl-add-form-body-label .format {
+  display: block;
+  right:25px;
+  opacity: 0.3;
+  bottom:0px;
+
+
+  
+
+}
+
