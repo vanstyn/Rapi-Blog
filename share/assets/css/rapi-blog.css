@@ -798,3 +798,11 @@ div.rabl-add-form-body-label .format {
 
 }
 
+.rapi-blog-postview .row-table .toggle-controls .delete-post {
+  margin-right:5px;
+}
+
+/* disable our custom edit control during record edit */
+.editing-record .rapi-blog-postview .row-table .toggle-controls .delete-post {
+  display: none;
+}
