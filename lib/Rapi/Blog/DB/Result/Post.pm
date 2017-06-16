@@ -172,6 +172,11 @@ sub open_url_path {
 sub insert {
   my $self = shift;
   my $columns = shift;
+  
+  if(my $User = Rapi::Blog::Util->get_User) {
+    die usererr "Insert Post: PERMISSION DENIED" if ($User->id && !$User->can_post);
+  }
+  
   $self->set_inflated_columns($columns) if $columns;
   
   $self->_set_column_defaults('insert');
