@@ -156,7 +156,7 @@ sub templateData {
   $self->_cache_slots->{$template}{templateData} //= do {
     my $data = {};
     if(my $name = $self->local_name($template)) {
-      $data->{Row} = $self->Model->resultset('Post')
+      $data->{Row} = $data->{Post} = $self->Model->resultset('Post')
         ->permission_filtered
         ->search_rs({ 'me.name' => $name })
         ->first; 

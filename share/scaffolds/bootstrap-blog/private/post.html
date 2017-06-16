@@ -1,23 +1,23 @@
 [%- USE date(format = '%a, %d-%b-%Y') -%]
 [%- WRAPPER site_wrapper.html 
-  title = Row.title
+  title = Post.title
 -%]
-[%- Row.record_hit -%]
+[%- Post.record_hit -%]
 
   <div class="blog-post">
   
       <h2 class="blog-post-title">
-        [% Row.title %]
+        [% Post.title %]
         
       </h2>
       <p class="blog-post-meta">
         <i style="padding-left:3px;"> 
-          [% date.format(Row.ts) %] <span style="font-size:.8em;">by 
-          <a href="/list?username=[% Row.author.username %]">[% Row.author.full_name %]</a></span>
+          [% date.format(Post.ts) %] <span style="font-size:.8em;">by 
+          <a href="/list?username=[% Post.author.username %]">[% Post.author.full_name %]</a></span>
         </i>
         
         [% IF scaffold.edit_post_link %]
-          <a class="public-edit-post-link" href="[% Row.open_url_path %]">
+          <a class="public-edit-post-link" href="[% Post.open_url_path %]">
             <i class="fa fa-pencil-square-o"></i>&nbsp;edit post
           </a>
         [% END %]

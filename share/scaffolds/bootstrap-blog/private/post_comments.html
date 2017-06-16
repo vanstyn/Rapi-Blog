@@ -3,9 +3,9 @@
 
 <hr>
 
-<h4>Comments ([% Row.scalar.comments.count %])</h4>
+<h4>Comments ([% Post.scalar.comments.count %])</h4>
 
-[% FOREACH child IN Row.scalar.direct_comments.all %]
+[% FOREACH child IN Post.scalar.direct_comments.all %]
   [% INCLUDE private/comment.html comment = child %]
 [% END %]
 
@@ -17,7 +17,7 @@
 
 <h3>Add comment:</h3>
 <form action="[% remote_action_path %]/comment/add" method="post">
-  <input name="post_id" type="hidden" value="[% Row.id %]" />
+  <input name="post_id" type="hidden" value="[% Post.id %]" />
   <textarea name="body" style="width:100%;height: 150px;"></textarea>
 
   <button class="btn btn-primary" type="submit">Comment</button>

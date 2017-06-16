@@ -122,6 +122,13 @@ provides additional API end-points that can be used to post comments, etc.
 URL path to directly load the "New Post" form. Useful if the scaffold wants to provide its own 
 "New Post" links(s).
 
+=head2 Post
+
+When the target template of the request is a Post, including requests dispatched via a C<view_wrapper>,
+C<'Post'> template variable will also be available. This will be a reference to the associated Post Row object
+(see L<Rapi::Blog::DB::Result::Post>). For non-post requests (i.e. requests to ordinary templates within
+the scaffold) this value will be undef.
+
 =head1 SEE ALSO
 
 =over
