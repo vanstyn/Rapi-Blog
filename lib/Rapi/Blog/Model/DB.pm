@@ -111,14 +111,14 @@ __PACKAGE__->config(
         multiIconCls   => 'icon-tags-blue',
         columns        => {
           name => {
-            header => 'name',
-            width  => 120,
+            header => 'Tag Name',
+            width  => 180,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           post_tags => {
-            header => 'post_tags',
-            width  => 160,
+            header => 'Tag/Post Links',
+            width  => 170,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -133,61 +133,80 @@ __PACKAGE__->config(
         columns        => {
           id => {
             allow_add => 0,
-            header    => 'id',
-            width     => 80,
+            header    => 'Id',
+            width     => 55,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           name => {
-            header => 'name',
+            header => 'Name',
             extra_properties => {
               editor => {
                 vtype => 'rablPostName',
               }
             },
-
-            #width => 100,
+            width => 170,
+            documentation => 'Unique post name, used in the URL -- can only contain lowercase/digit characters',
+            hidden => 1
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           title => {
-            header => 'title',
-            width  => 160,
+            header => 'Title',
+            width  => 220,
+            documentation => 'Human-frendly post title. If not set, defaults to the same value as Name'
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           image => {
-            header => 'image',
+            header => 'Image',
+            hidden => 1,
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             profiles => ['cas_img'],
+            documentation => 'Post-specific image. It is up to the scaffold to decide how (or if) to use it.'
           },
           create_ts => {
-            header     => 'create_ts',
+            header     => 'Created',
             allow_add  => \0,
             allow_edit => \0,
+            documentation => 'Timestamp of when the post was created (inserted)',
+            hidden => 1
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           update_ts => {
-            header     => 'update_ts',
+            header     => 'Updated',
             allow_add  => \0,
             allow_edit => \0,
+            documentation => 'Timestamp updated automatically every time the post is modified',
+            hidden => 1
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           published => {
-            header => 'published',
-            #width => 100,
+            header => 'Published?',
+            width => 75,
+            documentation => join('',
+              'True/false value which determines if a post should be made publically available. ',
+              'If false, external users will receive a 404 when trying to access the URL and the post ',
+              'will not show up in any list_posts() calls. However, admins and the author will still ',
+              'be able to access the post via its public URL.'
+            ),
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           publish_ts => {
-            header     => 'publish_ts',
+            header     => 'Published at',
             allow_add  => \0,
             allow_edit => \0,
+            documentation => join('',
+              'Timestamp updated automatically every time the published flag changes from 0 to 1 ',
+              'and is cleared when it changes from 1 back to 0.'
+            ),
+            hidden => 1
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -198,18 +217,27 @@ __PACKAGE__->config(
             width  => 400,
             #renderer => 'RA.ux.App.someJsFunc',
             profiles => ['markdown'],
+            documentation => 'The main content body of the post stored in Markdown/HTML format'
           },
           post_tags => {
-            header => 'post_tags',
-            width  => 120,
+            header => 'Post/Tag Links',
+            width  => 170,
+            documentaton => join('',
+              'Multi-rel which links this post to 0 or more Tags. These links are automatically created ',
+              'and destroyed according to #hashtag values found (or not found) in the body text on create/update.'
+            )
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           ts => {
-            header => 'ts',
+            header => 'Date/Time',
             # extra_properties get merged instead of replaced, so we don't clobber the rest of
             # the 'editor' properties
+            documentation => join('',
+              'The official date/time of the post. Defaults (i.e. pre-populates) to the current time ',
+              'in the add post form, however, the author is allowed to set a manual value by default'
+            ),
             extra_properties => {
               editor => {
                 value => sub { Rapi::Blog::Util->now_ts }
@@ -238,8 +266,14 @@ __PACKAGE__->config(
             profiles => ['hidden'],
           },
           author => {
-            header => 'author',
-            #width => 100,
+            header => 'Author',
+            width => 100,
+            documentation => join('',
+              'The user listed as the author of the post. The author has special permissions to modify ',
+              'and/or delete the post. Admin users are able to select any user as the author, but normal ',
+              'users have no control over the setting other than to create new posts (which they will ',
+              'automatically be set as the author)'
+            ),
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
             editor => {
@@ -249,58 +283,83 @@ __PACKAGE__->config(
             }
           },
           creator => {
-            header    => 'creator',
+            header    => 'Creator',
             allow_add => \0,
+            allow_edit => \0,
+            documentation => join('',
+              'The user which created the post. This will be the same as the author unless an admin ',
+              'manually selects a different author.'
+            ),
+            hidden => 1
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           updater => {
-            header    => 'updater',
+            header    => 'Updater',
             allow_add => \0,
+            allow_edit => \0,
+            documentation => 'The last user to modify the post.',
+            hidden => 1
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           size => {
-            header     => 'size',
+            header     => 'Size of body',
             allow_add  => \0,
             allow_edit => \0,
-            #width => 100,
+            width => 80,
             #renderer => 'RA.ux.App.someJsFunc',
             profiles => ['filesize'],
+            documentation => 'Size (in bytes) of the body content.'
           },
           comments => {
-            header => 'comments',
-            #width => 100,
+            header => 'Comments',
+            width => 140,
+            documentation => 'Comments on this post, including comments on comments.',
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           direct_comments => {
-            header => 'direct_comments',
-            #width => 100,
+            header => 'Direct Comments',
+            width => 140,
+            documentation => 'Comments on this post, limited to comments on the post itself (i.e. not subcomments)',
+            hidden => 1
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           custom_summary => {
-            header => 'custom_summary',
-            width  => 160,
+            header => 'Custom Summary (optional)',
+            width  => 200,
+            documentation => join('',
+              'Summary text can be supplied here to be able to control the summary. If this field is ',
+              'left blank, the summary will be autogenerated using a built-in algorithm'
+            ),
+            hidden => 1
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           summary => {
-            header     => 'summary',
+            header     => 'Post Summary',
             width      => 160,
             allow_add  => 0,
-            allow_edit => 0
+            allow_edit => 0,
+            hidden => 1,
+            documentation => 'Summary blurb on the post. Either uses Custom Summary or an auto-generated value',
               #renderer => 'RA.ux.App.someJsFunc',
               #profiles => [],
           },
           hits => {
-            header => 'hits',
-            #width => 100,
+            header => 'Recorded Hits',
+            width => 90,
+            documentation => join('',
+              'Multi-rel to "Hits" table which records web requests to each post. Currently ',
+              'relies on the scaffold view_wrapper to call [% Post.record_hit %]'
+            ),
+            hidden => 1
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -316,7 +375,7 @@ __PACKAGE__->config(
         columns        => {
           id => {
             allow_add => 0,
-            header    => 'id',
+            header    => 'Id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -328,13 +387,13 @@ __PACKAGE__->config(
             profiles => ['hidden'],
           },
           tag_name => {
-            header => 'tag_name',
+            header => 'Tag Name',
             width  => 120,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           post => {
-            header => 'post',
+            header => 'Post',
             width  => 200,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -350,40 +409,40 @@ __PACKAGE__->config(
         columns        => {
           id => {
             allow_add => 0,
-            header    => 'id',
-            #width => 100,
+            header    => 'Id',
+            width => 65,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           username => {
             header => 'username',
-            #width => 100,
+            width => 120,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           full_name => {
-            header => 'full_name',
-            #width => 100,
+            header => 'Full Name',
+            width => 160,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           post_authors => {
-            header => 'post_authors',
-            #width => 100,
+            header => 'Author of',
+            width => 120,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           post_creators => {
-            header => 'post_creators',
-            #width => 100,
+            header => 'Creator of',
+            width => 120,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           post_updaters => {
-            header => 'post_updaters',
-            #width => 100,
+            header => 'Last Updater of',
+            width => 120,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -413,8 +472,8 @@ __PACKAGE__->config(
             renderer => 'Ext.ux.RapidApp.renderSetPwValue'
           },
           comments => {
-            header => 'comments',
-            #width => 100,
+            header => 'Comments',
+            width => 130,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -430,8 +489,8 @@ __PACKAGE__->config(
         columns        => {
           id => {
             allow_add => 0,
-            header    => 'id',
-            #width => 100,
+            header    => 'Id',
+            width => 80,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -448,8 +507,8 @@ __PACKAGE__->config(
             profiles => ['hidden'],
           },
           ts => {
-            header => 'ts',
-            #width => 100,
+            header => 'Timestamp',
+            width => 120,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
             extra_properties => {
@@ -459,27 +518,27 @@ __PACKAGE__->config(
             }
           },
           body => {
-            header => 'body',
-            #width => 100,
+            header => 'Comment body',
+            width => 180,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           comments => {
-            header => 'comments',
-            #width => 100,
+            header => 'Sub-comments',
+            width => 130,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           post => {
-            header => 'post',
-            #width => 100,
+            header => 'Post',
+            width => 180,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           user => {
-            header => 'user',
-            #width => 100,
+            header => 'Commenter',
+            width => 120,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
             editor => {
@@ -495,8 +554,8 @@ __PACKAGE__->config(
             profiles => ['hidden'],
           },
           parent => {
-            header => 'parent',
-            #width => 100,
+            header => 'Replies to',
+            width => 120,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -511,7 +570,7 @@ __PACKAGE__->config(
         columns        => {
           id => {
             allow_add => 0,
-            header    => 'id',
+            header    => 'Id',
             width => 60,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -523,51 +582,51 @@ __PACKAGE__->config(
             profiles => ['hidden'],
           },
           ts => {
-            header => 'ts',
-            #width => 100,
+            header => 'Request Timestamp',
+            width => 130,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           client_ip => {
-            header => 'client_ip',
-            #width => 100,
+            header => 'IP Addr',
+            width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           client_hostname => {
-            header => 'client_hostname',
-            hidden => 1
-            #width => 100,
+            header => 'Hostname (if resolved)',
+            hidden => 1,
+            width => 160,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           uri => {
-            header => 'uri',
+            header => 'URI Accessed',
             width => 250,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           method => {
-            header => 'method',
-            width => 60,
+            header => 'HTTP Method',
+            width => 90,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           user_agent => {
-            header => 'user_agent',
-            width => 150,
+            header => 'User Agent String',
+            width => 250,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           referer => {
-            header => 'referer',
+            header => 'Referer URL',
             width => 250,
             hidden => 1
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           serialized_request => {
-            header => 'serialized_request',
+            header => 'Serialized Request',
             width => 200,
             hidden => 1,
             allow_add => 0, allow_edit => 0,
@@ -575,7 +634,7 @@ __PACKAGE__->config(
             #profiles => [],
           },
           post => {
-            header => 'post',
+            header => 'Accessed Post',
             width => 180,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
