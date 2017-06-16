@@ -5,7 +5,15 @@ Rapi::Blog::Manual::Scaffolds - Public-facing content for Rapi::Blog
 =head1 DESCRIPTION
 
 L<Rapi::Blog> serves public facing content from a local "scaffold" which is a simple directory
-of HTML and associated content.
+of HTML and associated content, mounted at the root (C</>) of the app. The other, backend namespaces 
+for the various controllers/modules are merged into the common root-based namespace. This design allows
+for the scaffolds to be structured as an ordinary HTML site following the same conventions as a static
+site living in a folder on your PC. The only difference between a Rapi::Blog scaffold and a static HTML
+directory is that files within the scaffold are able to *optionally* call template directives for
+dynamic content via simple variable substition. 
+
+Scaffolds may also define an additional config which declares details about how it can be used by 
+the backend. See below.
 
 =head1 SCAFFOLD CONFIG
 
@@ -17,14 +25,15 @@ The B<scaffold.yml> supports the following options:
 =head2 static_paths
 
 List of path prefixes which are considered 'static' meaning no template processing will happen on
-those paths. You want to list asset/image dirs like 'css/', 'fonts/' etc in this param.
+those paths. You want to list asset/image dirs like 'css/', 'fonts/' etc in this param, which
+helps performance for paths which the system doens't need to parse for template directives.
 
 =head2 private_paths
 
 List of path prefixes which will not be served publically, but will still be available internally
 to include, use as a wrapper, etc. Note that this option isn't really about security but about cleaning
-the namespace of paths which are known not to be able to render as stand-alone pages (like snippets,
-block directives, etc etc)
+the public namespace of paths which are known not to be able to render as stand-alone pages in that
+context (like snippets, block directives, etc etc)
 
 =head2 landing_page
 
@@ -66,17 +75,17 @@ in C<[% content %]>. The given Post row object will also be availble as C<[% Pos
 =head3 type
 
 Must be either C<'insert'> or C<'include'> to control which TT directive is used internally to
-load the Post into the C<[% content %]> in the wrapper. With C<'include'> (default) the content,
-include template directives is processed in advance while with C<'insert'> the content is inserted 
-as-is, leavig any directives to be processed in the scope of the wrapper. You shouldn't need to use
-C<'insert'> unless you really know what you are doing.
-
+load the Post into the C<[% content %]> in the wrapper. With C<'include'> (default) the content of 
+the template, along with its template directives, is processed in advance and then populated into
+the C<[% content %]> variable, while with C<'insert'> the content is inserted as-is, leaving any 
+directives to be processed in the scope of the wrapper. You shouldn't need to use C<'insert'> 
+unless you have a specific reason and know what you are doing.
 
 =head2 default_view_path
 
 The default C<'view_wrapper'>, identified by its configured C<path>, to use for accessing posts. This
 is used in locations where the system genertes URLs when it needs to publically link to a post. Defaults
-to the first C<'include'> view_wrapper.
+to the first C<'include'> type view_wrapper.
 
 =head2 preview_path
 
