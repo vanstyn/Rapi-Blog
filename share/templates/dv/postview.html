@@ -60,14 +60,15 @@
       </td>
       
       <td >
-        <div class="toggle-controls">
+        [% IF Row.can_delete %]
+          <div class="toggle-controls">
             <div style="float: right; padding-top:5px;">
             <div style="display:none;">[% r.delete_record %]</div>
             <a class="delete-post" onclick="rablDeletePost(this)">Delete Post</a>
           </div>
-          
-          <div style="float:right;">[% r.toggle.edit %]</div>
+        [% END %] 
         
+        <div style="float:right;">[% r.toggle.edit %]</div>
         
       </td>
     </tr></table>

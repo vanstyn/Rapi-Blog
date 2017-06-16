@@ -30,17 +30,20 @@ sub apply_permissions {
   # System 'administrator' role trumps everything:
   return if ($c->check_user_roles('administrator'));
 
-  my $uid = Rapi::Blog::Util->get_uid or return;
-  my $reqRow = $self->req_Row or return;
+  my $Post = $self->req_Row or return;
   
-  if ($uid == $reqRow->author_id) {
-    # users cannot change the author to someone else:
-    $self->apply_columns({ author => { allow_edit => 0 } });
+  my @excl = ('create');
+  
+  if($Post->can_modify) {
+    $Post->can_change_author or $self->apply_columns({ author => { allow_edit => 0 } });
   }
   else {
-    # If the user is not the author they can make no changes:
-    $self->apply_extconfig( store_exclude_api => [qw(create update destroy)] );
+    push @excl, 'update';
   }
+  
+  $Post->can_delete or push @excl, 'destroy';
+  
+  $self->apply_extconfig( store_exclude_api => \@excl );
 }
 
 

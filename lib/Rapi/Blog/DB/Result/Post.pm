@@ -315,7 +315,23 @@ sub record_hit {
   return "";
 }
 
+sub can_delete {
+  my $self = shift;
+  my $User = Rapi::Blog::Util->get_User or return 0;
+  $User->admin or ($User->author && $self->author_id == $User->id)
+}
 
+sub can_modify {
+  my $self = shift;
+  my $User = Rapi::Blog::Util->get_User or return 0;
+  $User->admin or ($User->author && $self->author_id == $User->id)
+}
+
+sub can_change_author {
+  my $self = shift;
+  my $User = Rapi::Blog::Util->get_User or return 0;
+  $User->admin
+}
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
