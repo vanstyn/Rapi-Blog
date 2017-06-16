@@ -187,8 +187,8 @@ __PACKAGE__->config(
             #profiles => [],
           },
           published => {
-            header => 'Published?',
-            width => 75,
+            header => '<i style="font-size:1.3em;" class="fa fa-eye" title="Published?"></i>',
+            width => 45,
             documentation => join('',
               'True/false value which determines if a post should be made publically available. ',
               'If false, external users will receive a 404 when trying to access the URL and the post ',
