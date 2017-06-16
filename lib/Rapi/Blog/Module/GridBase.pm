@@ -51,9 +51,9 @@ around 'get_add_edit_form_items' => sub {
     
       $self->_collect_to_fieldset(
         \@items, [qw/name title author ts published/], {
-          width => 400,
+          width => 410,
           title => 'Attributes',
-          labelWidth => 60
+          labelWidth => 70
       }),
 
       $self->_collect_to_fieldset(
@@ -64,7 +64,7 @@ around 'get_add_edit_form_items' => sub {
       
       $self->_collect_to_fieldset(
         \@items, [qw/custom_summary/], {
-          width => 400,
+          width => 350,
           title => join('',
             'Custom Summary ',
             '<span style="font-size:.9em;">',
@@ -79,6 +79,7 @@ around 'get_add_edit_form_items' => sub {
       anchor => '100%',
       hideBorders => \1,
       collapsible => \1,
+      style => 'padding-bottom:0px;padding-top:5px;',
       items => \@sets
     };
     
