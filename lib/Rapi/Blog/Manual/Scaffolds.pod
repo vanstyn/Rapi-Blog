@@ -16,21 +16,88 @@ The B<scaffold.yml> supports the following options:
 
 =head2 static_paths
 
+List of path prefixes which are considered 'static' meaning no template processing will happen on
+those paths. You want to list asset/image dirs like 'css/', 'fonts/' etc in this param.
+
 =head2 private_paths
+
+List of path prefixes which will not be served publically, but will still be available internally
+to include, use as a wrapper, etc. Note that this option isn't really about security but about cleaning
+the namespace of paths which are known not to be able to render as stand-alone pages (like snippets,
+block directives, etc etc)
 
 =head2 landing_page
 
+Path/template to render when a user lands on the home page at C<'/'> (or the URL the app is mounted on)
+
 =head2 not_found
+
+Path/template to render when a requested path is not found (404). This provides a mechanism to have
+branded 404 pages. If not specified, a default/plain 404 page is used.
 
 =head2 favicon
 
+Path to the favicon to use for the site.
+
 =head2 view_wrappers
+
+The C<view_wrappers> are what expose Posts in the database to public URLs. The view_wrappers are 
+supplied as a list of HashRefs defining the config of an individual view_wrapper. For example:
+
+  view_wrappers:
+    - { path: post/,  type: include, wrapper: private/post.html  }
+
+For typical setups, only one view_wrapper is needed, but you can setup as many as you choose.
+
+Each C<'view_wrapper'> config requires the following three params:
+
+=head3 path
+
+The path prefix to be exposed. The Post name is appended to this path to produce a valid URL for the
+given Post. Using the above example, a Post named C<'my-cool-post'> would be accessible at the public
+URL C<'/post/my-cool-post'>.
+
+=head3 wrapper
+
+The scaffold template to use when rendering the Post. This should be a TT template which has been 
+setup as a L<WRAPPER|https://metacpan.org/pod/Template#WRAPPER> with a the Post body content loaded
+in C<[% content %]>. The given Post row object will also be availble as C<[% Post %]>.
+
+=head3 type
+
+Must be either C<'insert'> or C<'include'> to control which TT directive is used internally to
+load the Post into the C<[% content %]> in the wrapper. With C<'include'> (default) the content,
+include template directives is processed in advance while with C<'insert'> the content is inserted 
+as-is, leavig any directives to be processed in the scope of the wrapper. You shouldn't need to use
+C<'insert'> unless you really know what you are doing.
+
 
 =head2 default_view_path
 
+The default C<'view_wrapper'>, identified by its configured C<path>, to use for accessing posts. This
+is used in locations where the system genertes URLs when it needs to publically link to a post. Defaults
+to the first C<'include'> view_wrapper.
+
+=head2 preview_path
+
+Optional alternative path to use instead of C<default_view_path> for the purpose of rendering a "preview"
+of the post as it will display on the site. This preview is presented in an iframe on the "Publish Preview"
+tab on the internal Post row page. This is useful in case you want to use a different wrapper that excludes
+items like top navigation, sidebars, etc, and display just the post itself with the active styles on the 
+site. It is totally optional, and for some cases you may prefer using the same exact view as the public
+site to be able to really see exactly how the post will look. This would be one of the common a cases 
+for a second C<'view_wrapper'> to be defined.
+
 =head2 internal_post_path
 
+The one, "real" URL path used to access Posts *internally*. This is used by the view_wrappers internally
+to resolve the Post from the supplied URL. Defaults to C<'private/post/'> which shouldn't normally need
+to be changed. It is suggested that it be within a private (i.e. covered by C<'private_paths'>) namespace.
+
 =head2 default_ext
+
+Default file extention for scaffold templates, defaults to C<html>. This makes it so that the template
+C<'/path/to/doc.html'> can alternatively be accessed at C<'/path/to/doc'> for cleaner/nicer looking URLs
 
 
 =back
