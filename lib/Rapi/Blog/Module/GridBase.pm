@@ -30,6 +30,16 @@ sub BUILD {
 
 has '+use_edit_form', default => 0;
 
+around 'get_add_form' => sub {
+  my ($orig, $self, @args) = @_;
+  
+  return {
+    %{$self->$orig(@args)},
+    autoScroll => \0,
+    bodyStyle => 'padding: 0px;',
+  }
+};
+
 around 'get_add_edit_form_items' => sub {
   my ($orig, $self, @args) = @_;
   
@@ -66,7 +76,7 @@ around 'get_add_edit_form_items' => sub {
     my $wrap = {
       xtype => 'fieldset',
       layout => 'hbox',
-      anchor => '-20',
+      anchor => '100%',
       hideBorders => \1,
       collapsible => \1,
       items => \@sets
@@ -84,12 +94,13 @@ around 'get_add_edit_form_items' => sub {
     };
     
     @items = ($wrap,$disp,@items);
-  
+    
     my $eF = $items[$#items] || {}; # last element
     if($eF->{xtype} eq 'ra-md-editor') {
       $eF->{_noAutoHeight} = 1;
       $eF->{plugins} = 'ra-parent-gluebottom';
       $eF->{hideLabel} = \1;
+      $eF->{anchor} = '100%';
     }
   }
 
