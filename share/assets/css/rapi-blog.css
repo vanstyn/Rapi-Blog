@@ -241,6 +241,7 @@
 .rapi-blog-postview div.post-body-wrap .inner .attr-content {
   height:100%;
   border-bottom:0px;
+  padding: 0px;
 
 }
 
@@ -538,12 +539,12 @@ top:2px;
 }
 
 .rapi-blog-postview .attr-content .image-column {
-	width: 225px;
+	width: 200px;
 
 }
 
 .rapi-blog-postview .attr-content .summary-info {
-	width: 325px;
+	width: 300px;
 
 }
 
@@ -645,13 +646,13 @@ display: table;
 
 
 .rapi-blog-postview .attr-content .tile.props {
-	width: 600px;
+	width: 540px;
 	height: 500px;
 
 }
 
 .rapi-blog-postview .attr-content .tile.props.right {
-	width: 350px;
+	width: 325px;
 	height: auto;
 
 }
