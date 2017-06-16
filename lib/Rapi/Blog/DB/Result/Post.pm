@@ -189,6 +189,8 @@ sub update {
   $self->set_inflated_columns($columns) if $columns;
   
   my $uid = Rapi::Blog::Util->get_uid;
+  die usererr "Update Post: PERMISSION DENIED" if ($uid && !$self->can_modify);
+  
   $self->updater_id( $uid );
   
   $self->_set_column_defaults('update');
@@ -196,6 +198,15 @@ sub update {
   $self->_update_tags if ($self->is_column_changed('body'));
   
   $self->next::method;
+}
+
+sub delete {
+  my $self = shift;
+  
+  my $uid = Rapi::Blog::Util->get_uid;
+  die usererr "Delete Post: PERMISSION DENIED" if ($uid && !$self->can_delete);
+
+  $self->next::method(@_)
 }
 
 sub image_url {
