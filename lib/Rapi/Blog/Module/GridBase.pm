@@ -87,9 +87,9 @@ around 'get_add_edit_form_items' => sub {
       xtype => 'label',
       html => join('',
         '<div class="rabl-add-form-body-label">',
-          '<span class="main">Post body:</span>',
+          '<span class="main"><i class="fa fa-pencil-square-o"></i>&nbsp;Post body:</span>',
           '<span class="hashtag">(enter Tags in Twitter-style <i>#Hashtag</i> format)</span>',
-          '<span class="format">Markdown/HTML</span>',
+          '<span class="format"><i class="fa fa-keyboard-o"></i>&nbsp;Markdown/HTML</span>',
         '</div>'
       )
     };
