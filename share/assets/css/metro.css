@@ -196,4 +196,7 @@
 }
 
 
+.metro a.tile {
+  text-decoration: none !important;
+}
 
