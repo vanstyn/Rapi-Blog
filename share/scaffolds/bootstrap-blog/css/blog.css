@@ -186,4 +186,15 @@ h6, .h6 {
 }
 
 
+a.public-edit-post-link {
+  font-size:14px;
+  opacity: 0.3;
+  display: inline-block;
+  vertical-align:middle;
+  margin-bottom:3px;
+  padding-left:10px;
+}
 
+a.public-edit-post-link:hover {
+  opacity: 1.0;
+}

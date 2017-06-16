@@ -25,6 +25,9 @@ sidebar_bottom : private/sidebar_bottom.html
 # whether or not to show a public "New Post" link
 new_post_link  : 1
 
+# whether or not to show a public edit link on post page
+edit_post_link : 1
+
 # The pages are used to build the navigation header
 pages : 
   - { title: Home,    path: /         }

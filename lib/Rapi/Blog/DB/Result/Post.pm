@@ -152,6 +152,13 @@ sub preview_url {
  return join('',$path,$self->name)
 }
 
+sub open_url_path {
+  my $self = shift;
+  my $app = $self->parent_app_class;
+  my $ns = $app->module_root_namespace;
+  join('',$app->mount_url,'/',$ns,'/#!',$self->getRestPath)
+}
+
 
 sub insert {
   my $self = shift;
