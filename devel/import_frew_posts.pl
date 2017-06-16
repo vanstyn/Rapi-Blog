@@ -67,6 +67,15 @@ for my $post (@posts) {
     published => 1,
     ts => join(' ',$post->{date},'12:00:00')
   };
+  
+  my ($preview,$remaining) = split(/\r?\n\<\!\-\-more\-\-\>\r?\n/,$content,2);
+  if ($remaining) {
+    # remove newlines (needed to handle cases of markdown links interrupted by newlines
+    $preview =~ s/\r?\n/ /g;
+    #strip markdown links since we don't support them in summaries
+    $preview =~ s/(!?)\[(.*?)\]\((.*?)\)/$1 ? "" : $2/ge;
+    $packet->{custom_summary} = $preview;
+  }
 
   try {
     $Rs->create($packet) and print "created";
