@@ -57,6 +57,9 @@ for my $post (@posts) {
   
   my $content = $post->{body} or die "no body";
   
+  # translate frew's URL scheme to ours (for links within the body to other posts)
+  $content =~ s/\/posts\/([a-zA-Z0-9\-\_]+)\/?/\/post\/$1\.md/g;
+  
   my $packet = {
     name => $post->{name},
     title => $post->{title},
