@@ -58,7 +58,14 @@ for my $post (@posts) {
   my $content = $post->{body} or die "no body";
   
   # translate frew's URL scheme to ours (for links within the body to other posts)
-  $content =~ s/\/posts\/([a-zA-Z0-9\-\_]+)\/?/\/post\/$1\.md/g;
+  $content =~ s/\/posts\/([a-zA-Z0-9\-\_]+)\/?/\/post\/$1/g;
+  
+  # Append a link back to the original/real post on frew's blog:
+  my $orig_url = join('','https://blog.afoolishmanifesto.com/posts/',$post->{name});
+  $content .= join('',
+    "\n\n<i style='font-size:.8em;'>original post: ",
+    "<a target='_blank' href='$orig_url'>$orig_url</a></i>"
+  );
   
   my $packet = {
     name => $post->{name},
@@ -127,13 +134,7 @@ sub _posts {
           
           $body .= "\n\ntags: " . join(' ', @tags) if(scalar(@tags) > 0);
           
-          if (my $orig = ($meta->{aliases}||[])->[0]) {
-            my $url = join('https://blog.afoolishmanifesto.com',$orig);
-            $body .= join('',
-              "\n\n<i style='font-size:.8em;'>original post: ",
-              "<a target='_blank' href='$url'>$url</a></i>"
-            );
-          }
+          $name =~ s/\.md$//;
           
           push @posts, { name => $name, title => $title, date => $date, body => $body };
         
