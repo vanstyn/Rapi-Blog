@@ -17,7 +17,7 @@
         </i>
         
         [% IF scaffold.edit_post_link %]
-          <a class="public-edit-post-link" href="[% Post.open_url_path %]">
+          <a class="public-edit-post-link" href="[% Post.open_url_path('direct') %]">
             <i class="fa fa-pencil-square-o"></i>&nbsp;edit post
           </a>
         [% END %]

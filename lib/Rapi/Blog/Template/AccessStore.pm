@@ -200,9 +200,18 @@ around 'get_template_vars' => sub {
     # Path to the 'Remote' controller
     remote_action_path => sub { $c ? join('',$c->mount_url,'/remote') : undef },
     
-    add_post_path => sub { 
+    add_post_path => sub {
       my $ns = $c->module_root_namespace;
-      join('',$c->mount_url,'/',$ns,'/#!/',$ns,'/main/db/db_post/add')
+      if(my $mode = shift) {
+        $mode = lc($mode);
+        # Note: 'direct' is not useful un this context since add relies on opening new tab
+        die "add_post_path(): bad argument '$mode' -- must be undef or 'navable'"
+          unless ($mode eq 'navable');
+        return join('',$c->mount_url,'/rapidapp/module/',$mode,'/',$ns,'/main/db/db_post/add')
+      }
+      else {
+        return join('',$c->mount_url,'/',$ns,'/#!/',$ns,'/main/db/db_post/add')
+      }
     }
     
   };

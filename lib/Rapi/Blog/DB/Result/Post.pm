@@ -154,9 +154,18 @@ sub preview_url {
 
 sub open_url_path {
   my $self = shift;
+  my $mode = shift;
   my $app = $self->parent_app_class;
-  my $ns = $app->module_root_namespace;
-  join('',$app->mount_url,'/',$ns,'/#!',$self->getRestPath)
+  if($mode) {
+    $mode = lc($mode);
+    die "open_url_path(): bad argument '$mode' -- must be undef, 'direct' or 'navable'"
+      unless ($mode eq 'direct' or $mode eq 'navable');
+    return join('',$app->mount_url,'/rapidapp/module/',$mode,$self->getRestPath)
+  }
+  else {
+    my $ns = $app->module_root_namespace;
+    return join('',$app->mount_url,'/',$ns,'/#!',$self->getRestPath)
+  }
 }
 
 
