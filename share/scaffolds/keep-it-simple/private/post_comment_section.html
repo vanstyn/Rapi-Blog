@@ -20,7 +20,14 @@
 
            <div class="comment-meta">
               <time class="comment-time" datetime="[% date.format(Comment.ts,format1) %]">[% date.format(Comment.ts,format2) %]</time>
-              <span class="sep">/</span><a class="reply" href="#">Reply</a>
+              
+              [% IF User && User.can_comment %]
+                <span class="sep">/</span><a 
+                  class="reply" style="cursor:pointer;"
+                  onclick="promptSubComment('[% remote_action_path %]/comment/add','[% Comment.id %]')"
+                >Reply</a>
+              [% END %]
+              
            </div>
         </div>
 
