@@ -12,7 +12,7 @@ use Rapi::Blog;
 
 use Path::Class qw(file dir);
 use Scalar::Util 'blessed';
-use Term::ReadPassword;
+use Rapi::Blog::Util::Term::ReadPassword;
 
 sub call {
   my $class = shift;

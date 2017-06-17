@@ -1,3 +1,4 @@
+Rapi-Blog-*
 *.db
 examples/*/cas_store/
 devel/hugo_posts/
