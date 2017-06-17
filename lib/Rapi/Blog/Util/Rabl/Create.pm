@@ -37,13 +37,9 @@ sub call {
   
   die 'app.psgi already exists!' if (-e $Dir->file('app.psgi')); # redundant
   
-  my $share_dir = Rapi::Blog->_get_share_dir or die "Unable to identify ShareDir for Rapi::Blog.\n";
-  
-  my $Scafs = dir($share_dir)->subdir('scaffolds')->resolve;
-  
-  my $ScafDir = $Scafs->subdir($scaffold_name);
-  die "Scaffold '$scaffold_name' not found in ShareDir\n" unless (-d $ScafDir);
-  
+  my $ScafDir = $class->prompt_select_scaffold($scaffold_name) 
+    or die "Unable to locate skeleton scaffold -- unknown error";
+
   my $TargScaf = $Dir->subdir('scaffold');
   
   print "\nInitializing scaffold using the built-in skeleton '$scaffold_name':\n ";
@@ -53,27 +49,50 @@ sub call {
   $Dir->file('app.psgi')->spew( $class->_app_psgi_content );
   print "done.\n\n";
   
-  my $pw = $class->prompt_password;
+  if(my $pw = $class->prompt_password) {
   
-  my $App = Rapi::Blog->new({ site_path => "$Dir", debug => 0 });
-  
-  print "\nInitializing databases, please wait...\n";
-  $App->to_app;
-  
-  print "\n\n";
-  
-  my $AdminUser = $App
-    ->appname
-    ->model('RapidApp::CoreSchema::User')
-    ->search({ 'me.username' => 'admin' })
-    ->first;
+    my $App = Rapi::Blog->new({ site_path => "$Dir", debug => 0 });
     
-  $AdminUser->update({ set_pw => $pw });
+    print "\nInitializing databases, please wait...\n";
+    $App->to_app;
+    
+    print "\n\n";
+    
+    my $AdminUser = $App
+      ->appname
+      ->model('RapidApp::CoreSchema::User')
+      ->search({ 'me.username' => 'admin' })
+      ->first;
+      
+    $AdminUser->update({ set_pw => $pw });
+  }
   
-  print join("\n",
-    ' *** SUCCESS! ***','',
-    "New Rapi::Blog site sucessfully created in '$Dir' ... ",'',
-    "You may now 'plackup' the test server:",'',
+  print join("",
+    ' *** SUCCESS! ***',"\n\n",
+    "New Rapi::Blog site sucessfully created in '$Dir' ... ","\n\n",
+    "If you would like to test and start the site using plackup now, type in 'up' or \n",
+    "a custom TCP port number (e.g. 5005) -- ('up' and '5000' are equivelent)\n",
+    "or anything else to exit.\n",
+    " ==> "
+  );
+  my $port = <STDIN>;
+  chomp($port);
+  $port = '5000' if ($port && $port eq 'up');
+  
+  if ($port && $port =~ /^\d+$/) {
+    print "\n\nStarting the PSGI test server... once it finishes loading, you can access ";
+    print "the public site at http://0:$port/ and the admin section at: http://0:$port/adm\n";
+  
+    my @cmd = ('plackup','-p',$port,"$Dir/app.psgi");
+    print "\n\n exec --> " . join(' ',@cmd) . "\n\n";
+    exec(@cmd);
+    exit; #redundant
+  }
+    
+    
+  print join("\n",'',
+    ' *** FINISHED! ***',"\n",
+    "When you're ready you may 'plackup' the test server:",'',
     "   plackup $Dir/app.psgi",'',
     "Login to the admin section at: http://0:5000/adm (or whatever host/port you deploy to)",'',
     "Next steps: ",'',
@@ -83,16 +102,87 @@ sub call {
 }
 
 
+sub prompt_select_scaffold {
+  my $self = shift;
+  my $default = shift || '';
+  
+  my @scaffolds = $self->discover_scaffolds;
+  my $num = scalar(@scaffolds);
+  
+  print "\n** Choose a skeleton scaffold to use to initialize your new site...\n";
+  print "   There are currently $num built-in scaffolds available:\n\n";
+  
+  my $defN;
+  my $n = 0;
+  for my $Dir (@scaffolds) {
+    $n++;
+    my $name = $Dir->basename;
+    print "    [ $n ]  $name "; 
+    if($name eq $default) {
+      $defN = $n;
+      print '  (**default**)';
+    }
+    print "\n";
+  }
+  
+  print "\nType the number of the scaffold you would like to use\n";   
+  print " (or hit Enter to use the default '$default')\n" if ($default && $defN);
+  
+  my $SelDir;
+  until ($SelDir) {
+    
+    print " ==> ";
+    my $input = <STDIN>;
+    chomp($input);
+    
+    $input = $defN if(!$input && $defN);
+    
+    unless ($input && $input =~ /^\d+$/) {
+      print "    *** invalid selection\n";
+      next;
+    }
+    
+    my $i = $input - 1;
+    
+    $SelDir = $scaffolds[$i];
+    unless ($SelDir) {
+      print "    *** invalid selection\n";
+      next;
+    }
+  }
+
+  return $SelDir
+}
+
+
+sub discover_scaffolds {
+  my $self = shift;
+
+  my $share_dir = Rapi::Blog->_get_share_dir or die "Unable to identify ShareDir for Rapi::Blog.\n";
+  my $Scafs = dir($share_dir)->subdir('scaffolds')->resolve;
+  
+  grep { $_->isa('Path::Class::Dir') } $Scafs->children
+}
+
+
 sub prompt_password {
   my $self = shift;
   
-  my $pw  = read_password("  Enter initial password for the 'admin' user: ",0,1);
-  if(! defined $pw) {
+  print "  Set password for the 'admin' user [or leave blank for RapidApp/AuthCore default]:\n\n";
+  
+  
+  my $pw  = read_password("       (New Password) ==> ",0,1);
+  if(! defined $pw) { # they hit ctrl-c
     print "   aborting.\n";
     exit;
   }
-  return $self->prompt_password unless ($pw);
-  my $pw2 = read_password("                             Confirm password: ",0,1) || '';
+  
+  if ($pw eq '') {
+    print "         *** Using RapidApp/AuthCore default admin password\n\n\n";
+    return undef;
+  }
+  
+  my $pw2 = read_password("   (Confirm Password) ==> ",0,1); 
   if(! defined $pw2) {
     print "   aborting.\n";
     exit;
