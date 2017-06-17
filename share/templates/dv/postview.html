@@ -153,6 +153,7 @@
     
     <div class="inner tab-content preview" style="display:none;">
       <div class="headline">
+        [% IF Post.can_modify %]
         <div class="edit-link-wrapper" style="float:left;">
         <h5>
           <a 
@@ -162,6 +163,7 @@
           >Click to Edit</a>
         </h5>
         </div>
+        [% END %]
         
         <div class="pub-status" style="float:left;">
            <span class="label">Last modified: </span>
