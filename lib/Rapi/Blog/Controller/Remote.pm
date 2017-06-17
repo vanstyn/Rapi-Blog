@@ -68,7 +68,7 @@ sub add_comment {
   
   my $url = join('#',$Post->public_url,$Comment->html_id);
   
-  return $c->res->redirect( $url, 307 );
+  return $c->res->redirect( $url, 303 );
 }
 
 sub changepw :Local :Args(0) {
