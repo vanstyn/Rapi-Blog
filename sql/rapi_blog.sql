@@ -17,11 +17,13 @@ CREATE TABLE [user] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   [username] varchar(32) UNIQUE NOT NULL,
   [full_name] varchar(64) UNIQUE DEFAULT NULL,
+  [image] varchar(255) DEFAULT NULL,
+  [email] varchar(255) DEFAULT NULL,
   [admin] BOOLEAN NOT NULL DEFAULT 0,
   [author] BOOLEAN NOT NULL DEFAULT 0,
   [comment] BOOLEAN NOT NULL DEFAULT 1
 );
-INSERT INTO [user] VALUES(0,'(system)','System User',1,1,1);
+INSERT INTO [user] VALUES(0,'(system)','System User',null,null,1,1,1);
 
 
 DROP TABLE IF EXISTS [post];
@@ -39,6 +41,7 @@ CREATE TABLE [post] (
   [published] BOOLEAN NOT NULL DEFAULT 0,
   [publish_ts] datetime DEFAULT NULL,
   [size] INTEGER DEFAULT NULL,
+  [tag_names] text default NULL,
   [custom_summary] text default NULL,
   [summary] text default NULL,
   [body] text default '',

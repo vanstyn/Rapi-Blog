@@ -25,6 +25,20 @@ __PACKAGE__->add_columns(
     is_nullable => 1,
     size => 64,
   },
+  "image",
+  {
+    data_type => "varchar",
+    default_value => \"null",
+    is_nullable => 1,
+    size => 255,
+  },
+  "email",
+  {
+    data_type => "varchar",
+    default_value => \"null",
+    is_nullable => 1,
+    size => 255,
+  },
   "admin",
   { data_type => "boolean", default_value => 0, is_nullable => 0 },
   "author",
@@ -61,8 +75,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-24 12:06:23
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:d8XOlxc3ysqy5CPSA0/2UQ
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-06-16 23:59:58
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CsDZyGJU9o2NZP7vE2Wz9Q
 
 use RapidApp::Util ':all';
 

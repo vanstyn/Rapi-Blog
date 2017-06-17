@@ -50,6 +50,8 @@ __PACKAGE__->add_columns(
   { data_type => "datetime", default_value => \"null", is_nullable => 1 },
   "size",
   { data_type => "integer", default_value => \"null", is_nullable => 1 },
+  "tag_names",
+  { data_type => "text", default_value => \"null", is_nullable => 1 },
   "custom_summary",
   { data_type => "text", default_value => \"null", is_nullable => 1 },
   "summary",
@@ -97,8 +99,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-05-28 12:05:29
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dbSY8wLT8DI4YvczNjpgsA
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-06-16 23:59:58
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:g9eg5wFsA9L8FHee9GrwZw
 
 __PACKAGE__->has_many(
   "direct_comments",
