@@ -126,9 +126,7 @@ has 'scaffold_cnf', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   }
   
   %$cnf = ( %$defaults, %$cnf );
-  
-  scream($cnf);
-  
+
   return $cnf
 
 }, isa => HashRef;
