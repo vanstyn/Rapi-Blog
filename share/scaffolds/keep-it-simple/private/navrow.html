@@ -1,37 +1,5 @@
-[%- SET nav = [
-  { 
-    title => 'Home', 
-    path  => '/' 
-  },
-  { 
-    title => 'Dropdown', 
-    children => [
-      { title => 'Submenu 01' },
-      { title => 'Submenu 02' },
-      { title => 'Submenu 02' },
-    ]
-  },
-  { 
-    title => 'Demo', 
-    path  => '/demo' 
-  },
-  { 
-    title => 'Archives', 
-    path  => '/archives' 
-  },
-  { 
-    title => 'Blog',
-    path  => '/blog',
-    children => [
-      { title => 'Blog Entries', path => '/blog' },
-      { title => 'Single Blog',  path => '/single' },
-    ]
-  },
-  { 
-    title => 'Page', 
-    path  => '/page' 
-  },
-] -%]
+[%- SET nav = scaffold.nav_sections -%]
+
 
 <ul id="nav" class="nav" style="width:100%;">
 [% FOREACH i IN nav %]

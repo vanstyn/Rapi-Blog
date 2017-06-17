@@ -10,3 +10,23 @@ preview_path      : fullscr/
 view_wrappers:
   - { path: post/,    type: include,  wrapper: private/post.html    }
   - { path: fullscr/, type: include,  wrapper: private/fullscreen.html }
+
+nav_sections:
+  - { title: Home, path: / }
+  
+  - { title: Dropdown, children: [
+            { title: 'Submenu 01' },
+            { title: 'Submenu 02' },
+            { title: 'Submenu 03' } 
+          ]}
+    
+  - { title: Demo, path: /demo }
+  - { title: Archives, path: /archives }
+  
+  - { title: Blog, path: /blog, children: [
+                                   { title: Blog Entries, path: /blog },
+                                   { title: Single Blog, path: /single }
+                                ]}
+
+  - { title: Page, path: /page }
+                      
