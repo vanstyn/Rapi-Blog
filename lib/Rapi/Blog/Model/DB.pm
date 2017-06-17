@@ -365,8 +365,11 @@ __PACKAGE__->config(
               #profiles => [],
           },
           tag_names => {
-            header => 'tag_names',
-            #width => 100,
+            header => 'Tag Names',
+            width => 200,
+            hidden => 1,
+            allow_add => 0,
+            allow_edit => 0
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -485,8 +488,9 @@ __PACKAGE__->config(
             #profiles => [],
           },
           image => {
-            header => 'image',
-            #width => 100,
+            header => 'Image',
+            profiles => ['cas_img'],
+            width => 55,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },

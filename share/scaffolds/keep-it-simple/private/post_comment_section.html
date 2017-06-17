@@ -10,7 +10,8 @@
   <li class="depth-[% depth %]" id="[% Comment.html_id %]">
 
      <div class="avatar">
-        <img width="50" height="50" class="avatar" src="images/user-01.png" alt="">
+        [% SET img_url = Comment.user.image_url || 'images/user-01.png' %]
+        <img width="50" height="50" class="avatar" src="[% img_url %]" alt="">
      </div>
 
      <div class="comment-content">
@@ -56,7 +57,7 @@
 
    <!-- commentlist -->
    <ol class="commentlist">
-     [% FOREACH child IN Post.scalar.comments.all %]
+     [% FOREACH child IN Post.scalar.direct_comments.all %]
        [% PROCESS render_comment Comment=child %]
      [% END %]
    

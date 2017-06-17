@@ -806,3 +806,11 @@ div.rabl-add-form-body-label .format {
 .editing-record .rapi-blog-postview .row-table .toggle-controls .delete-post {
   display: none;
 }
+
+
+/* hacky workaround to stop cas_img from being too huge in property grid. This 
+   needs fixed in RapidApp ... */
+.x-editor .x-form-display-field > img,
+.x-grid3 .yes-text-select .with-background-right-image > img {
+  max-width:100px !important;
+}

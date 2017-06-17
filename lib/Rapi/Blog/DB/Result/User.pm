@@ -117,7 +117,12 @@ around 'full_name' => sub {
   $self->$orig(@args) || $self->username
 };
 
-
+sub image_url {
+  my $self = shift;
+  $self->{_image_url} //= $self->image 
+    ? join('/','_ra-rel-mnt_','simplecas','fetch_content',$self->image) 
+    : undef
+}
 
 sub _role_perm_sync {
   my $self = shift;

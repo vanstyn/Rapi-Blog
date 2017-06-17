@@ -236,7 +236,7 @@ sub _set_column_defaults {
     $self->summary( 
       $self->custom_summary ? $self->custom_summary : $self->_generate_auto_summary
     );
-    
+    $self->tag_names(join(' ',$self->_extract_normalized_hashtags));
   }
   
   my $uid = Rapi::Blog::Util->get_uid;
@@ -260,15 +260,15 @@ sub _set_column_defaults {
 
 }
 
+sub _extract_normalized_hashtags {
+  my $self = shift;
+  # normalized list of keywords, lowercased and _ converted to -
+  uniq(map { $_ =~ s/\_/\-/g; lc($_) } $self->_extract_hashtags);
+}
+
 sub _update_tags {
   my $self = shift;
-  
-  # normalized list of keywords, lowercased and _ converted to -
-  my @kw = uniq(
-    map { $_ =~ s/\_/\-/g; lc($_) } 
-    $self->_extract_hashtags
-  );
-
+  my @kw = $self->_extract_normalized_hashtags;
   $self->set_tags([ map {{ name => $_ }} @kw ]);
 }
 
