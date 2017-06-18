@@ -35,16 +35,15 @@
             </div>
 
             <div class="widget widget_tags">
-               <h3>Post Tags.</h3>
+               <h3>Recent Tags</h3>
 
                <div class="tagcloud group">
-                   <a href="#">Corporate</a>
-                  <a href="#">Onepage</a>
-                  <a href="#">Agency</a>
-                  <a href="#">Multipurpose</a>
-                  <a href="#">Blog</a>
-                  <a href="#">Landing Page</a>
-                  <a href="#">Resume</a>
+								 
+                 [%- SET tags_result = list_tags({limit => 10, sort => 'recent'}) -%]
+                 [% FOREACH tag IN tags_result.rows %]
+                     <a href="/blog?tag=[% tag.name %]">[% tag.name %]</a> 
+                  [% END %]
+								 
                </div>
                   
             </div>

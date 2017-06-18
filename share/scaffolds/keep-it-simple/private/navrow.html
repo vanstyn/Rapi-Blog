@@ -33,8 +33,17 @@
 
 [%- IF User -%]
   <li class="has_children" style="float:right;min-width:120px;">
-    <a style="cursor:pointer;"><i class="fa fa-user"></i>
-    &nbsp;[% User.username %] <span style="font-size:.8em;">&#9660;</span></a>
+    <a style="cursor:pointer;">
+      <div class="avatar" >
+         [% SET img_url = User.image_url || 'images/user-01.png' %]
+         <img 
+				  style="border-radius:100%;margin-bottom:-7px;"
+				 	width="25" height="25" class="avatar" 
+					src="[% img_url %]" alt=""
+				 >&nbsp;[% User.username %] <span style="font-size:.8em;">&#9660;</span>
+      </div>
+
+	  </a>
     <ul>
       <li><a href="[% c.mount_url %]/adm/#!/adm/main/db/db_post/add">
         <i class="fa fa-plus"></i>&nbsp;
