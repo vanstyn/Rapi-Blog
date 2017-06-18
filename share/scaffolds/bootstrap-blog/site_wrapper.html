@@ -112,7 +112,7 @@
           
           <div class="sidebar-module">
           
-            <h4>Tags</h4>
+            <h4>Popular Tags</h4>
             <ol class="list-unstyled">
               [%- SET tags_result = list_tags({limit => 10}) -%]
               [% FOREACH tag IN tags_result.rows %]
@@ -123,6 +123,27 @@
                [% END %]
                [% IF tags_result.remaining %]
                 <b style="padding-left:10px;"> ... <a href="/tags">see all [[% tags_result.total %]]</a></b>
+               [% END %]
+               [% IF tags_result.total == 0 %]
+                 <li>(no tags yet)</li> 
+               [% END %]
+            </ol>
+						
+						<br>
+						
+            <h4>Recent Tags</h4>
+            <ol class="list-unstyled">
+              [%- SET tags_result = list_tags({limit => 10,sort => 'recent'}) -%]
+              [% FOREACH tag IN tags_result.rows %]
+                <li>
+                  <a href="/list?tag=[% tag.name %]">[% tag.name %]</a> 
+                  ([% tag.posts_count %])
+                </li>
+               [% END %]
+               [% IF tags_result.remaining %]
+                <b style="padding-left:10px;"> ... <a href="/tags?sort=recent">
+										see all [[% tags_result.total %]]
+								</a></b>
                [% END %]
                [% IF tags_result.total == 0 %]
                  <li>(no tags yet)</li> 

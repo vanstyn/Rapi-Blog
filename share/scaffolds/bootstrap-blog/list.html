@@ -108,7 +108,7 @@
       [% INCLUDE simple_paging_controls %]
     </div>
   
-    [%- SET page_choices = [20,50,100,200,500] -%]
+    [%- SET page_choices = [5,10,20,50,100,200,500] -%]
     Max results per page: &nbsp;&nbsp;[%- FOREACH size IN page_choices -%]
       [% IF size == result.limit %]
         <b>[% size %]</b>
