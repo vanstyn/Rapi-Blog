@@ -19,11 +19,12 @@ require Module::Locate;
 use Path::Class qw/file dir/;
 use YAML::XS 0.64 'LoadFile';
 
-our $VERSION = '0.992';
+our $VERSION = '0.993';
 our $TITLE = "Rapi::Blog v" . $VERSION;
 
 has 'site_path',        is => 'ro', required => 1;
 has 'scaffold_path',    is => 'ro', isa => Maybe[Str], default => sub { undef };
+has 'builtin_scaffold', is => 'ro', isa => Maybe[Str], default => sub { undef };
 has 'scaffold_config',  is => 'ro', isa => HashRef, default => sub {{}};
 has 'fallback_builtin_scaffold', is => 'ro', isa => Bool, default => sub {0};
 
@@ -78,18 +79,31 @@ has 'site_dir', is => 'ro', init_arg => undef, lazy => 1, default => sub {
 
 has 'scaffold_dir', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
-  
-  my $path = $self->scaffold_path || $self->site_dir->subdir('scaffold');
+	
+	my $path;
+	
+	if(my $scaffold_name = $self->builtin_scaffold) {
+		die join('',
+		  " Error: don't use both 'builtin_scaffold' and 'scaffold_path' options"
+		) if ($self->scaffold_path);
+		my $Dir = $self->_get_builtin_scaffold_dir($scaffold_name)->absolute;
+    -d $Dir or die "builtin scaffold '$scaffold_name' not found\n";
+		
+		$path = $Dir->stringify;
+	}
+	else {
+		$path = $self->scaffold_path || $self->site_dir->subdir('scaffold');
+	}
   
   my $Dir = dir( $path );
-  if(!-d $Dir) {
+  if(! -d $Dir) {
     if($self->fallback_builtin_scaffold) {
       my $scaffold_name = 'bootstrap-blog';
       warn join('', 
         "\n ** WARNING: local scaffold directory not found;\n  --> using builtin ",
         "scaffold '$scaffold_name' (fallback_builtin_scaffold is set to true)\n\n"
       );
-      $Dir = dir( $self->share_dir )->subdir('scaffolds')->subdir($scaffold_name);
+      $Dir = $self->_get_builtin_scaffold_dir($scaffold_name);
       -d $Dir or die join('',
         " Fatal error: fallback scaffold not found (this could indicate a ",
         "problem with your Rapi::Blog installation)\n\n"
@@ -101,6 +115,19 @@ has 'scaffold_dir', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   }
   return $Dir
 }, isa => InstanceOf['Path::Class::Dir'];
+
+sub _get_builtin_scaffold_dir {
+	my ($self, $scaffold_name) = @_;
+	$scaffold_name ||= 'bootstrap-blog';
+	
+	my $Scaffolds = dir( $self->share_dir )->subdir('scaffolds')->absolute;
+	-d $Scaffolds or die join('',
+    " Fatal error: Unable to locate scaffold share dir (this could indicate a ",
+    "problem with your Rapi::Blog installation)\n\n"
+  );
+	
+	$Scaffolds->subdir($scaffold_name)
+}
 
 has 'scaffold_cnf', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
