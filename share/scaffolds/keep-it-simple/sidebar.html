@@ -49,14 +49,27 @@
             </div>
 
             <div class="widget widget_popular">
-               <h3>Popular Post.</h3>
+               <h3>Popular Posts</h3>
+							 [%- SET posts_result = list_posts({limit => 4, sort => 'popularity'}) -%]
 
                <ul class="link-list">
-                  <li><a href="#">Sint cillum consectetur voluptate.</a></li>
-                  <li><a href="#">Lorem ipsum Ullamco commodo.</a></li>
-                  <li><a href="#">Fugiat minim eiusmod do.</a></li>                     
-               </ul>
-                  
+								 [% FOREACH Post IN posts_result.rows %]
+								   <li><a href="[% Post.public_url %]">[% Post.title %]</a></li>
+								 [% END %]                    
+               </ul> 
+            </div>
+						
+						<br>
+						
+            <div class="widget widget_popular">
+               <h3>Most Commented on</h3>
+							 [%- SET posts_result = list_posts({limit => 4, sort => 'most_comments'}) -%]
+
+               <ul class="link-list">
+								 [% FOREACH Post IN posts_result.rows %]
+								   <li><a href="[% Post.public_url %]">[% Post.title %]</a></li>
+								 [% END %]                    
+               </ul> 
             </div>
             
          </div> <!-- end sidebar -->

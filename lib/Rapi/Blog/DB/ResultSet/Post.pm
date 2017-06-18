@@ -9,6 +9,8 @@ extends 'DBIx::Class::ResultSet';
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 
+__PACKAGE__->load_components(qw(Helper::ResultSet::CorrelateRelationship));
+
 sub published {
   (shift)
     ->search_rs({ 'me.published' => 1 })
@@ -26,6 +28,20 @@ sub newest_published_first {
     ->search_rs(undef,{ 
       order_by => { -desc => 'me.publish_ts' }
     })
+}
+
+sub most_hits_first {
+	my $self = shift;
+  $self->search_rs(undef, { 
+    order_by => { '-desc' => $self->correlate('hits')->count_rs->as_query },
+  })
+}
+
+sub most_comments_first {
+	my $self = shift;
+  $self->search_rs(undef, { 
+    order_by => { '-desc' => $self->correlate('comments')->count_rs->as_query },
+  })
 }
 
 
@@ -57,7 +73,7 @@ sub _all_columns_except {
 __PACKAGE__->load_components('+Rapi::Blog::DB::Component::ResultSet::ListAPI');
 
 sub _api_default_params {{ limit => 20 }}
-sub _api_param_arg_order { [qw/search tag page limit/] } 
+sub _api_param_arg_order { [qw/search tag page limit sort/] } 
 
 
 # Method exposed to templates:
@@ -97,6 +113,18 @@ sub list_posts {
     { 'author.username' => $P->{username} },
     { join => 'author' }
   ) if ($P->{username});
+	
+	if(my $sort = $P->{sort}) {
+		if($sort eq 'newest') {
+			$Rs = $Rs->newest_first;
+		}
+		elsif($sort eq 'popularity') {
+			$Rs = $Rs->most_hits_first;
+		}
+		elsif($sort eq 'most_comments'){
+			$Rs = $Rs->most_comments_first;
+		}
+	}
   
   return $Rs->_list_api
 }

@@ -223,6 +223,11 @@ sub image_url {
     : undef
 }
 
+sub tag_names_list {
+	my $self = shift;
+	split(/\s+/,$self->tag_names)
+}
+
 
 sub _set_column_defaults {
   my $self = shift;
