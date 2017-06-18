@@ -22,6 +22,14 @@ sub alphabetically {
   (shift)->search_rs(undef, { order_by => { '-asc' => 'me.name' } })
 }
 
+sub by_most_recent {
+	(shift)->search_rs(undef, { 
+		join => { 'post_tags' => 'post' },
+		order_by => { '-desc' => 'post.ts' },
+		group_by => 'me.name' 
+	})
+}
+
 
 __PACKAGE__->load_components('+Rapi::Blog::DB::Component::ResultSet::ListAPI');
 
@@ -43,6 +51,9 @@ sub list_tags {
   $P->{sort} ||= 'popularity';
   if($P->{sort} eq 'alphabetical') {
     $Rs = $Rs->alphabetically;
+  }
+  elsif($P->{sort} eq 'recent') {
+    $Rs = $Rs->by_most_recent;
   }
   else {
     $Rs = $Rs->by_popularity
