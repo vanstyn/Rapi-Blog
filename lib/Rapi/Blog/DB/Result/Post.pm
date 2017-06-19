@@ -334,7 +334,10 @@ sub record_hit {
   if(my $c = RapidApp->active_request_context) {
     push @args, $c->request;
   }
-  
+	
+  # This is a rare example where we do want to allow an insert from a template 
+	local $Rapi::Blog::DB::Component::SafeResult::ALLOW = 1;
+	
   $self->hits->create_from_request(@args);
   
   return "";
