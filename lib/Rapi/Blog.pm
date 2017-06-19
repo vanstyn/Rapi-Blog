@@ -206,9 +206,6 @@ sub _build_base_config {
     __PACKAGE__, " may not be installed properly.\n"
   );
   
-  # Temp for dev/testing - everything but 'rapidapp/' templates:
-  my $tpl_regex = '^(?!rapidapp\/).+';
-
   my $config = {
   
     'RapidApp' => {
@@ -233,7 +230,7 @@ sub _build_base_config {
       nav_title => 'Administration',
       banner_template => file($tpl_dir,'banner.html')->stringify,
       dashboard_url => '/tpl/dashboard.md',
-      #template_navtree_regex => $tpl_regex
+			navtree_init_width => 190,
     },
     
     'Controller::RapidApp::Template' => {
@@ -245,10 +242,6 @@ sub _build_base_config {
       include_paths => [ $tpl_dir ],
       access_class => 'Rapi::Blog::Template::AccessStore',
       access_params => {
-        #writable_regex      => $tpl_regex,
-        #creatable_regex     => $tpl_regex,
-        #deletable_regex     => $tpl_regex,
-        
         scaffold_dir  => $self->scaffold_dir,
         scaffold_cnf  => $self->scaffold_cnf,
         static_paths  => $self->scaffold_cnf->{static_paths},
