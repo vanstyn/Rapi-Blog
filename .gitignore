@@ -1,5 +1,6 @@
 Rapi-Blog-*
 *.db
+*.DS_Store
 examples/*/cas_store/
 devel/hugo_posts/
 devel/external_data
