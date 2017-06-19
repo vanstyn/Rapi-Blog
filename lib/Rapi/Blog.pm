@@ -272,7 +272,7 @@ __END__
 
 =head1 NAME
 
-Rapi::Blog - Plack-compatable, RapidApp-based blog engine
+Rapi::Blog - Plack-compatible, RapidApp-based blog engine
 
 =head1 SYNOPSIS
 

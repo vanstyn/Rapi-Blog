@@ -10,7 +10,7 @@ for the various controllers/modules are merged into the common root-based namesp
 for the scaffolds to be structured as an ordinary HTML site following the same conventions as a static
 site living in a folder on your PC. The only difference between a Rapi::Blog scaffold and a static HTML
 directory is that files within the scaffold are able to *optionally* call template directives for
-dynamic content via simple variable substition. 
+dynamic content via simple variable substitution. 
 
 Scaffolds may also define an additional config which declares details about how it can be used by 
 the backend. See below.
@@ -26,11 +26,11 @@ The B<scaffold.yml> supports the following options:
 
 List of path prefixes which are considered 'static' meaning no template processing will happen on
 those paths. You want to list asset/image dirs like 'css/', 'fonts/' etc in this param, which
-helps performance for paths which the system doens't need to parse for template directives.
+helps performance for paths which the system doesn't need to parse for template directives.
 
 =head2 private_paths
 
-List of path prefixes which will not be served publically, but will still be available internally
+List of path prefixes which will not be served publicly, but will still be available internally
 to include, use as a wrapper, etc. Note that this option isn't really about security but about cleaning
 the public namespace of paths which are known not to be able to render as stand-alone pages in that
 context (like snippets, block directives, etc etc)
@@ -70,7 +70,7 @@ URL C<'/post/my-cool-post'>.
 
 The scaffold template to use when rendering the Post. This should be a TT template which has been 
 setup as a L<WRAPPER|https://metacpan.org/pod/Template#WRAPPER> with a the Post body content loaded
-in C<[% content %]>. The given Post row object will also be availble as C<[% Post %]>.
+in C<[% content %]>. The given Post row object will also be available as C<[% Post %]>.
 
 =head3 type
 
@@ -84,7 +84,7 @@ unless you have a specific reason and know what you are doing.
 =head2 default_view_path
 
 The default C<'view_wrapper'>, identified by its configured C<path>, to use for accessing posts. This
-is used in locations where the system genertes URLs when it needs to publically link to a post. Defaults
+is used in locations where the system generates URLs when it needs to publicly link to a post. Defaults
 to the first C<'include'> type view_wrapper.
 
 =head2 preview_path
@@ -105,7 +105,7 @@ to be changed. It is suggested that it be within a private (i.e. covered by C<'p
 
 =head2 default_ext
 
-Default file extention for scaffold templates, defaults to C<html>. This makes it so that the template
+Default file extension for scaffold templates, defaults to C<html>. This makes it so that the template
 C<'/path/to/doc.html'> can alternatively be accessed at C<'/path/to/doc'> for cleaner/nicer looking URLs
 
 
@@ -126,7 +126,7 @@ The active scaffold config/data structure.
 
 =head2 list_posts
 
-Interface to retreive and filter Posts from the database. This is exposed with the 
+Interface to retrieve and filter Posts from the database. This is exposed with the 
 L<ListAPI|Rapi::Blog::DB::Component::ResultSet::ListAPI>
 interface which accepts several named params and returns a common
 L<ListAPI|Rapi::Blog::DB::Component::ResultSet::ListAPI> result packet.
@@ -170,7 +170,7 @@ Posts with the most comments (includes sub-comments/replies) first
 
 =head2 list_tags
 
-Interface to retreive and filter Tags from the database. This is exposed with the 
+Interface to retrieve and filter Tags from the database. This is exposed with the 
 L<ListAPI|Rapi::Blog::DB::Component::ResultSet::ListAPI>
 interface which accepts several named params and returns a common
 L<ListAPI|Rapi::Blog::DB::Component::ResultSet::ListAPI> result packet.
@@ -204,7 +204,7 @@ Most recently used (according to Post Date/Time) tags first.
 
 =head2 list_users
 
-Interface to retreive and filter Users from the database. This is exposed with the 
+Interface to retrieve and filter Users from the database. This is exposed with the 
 L<ListAPI|Rapi::Blog::DB::Component::ResultSet::ListAPI>
 interface which accepts several named params and returns a common
 L<ListAPI|Rapi::Blog::DB::Component::ResultSet::ListAPI> result packet.
