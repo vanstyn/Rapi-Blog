@@ -360,3 +360,182 @@ sub can_change_author {
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;
 1;
+
+
+__END__
+
+=head1 NAME
+
+Rapi::Blog::DB::Result::Post - Post row object
+
+=head1 DESCRIPTION
+
+This is the default Result class/row object for L<Rapi::Blog>. The C<list_post()> template directive
+returns an array of these objects (in the sub property C<rows>), and when viewing a post via a
+C<view_wrapper> the associated post is available as the template variable C<Post>.
+
+This is a L<DBIx::Class::Row>.
+
+=head1 COLUMNS
+
+=head2 name
+
+The unique name of the Post. The name is used to generate the public URL for the post.
+Should contain only lower case alpha characters, dash and underscore.
+
+=head2 title
+
+Human-friendly Post title
+
+=head2 image
+
+CAS image column (C<'cas_img'>). Contains the sha1 of a file within the SimpleCAS.
+
+=head2 ts
+
+The declared Date/Time of the Post. Defaults to the timestamp of when the Post is created but can be
+set to anything.
+
+=head2 create_ts
+
+The real Date/Time the Post is created, read-only.
+
+=head2 update_ts
+
+The Date/Time of the last modification of the Post, read-only.
+
+=head2 author
+
+The author of the Post, FK to L<Rapi::Blog::DB::Result::User> object. C<author> is a relationship, the 
+underlying foreign-key column is C<author_id> which is hidden.
+
+The author defaults to the user creating the Post, but if the user is an C<admin> they can select a
+different user.
+
+=head2 creator
+
+The creator of the Post, FK to L<Rapi::Blog::DB::Result::User> object. C<creator> is a relationship, the 
+underlying foreign-key column is C<creator_id> which is hidden. Read-only.
+
+=head2 updater
+
+The last user who modified the Post, FK to L<Rapi::Blog::DB::Result::User> object. C<updater> is a 
+relationship, the underlying foreign-key column is C<updater_id> which is hidden. Read-only.
+
+=head2 published
+
+True or false bool value. Posts which are not published will not be listed in C<list_posts()> and will
+return a 404 not found except for C<admins> and the C<author> of the Post.
+
+=head2 publish_ts
+
+The Date/Time the Post was marked C<published> or C<undef> if the Post is not published. Read-only.
+
+=head2 size
+
+The size in bytes of the C<body>. Read-only.
+
+=head2 tag_names
+
+List of tag names for the Post as a space-separated string, read-only. Tags are defined by specifying 
+them in Twitter C<#hashtag> format in the Post C<body>.
+
+=head2 summary
+
+The summary for the Post which is either set from C<custom_summary> or auto-generated from the C<body>.
+Read-only.
+
+=head2 custom_summary
+
+Custom summary for the Post. Setting any nonzero-length value will populate as the C<summary>, while
+an empty string will cause C<summary> to be auto-generated.
+
+=body
+
+The main content body of the Post in HTML/Markdown format.
+
+=head1 METHODS
+
+=head2 comments 
+
+Multi-relationship to all the Comments of this Post.
+
+=head2 hits
+
+Multi-relationship to all the Hits of this Post. Hits record details of the HTTP request when C<record_hit>
+is called from the view template.
+
+hits post_tags
+
+Multi-relationship recording the tags of this Post.
+
+=head2 tag_names_list 
+
+List of tag names. Like C<tag_names> but returns a list of strings rather than a single string.
+
+=head2 image_url 
+
+URL which can be used to access the C<image> for the active site/scaffold.
+
+=head2 public_url_path
+
+URL path prefix to access the default public view of all Posts.
+
+=head2 public_url
+
+URL path prefix to access the default public view of B<this> Post. This is just the C<public_url_path>
+plus the C<name>
+
+=head2 preview_url_path
+
+URL path prefix to access the public preview of all Posts. By default this is the same as 
+C<public_url_path> unless the Scaffold has defined C<preview_path>. The preview is used to display
+the post in an iframe on the internal post page. This is useful to be able to show the post without
+the full navigation of the site.
+
+=head2 preview_url
+
+URL path prefix to access the public preview of B<this> Post. This is just the C<preview_url_path>
+plus the C<name>
+
+=head2 open_url_path
+
+URL path to access the Post internally within the password-protected area of the site. This is the
+same page that opens if you double-click a Post from the Posts grid and is how you can edit a post. If
+the user is not logged in they will automatically be prompted to login.
+
+Supports an optional mode argument which can be C<'direct'> or C<'navable'>. These are full-screen modes
+which will open the Post page without the full navigation tree and header. The C<'direct'> mode will be
+totally full-screen, while C<'navable'> will load a full-screen tabpanel which allows following links to 
+related objects.
+
+=head1 SEE ALSO
+
+=over
+
+=item * 
+
+L<Rapi::Blog>
+
+=item *
+
+L<http://rapi.io/blog>
+
+=back
+
+
+=head1 AUTHOR
+
+Henry Van Styn <vanstyn@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2017 by IntelliTree Solutions llc.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+
