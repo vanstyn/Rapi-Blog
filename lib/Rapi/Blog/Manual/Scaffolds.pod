@@ -150,6 +150,24 @@ The maximum number of results to return (i.e. page size)
 
 The page number to return, in conjunction with C<limit>.
 
+=head3 sort
+
+Sort keyword for the order posts are returned in. Currently supports 3 possible values (defaults to
+C<newest>)
+
+=head4 newest
+
+Newest (by Post Date/Time) Posts first
+
+=head4 popularity
+
+Posts with the most "Hits" first. Note that in order for a hit to be recorded, the scaffold must
+call the template directive C<[% Post.record_hit %]>.
+
+=head4 most_comments
+
+Posts with the most comments (includes sub-comments/replies) first
+
 =head2 list_tags
 
 Interface to retreive and filter Tags from the database. This is exposed with the 
@@ -166,6 +184,23 @@ String to search/filter results. The search will match substrings of the tag nam
 =head3 post_id
 
 Limit results to Tags linked to the supplied post_id
+
+=head3 sort
+
+Sort keyword for the order tags are returned in. Currently supports 3 possible values (defaults to
+C<popularity>)
+
+=head4 popularity
+
+Most popular tags by number of posts which use them.
+
+=head4 alphabetical
+
+Tags in alphabetical order.
+
+=head4 recent
+
+Most recently used (according to Post Date/Time) tags first.
 
 =head2 list_users
 
