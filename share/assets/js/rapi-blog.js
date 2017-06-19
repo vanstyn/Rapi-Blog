@@ -215,3 +215,10 @@ Ext.apply(Ext.form.VTypes,{
 
 });
 
+
+function rablTagNamesColumnRenderer(v) {
+	if(!v) { return Ext.ux.showNull(v); }
+	var tags = v.split(/\s+/);
+	return tags.join(', ');
+}
+

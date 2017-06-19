@@ -369,8 +369,8 @@ __PACKAGE__->config(
             width => 200,
             hidden => 1,
             allow_add => 0,
-            allow_edit => 0
-            #renderer => 'RA.ux.App.someJsFunc',
+            allow_edit => 0,
+            renderer => 'rablTagNamesColumnRenderer',
             #profiles => [],
           },
         },
