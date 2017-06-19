@@ -351,6 +351,10 @@ PSGI C<$app> CodeRef. Derives from L<Plack::Component>
 
 L<rabl.pl>
 
+=item *
+
+L<Rapi::Blog::Manual>
+
 =item * 
 
 L<RapidApp>

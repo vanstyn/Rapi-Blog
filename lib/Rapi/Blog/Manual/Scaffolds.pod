@@ -221,7 +221,11 @@ Limit users to those with the matching named permission, which are currently 'au
 
 =head2 User
 
+The currently logged in user, or C<undef> if not logged in. Returns a L<Rapi::Blog::DB::Result::User> object.
+
 =head2 request_path
+
+The path of the current request
 
 =head2 remote_action_path
 
