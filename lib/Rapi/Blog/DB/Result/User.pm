@@ -94,6 +94,10 @@ __PACKAGE__->apply_TableSpec;
 
 sub insert {
   my $self = shift;
+	
+  my $User = Rapi::Blog::Util->get_User;
+  die usererr "Create User: PERMISSION DENIED" if ($User && $User->id && !$User->admin);
+	
   $self->next::method(@_);
   
   $self->_role_perm_sync;
@@ -103,11 +107,28 @@ sub insert {
 
 sub update {
   my $self = shift;
+	
+  my $User = Rapi::Blog::Util->get_User;
+	
+  die usererr "Update User: PERMISSION DENIED" if (
+		$User && $User->id && 
+		!($User->admin || $self->id == $User->id)
+  );
+	
   $self->next::method(@_);
   
   $self->_role_perm_sync;
 
   $self
+}
+
+sub delete {
+	my $self = shift;
+	
+  my $User = Rapi::Blog::Util->get_User;
+  die usererr "Delete User: PERMISSION DENIED" if ($User && $User->id && !$User->admin);
+	
+  $self->next::method(@_)
 }
 
 
