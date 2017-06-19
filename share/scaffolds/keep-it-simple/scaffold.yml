@@ -30,3 +30,5 @@ nav_sections:
 
   - { title: Page, path: /page }
                       
+# whether or not to show a public edit link on post page
+edit_post_link : 1

@@ -16,6 +16,12 @@
               <li>[% date.format(Post.ts) %]</li>
               <span class="meta-sep">&bull;</span>
               <li>[% Post.author.full_name || Post.author.username %]</li>
+			        [% IF scaffold.edit_post_link %]
+			          <li><a class="public-edit-post-link" href="[% Post.open_url_path() %]">
+			            <i class="fa fa-pencil-square-o"></i>
+			          </a></li>
+			        [% END %]
+							
            </ul>
         </div> 
    
