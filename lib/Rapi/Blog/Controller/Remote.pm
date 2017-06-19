@@ -101,3 +101,74 @@ sub error_response {
 __PACKAGE__->meta->make_immutable;
 
 1;
+
+__END__
+
+=head1 NAME
+
+Rapi::Blog::Controller::Remote - General-purpose controller actions
+
+=head1 DESCRIPTION
+
+This controller provides general-purpose HTTP end-points for use by scaffolds in Rapi::Blog
+applications, such as posts to add comments and other functions (future) that are separate 
+from the auto-generated interfaces provided by RapidApp. So far the only action that has 
+been implemented is C<comment/add>.
+
+=head1 ACTIONS
+
+=head2 comment
+
+Action for comment operations. Currently the only argument supported argumemnt is C<add>.
+
+This will return with a 303 redirect back to the Post C<public_url> and the label tag C<html_id>
+which is automatically generated for the comment. If the scaffold renders the C<html_id> with each
+comment as the element id this will result in the page being scrolled to the just added comment.
+
+Expects the following C<POST> params:
+
+=head3 post_id
+
+The id of the Post being commented on. Either C<post_id> or C<parent_id> must be supplied.
+
+=head3 parent_id
+
+The id of another Comment that this comment is a reply to. If C<parent_id> is supplied 
+C<post_id> should not.
+
+=head3 body
+
+The body text of the comment
+
+=head2 changepw
+
+Not yet implemented.
+
+=head1 SEE ALSO
+
+=over
+
+=item * 
+
+L<Rapi::Blog>
+
+=item * 
+
+L<Catalyst::Controller>
+
+=back
+
+
+=head1 AUTHOR
+
+Henry Van Styn <vanstyn@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2017 by IntelliTree Solutions llc.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
