@@ -196,3 +196,124 @@ sub can_comment {
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;
 1;
+
+__END__
+
+=head1 NAME
+
+Rapi::Blog::DB::Result::User - User row object
+
+=head1 DESCRIPTION
+
+This is the default User Result class/row object for L<Rapi::Blog>. The C<list_users()> template directive
+returns an array of these objects (in the sub property C<rows>)
+
+
+This is a L<DBIx::Class::Row>.
+
+=head1 COLUMNS
+
+=head2 id
+
+Auto-increment user id. Read-only.
+
+=head2 username
+
+The unique username used to login to the system. This links with the RapidApp AuthCore user object with
+the same username and the system automatically keeps these objects in sync.
+
+=head2 full_name
+
+Friendly display name.
+
+=head2 image
+
+CAS image column (C<'cas_img'>). Contains the sha1 of a file within the SimpleCAS.
+
+=head2 email
+
+User's E-Mail address
+
+=head2 admin
+
+True/false permission flag if the user is an admin or not. Setting this value automatically adds or 
+removes the C<administrators> role in AuthCore user object.
+
+=head2 author
+
+True/false permission flag which determines whether or not a user is allowed to add new posts.
+
+=head2 comment
+
+True/false permission flag which determines whether or not a user is allowed to add comments.
+
+=head2 set_pw
+
+Virtual column can be set with a plaintext value that on insert/update will store the hashed
+password in the AuthCore user row.
+
+=head1 METHODS
+
+=head2 image_url 
+
+URL which can be used to access the user's C<image> (i.e. avatar) for the active site/scaffold.
+
+=head2 can_post 
+
+Util method returns true if the user can post. Will be true if the user is either an admin or
+an author.
+
+=head2 can_post 
+
+Util method returns true if the user can comment. Will be true if the user is either an admin or
+has the comment permission.
+
+=head2 comments 
+
+Multi-relationship to all the Comments this user has created.
+
+=head2 post_authors
+
+Multi-relationship to all the Posts this user is the author of.
+
+=head2 post_creators
+
+Multi-relationship to all the Posts this user has created.
+
+=head2 post_updaters
+
+Multi-relationship to all the Posts this user is the last updater of.
+
+
+=head1 SEE ALSO
+
+=over
+
+=item * 
+
+L<Rapi::Blog>
+
+=item *
+
+L<http://rapi.io/blog>
+
+=back
+
+
+=head1 AUTHOR
+
+Henry Van Styn <vanstyn@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2017 by IntelliTree Solutions llc.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
+
+
+
+

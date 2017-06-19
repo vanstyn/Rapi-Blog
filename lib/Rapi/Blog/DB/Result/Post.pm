@@ -370,13 +370,17 @@ Rapi::Blog::DB::Result::Post - Post row object
 
 =head1 DESCRIPTION
 
-This is the default Result class/row object for L<Rapi::Blog>. The C<list_post()> template directive
-returns an array of these objects (in the sub property C<rows>), and when viewing a post via a
-C<view_wrapper> the associated post is available as the template variable C<Post>.
+This is the default Post Result class/row object for L<Rapi::Blog>. The C<list_posts()> template 
+directive returns an array of these objects (in the sub property C<rows>), and when viewing a post 
+via a C<view_wrapper> the associated post is available as the template variable C<Post>.
 
 This is a L<DBIx::Class::Row>.
 
 =head1 COLUMNS
+
+=head2 id
+
+Auto-increment post id. Read-only.
 
 =head2 name
 
@@ -508,6 +512,27 @@ Supports an optional mode argument which can be C<'direct'> or C<'navable'>. The
 which will open the Post page without the full navigation tree and header. The C<'direct'> mode will be
 totally full-screen, while C<'navable'> will load a full-screen tabpanel which allows following links to 
 related objects.
+
+=head2 record_hit 
+
+Called to record the current request in the Hits table for the post. Designed to be called from the
+default view path in the scaffold.
+
+=head2 can_delete
+
+Util method returns true if the current user can delete the post. Will be true if the user is either 
+an admin or or the author of the post.
+
+=head2 can_modify
+
+Util method returns true if the current user can modify the post. Will be true if the user is either 
+an admin or or the author of the post.
+
+=head2 can_change_author
+
+Util method returns true if the current user can change the author of the post. Will be true if the 
+user is an admin.
+
 
 =head1 SEE ALSO
 
