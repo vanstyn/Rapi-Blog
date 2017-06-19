@@ -102,6 +102,8 @@ __PACKAGE__->belongs_to(
 # Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-06-16 23:59:58
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:g9eg5wFsA9L8FHee9GrwZw
 
+__PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');
+
 __PACKAGE__->has_many(
   "direct_comments",
   "Rapi::Blog::DB::Result::Comment",

@@ -81,6 +81,7 @@ __PACKAGE__->has_many(
 use RapidApp::Util ':all';
 
 __PACKAGE__->load_components('+RapidApp::DBIC::Component::TableSpec');
+__PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');
 
 __PACKAGE__->add_virtual_columns( set_pw => {
   data_type => "varchar", 

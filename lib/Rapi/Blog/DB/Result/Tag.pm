@@ -31,6 +31,8 @@ __PACKAGE__->has_many(
 
 use RapidApp::Util ':all';
 
+__PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');
+
 sub posts_count {
   my $self = shift;
   # In case the ResultSet has pre-loaded this value, don't do another query:

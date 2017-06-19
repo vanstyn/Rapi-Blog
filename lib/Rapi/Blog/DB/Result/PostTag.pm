@@ -41,6 +41,8 @@ __PACKAGE__->belongs_to(
 
 use RapidApp::Util ':all';
 
+__PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');
+
 sub insert {
   my $self = shift;
   my $columns = shift;

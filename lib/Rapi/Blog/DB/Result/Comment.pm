@@ -70,6 +70,7 @@ __PACKAGE__->belongs_to(
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 
+__PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');
 
 sub insert {
   my $self = shift;
