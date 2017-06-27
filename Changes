@@ -1,4 +1,7 @@
 Revision history for Rapi::Blog
 
+1.0001 2017-06-27
+    - Fix first login deep recursion bug (#1) (VANSTYN)
+
 1.0000 2017-06-20
     - First public release for TPC 2017! (VANSTYN)
