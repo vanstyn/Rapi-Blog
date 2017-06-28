@@ -314,6 +314,15 @@ provides additional API end-points that can be used to post comments, etc.
 URL path to directly load the "New Post" form. Useful if the scaffold wants to provide its own 
 "New Post" links(s).
 
+=head2 mount_url
+
+Same as C<[% c.mount_url %]> - from RapidApp, the mounted path of the app if it is at a sub-url (e.g.
+using C<mount> with L<Plack::Builder>, etc). If the app is mounted normally on C</> this will be an
+empty string C<''>.
+
+This is provided as a top-level variable so non-privileged templates can access it (since they do 
+not have access to the actual context object in C<[% c %]>.
+
 =head2 Post
 
 When the target template of the request is a Post, including requests dispatched via a C<view_wrapper>,
