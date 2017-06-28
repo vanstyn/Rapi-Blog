@@ -1,5 +1,8 @@
 Revision history for Rapi::Blog
 
+1.0002 2017-06-28
+    - Documentation improvements (no code changes) (VANSTYN)
+
 1.0001 2017-06-27
     - Fix first login deep recursion bug (#1) (VANSTYN)
 
