@@ -19,7 +19,7 @@ require Module::Locate;
 use Path::Class qw/file dir/;
 use YAML::XS 0.64 'LoadFile';
 
-our $VERSION = 1.0004;
+our $VERSION = 1.0004_01;
 our $TITLE = "Rapi::Blog v" . $VERSION;
 
 has 'site_path',        is => 'ro', required => 1;

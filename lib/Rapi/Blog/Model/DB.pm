@@ -12,14 +12,14 @@ my $db_path = file( RapidApp::Util::find_app_home('Rapi::Blog'), 'rapi_blog.db' 
 sub _sqlt_db_path { "$db_path" };    # exposed for use by the regen devel script
 
 use Rapi::Blog::Util;
+use DBIx::Class::Schema::Diff 1.05;
 
 #<<<  tell perltidy not to mess with this
 before 'setup' => sub {
   my $self = shift;
 
-  # extract path from dsn because the app reaches in to set it
-  my $dsn = $self->connect_info->{dsn};
-  my ( $pre, $db_path ) = split( /\:SQLite\:/, $dsn, 2 );
+  my $db_path = $self->_get_sqlite_db_path 
+    or die "Couldn't determine SQLite db path (currently only SQLite is supported)";
 
   unless ( -f $db_path ) {
     warn "  ** Auto-Deploy $db_path **\n";
@@ -31,9 +31,10 @@ before 'setup' => sub {
       { key => 'primary' }
     );
   }
-
-  my $diff =
-    $self->_diff_deployed_schema
+  
+  my $DiffObj = $self->_migrate_and_diff_deployed;
+  
+  my $diff = $DiffObj
     ->filter_out('*:relationships')
     ->filter_out('*:constraints')
     ->filter_out('*:isa')
@@ -48,6 +49,153 @@ before 'setup' => sub {
       Dumper($diff), '', '', '' );
   }
 };
+
+sub _get_sqlite_db_path {
+  my $self = shift;
+  
+  # extract path from dsn because the app reaches in to set it
+  my $dsn = $self->connect_info->{dsn};
+  my ( $pre, $db_path ) = split( /\:SQLite\:/, $dsn, 2 );
+
+  return $db_path
+}
+
+
+sub _migrate_and_diff_deployed {
+  my ($self, $seen) = @_;
+  $seen ||= {};
+  
+  my $DiffObj = $self->_diff_deployed_schema;
+
+  my $schemsum = $DiffObj->_schema_diff->new_schema
+    ->prune('isa')
+    ->prune('relationships')
+    ->prune('private_col_attrs')
+    ->fingerprint;
+    
+  if($seen->{$schemsum}++) {
+    die "looping/failing migrations detected! Already saw schema signature $schemsum";
+  }
+
+  $self->_migrate_for_schemsum($schemsum) 
+    ? $self->_migrate_and_diff_deployed($seen)
+    : $DiffObj
+}
+
+# Dynamic, signature-based migrations
+sub _migrate_for_schemsum {
+  my ($self, $schemsum) = @_;
+  
+  # Failsafe to only process for SQLite in this version
+  my $db_path = $self->_get_sqlite_db_path or return 0;
+  
+  my $meth = join('_','','run','migrate',$schemsum);
+  $meth =~ s/\-/\_/g;
+  
+  if($self->can($meth)) {
+    warn "  ** detected known schema signature '$schemsum' -- running migration ...\n";
+    
+    my $Db = file($db_path);
+    my $BkpDir = $Db->parent->subdir(join('.','','bkp',$Db->basename));
+    my $Bkp = $BkpDir->file(join('.',$schemsum,'db'));
+    
+    warn join('',
+      "    [backing up '",$Db->basename,"' to '",
+      $Bkp->relative($Db->parent)->stringify,"']\n"
+    );
+    
+    -d $BkpDir or $BkpDir->mkpath();
+    $Bkp->spew(scalar $Db->slurp);
+    
+    warn "    ++ calling ->$meth():\n";
+
+    $self->$meth or warn "  warning: migration method $meth did not return a true value ... \n";
+    
+    # We return true regardless to indicate that the migration was run:
+    return 1;
+  }
+  else {
+    # Unknown schema signature:
+    return 0;
+  }
+}
+
+# This is the migration from the last dev state before public 1.000 release... was
+# never seen in the wild (this entry made for test/dev as we never expect to see it)
+sub _run_migrate_schemsum_7ef8b36d22d6c7d {
+  my $self = shift;
+  
+  my @statements = (
+    'PRAGMA foreign_keys=off',
+    'BEGIN TRANSACTION',
+    
+    'ALTER TABLE [post] RENAME TO [temp_post]',q~
+CREATE TABLE [post] (
+  [id]             INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [name]           varchar(255) UNIQUE NOT NULL,
+  [title]          varchar(255) DEFAULT NULL,
+  [image]          varchar(255) DEFAULT NULL,
+  [ts]             datetime NOT NULL,
+  [create_ts]      datetime NOT NULL,
+  [update_ts]      datetime NOT NULL,
+  [author_id]      INTEGER NOT NULL,
+  [creator_id]     INTEGER NOT NULL,
+  [updater_id]     INTEGER NOT NULL,
+  [published]      BOOLEAN NOT NULL DEFAULT 0,
+  [publish_ts]     datetime DEFAULT NULL,
+  [size]           INTEGER DEFAULT NULL,
+  [tag_names]      text default NULL,
+  [custom_summary] text default NULL,
+  [summary]        text default NULL,
+  [body]           text default '',
+  
+  FOREIGN KEY ([author_id]) REFERENCES [user]              ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY ([creator_id]) REFERENCES [user]             ([id])   ON DELETE RESTRICT ON UPDATE CASCADE,
+  FOREIGN KEY ([updater_id]) REFERENCES [user]             ([id])   ON DELETE RESTRICT ON UPDATE CASCADE
+)~, q~
+INSERT INTO [post] SELECT
+  [id],[name],[title],[image],[ts],[create_ts],[update_ts],[author_id],[creator_id],
+  [updater_id],[published],[publish_ts],[size],null,[custom_summary],[summary],[body]
+FROM [temp_post]
+~,
+ 'DROP TABLE [temp_post]',
+  
+  
+    'ALTER TABLE [user] RENAME TO [temp_user]', q~
+CREATE TABLE [user] (
+  [id]        INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [username]  varchar(32) UNIQUE NOT NULL,
+  [full_name] varchar(64) UNIQUE DEFAULT NULL,
+  [image]     varchar(255) DEFAULT NULL,
+  [email]     varchar(255) DEFAULT NULL,
+  [admin]     BOOLEAN NOT NULL DEFAULT 0,
+  [author]    BOOLEAN NOT NULL DEFAULT 0,
+  [comment]   BOOLEAN NOT NULL DEFAULT 1
+)~, q~
+INSERT INTO [user] SELECT
+  [id],[username],[full_name],null,null,[admin],[author],[comment]
+FROM [temp_user]
+~,
+ 'DROP TABLE [temp_user]',
+ 
+ 'COMMIT',
+ 'PRAGMA foreign_keys=on',
+  );
+  
+  my $db = $self->_one_off_connect;
+  
+  $db->storage->dbh->do($_) for (@statements);
+  
+  return 1
+}
+
+## This is the migration from the first public release of the schema (v1.0000)
+#sub _run_migrate_schemsum_8955354febf5675 {
+#  my $self = shift;
+#  
+#  scream('[1] WE WOULD RUN MIGRATION FOR schemsum-8955354febf5675 !!!');
+#}
+
 #>>>
 
 __PACKAGE__->config(
