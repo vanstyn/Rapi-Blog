@@ -40,6 +40,7 @@ before 'setup' => sub {
     ->filter_out('*:isa')
     ->filter_out('*:columns/*._inflate_info')
     ->filter_out('*:columns/*._ic_dt_method')
+    ->filter_out('*:columns/*.is_numeric') # this apparently can get set later on
     ->diff;
 
   if ($diff) {
@@ -185,6 +186,13 @@ FROM [temp_user]
   my $db = $self->_one_off_connect;
   
   $db->storage->dbh->do($_) for (@statements);
+  
+  # Must trigger biz-logic to update new tag_names column for every row
+  # (note: calling this here causes some column attr 'is_numeric' to get applied, not sure why)
+  for my $Post ($db->resultset('Post')->all) {
+    $Post->make_column_dirty('body');
+    $Post->update
+  }
   
   return 1
 }
