@@ -197,6 +197,41 @@ FROM [temp_user]
   return 1
 }
 
+
+sub _run_migrate_schemsum_8955354febf5675 {
+  my $self = shift;
+  
+  my @statements = (
+    'PRAGMA foreign_keys=off',
+    'BEGIN TRANSACTION',q~
+CREATE TABLE [category] (
+  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [name] varchar(64) NOT NULL,
+  [description] varchar(1024) DEFAULT NULL,
+  CONSTRAINT [category_name_unique] UNIQUE ([name])
+)~,
+
+q~CREATE TABLE [post_category] (
+  [id]          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [post_id]     INTEGER NOT NULL,
+  [category_id] INTEGER NOT NULL,
+  
+  FOREIGN KEY ([post_id])     REFERENCES [post] ([id])     ON DELETE CASCADE  ON UPDATE CASCADE,
+  FOREIGN KEY ([category_id]) REFERENCES [category] ([id]) ON DELETE RESTRICT ON UPDATE RESTRICT
+)~,
+
+     'COMMIT',
+     'PRAGMA foreign_keys=on',
+  );
+  
+  my $db = $self->_one_off_connect;
+  
+  $db->storage->dbh->do($_) for (@statements);
+  
+  return 1
+}
+
+
 ## This is the migration from the first public release of the schema (v1.0000)
 #sub _run_migrate_schemsum_8955354febf5675 {
 #  my $self = shift;
@@ -521,12 +556,19 @@ __PACKAGE__->config(
               #profiles => [],
           },
           tag_names => {
-            header => 'Tag Names',
-            width => 200,
-            hidden => 1,
-            allow_add => 0,
+            header     => 'Tag Names',
+            width      => 200,
+            hidden     => 1,
+            allow_add  => 0,
             allow_edit => 0,
-            renderer => 'rablTagNamesColumnRenderer',
+            renderer   => 'rablTagNamesColumnRenderer',
+            #profiles => [],
+          },
+          post_categories => {
+            header => 'post_categories',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
         },
@@ -644,9 +686,9 @@ __PACKAGE__->config(
             #profiles => [],
           },
           image => {
-            header => 'Image',
+            header   => 'Image',
             profiles => ['cas_img'],
-            width => 55,
+            width    => 55,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -815,6 +857,81 @@ __PACKAGE__->config(
           post => {
             header => 'Accessed Post',
             width  => 180,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+        },
+      },
+      Category => {
+        display_column => 'name',
+        title          => 'Category',
+        title_multi    => 'Category Rows',
+        iconCls        => 'ra-icon-pg',
+        multiIconCls   => 'ra-icon-pg-multi',
+        columns        => {
+          id => {
+            allow_add => 0,
+            header    => 'id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          name => {
+            header => 'name',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          description => {
+            header => 'description',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          post_categories => {
+            header => 'post_categories',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+        },
+      },
+      PostCategory => {
+        display_column => 'id',
+        title          => 'PostCategory',
+        title_multi    => 'PostCategory Rows',
+        iconCls        => 'ra-icon-pg',
+        multiIconCls   => 'ra-icon-pg-multi',
+        columns        => {
+          id => {
+            allow_add => 0,
+            header    => 'id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          post_id => {
+            header => 'post_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => [ 'hidden' ],
+          },
+          category_id => {
+            header => 'category_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => [ 'hidden' ],
+          },
+          category => {
+            header => 'category',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          post => {
+            header => 'post',
+            #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
