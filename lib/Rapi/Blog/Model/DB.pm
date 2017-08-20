@@ -865,7 +865,7 @@ __PACKAGE__->config(
       Category => {
         display_column => 'name',
         title          => 'Category',
-        title_multi    => 'Category Rows',
+        title_multi    => 'Categories',
         iconCls        => 'ra-icon-pg',
         multiIconCls   => 'ra-icon-pg-multi',
         columns        => {
@@ -878,19 +878,19 @@ __PACKAGE__->config(
           },
           name => {
             header => 'name',
-            #width => 100,
+            width => 140,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           description => {
             header => 'description',
-            #width => 100,
+            width => 280,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           post_categories => {
             header => 'post_categories',
-            #width => 100,
+            width => 190,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -899,15 +899,15 @@ __PACKAGE__->config(
       },
       PostCategory => {
         display_column => 'id',
-        title          => 'PostCategory',
-        title_multi    => 'PostCategory Rows',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
+        title          => 'Post-Category Link',
+        title_multi    => 'Post-Category Links',
+        iconCls        => 'icon-node',
+        multiIconCls   => 'icon-nodes',
         columns        => {
           id => {
             allow_add => 0,
             header    => 'id',
-            #width => 100,
+            width => 45,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
