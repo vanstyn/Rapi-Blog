@@ -98,6 +98,12 @@ around 'get_add_edit_form_items' => sub {
     
     @items = ($wrap,$disp,@items);
     
+    # For 'body' to always be the last item to maintain nearest expected functionality,
+    # even in the event of un-handled schema changes
+    my $bodyItm;
+    @items = grep { $_->{name} eq 'body' ? ($bodyItm = $_ and 0) : 1 } @items;
+    push @items, $bodyItm;
+    
     my $eF = $items[$#items] || {}; # last element
     if($eF->{xtype} eq 'ra-md-editor') {
       $eF->{_noAutoHeight} = 1;
