@@ -12,7 +12,19 @@ use Rapi::Blog::Util;
 sub BUILD {
   my $self = shift;
   
-  if($self->ResultSource->source_name eq 'Post') {
+  my $source_name = $self->ResultSource->source_name;
+  
+  if($source_name eq 'Category') {
+    $self->apply_extconfig(
+      use_add_form => 0,
+      persist_immediately => { 
+        create => 0, update => 0, destroy => 1 
+      },
+      autoload_added_record => 0,
+      toggle_edit_cells_init_off => 0
+    )
+  }
+  elsif($source_name eq 'Post') {
 
     $self->apply_extconfig(
       reload_on_show => \1,
