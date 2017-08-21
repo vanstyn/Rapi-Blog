@@ -48,7 +48,13 @@ around 'get_add_edit_form_items' => sub {
   my @items = $self->$orig(@args);
 
   if($self->ResultSource->source_name eq 'Post') {
-
+  
+    # Actually check to see if there are any Categories, and if 
+    # there are not, don't present the editor
+    unless($self->ResultSource->schema->resultset('Category')->count > 0) {
+      @items = grep { ($_->{name}||'') ne 'categories' } @items;
+    }
+  
     my @sets = (
     
       $self->_collect_to_fieldset(
@@ -101,7 +107,7 @@ around 'get_add_edit_form_items' => sub {
     # For 'body' to always be the last item to maintain nearest expected functionality,
     # even in the event of un-handled schema changes
     my $bodyItm;
-    @items = grep { $_->{name} eq 'body' ? ($bodyItm = $_ and 0) : 1 } @items;
+    @items = grep { ($_->{name}||'') eq 'body' ? ($bodyItm = $_ and 0) : 1 } @items;
     push @items, $bodyItm;
     
     my $eF = $items[$#items] || {}; # last element
