@@ -355,6 +355,14 @@ sub tag_names_list {
 	split(/\s+/,$self->tag_names)
 }
 
+sub category_list {
+  my $self = shift;
+  sort $self
+    ->post_categories
+    ->get_column('category_name')
+    ->all
+}
+
 
 sub _set_column_defaults {
   my $self = shift;
