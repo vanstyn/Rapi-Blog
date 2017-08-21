@@ -569,6 +569,10 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
+          categories => {
+            header => 'Categories',
+            width  => 180
+          }
         },
       },
       PostTag => {

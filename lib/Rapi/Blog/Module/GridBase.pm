@@ -52,7 +52,7 @@ around 'get_add_edit_form_items' => sub {
     my @sets = (
     
       $self->_collect_to_fieldset(
-        \@items, [qw/name title author ts published/], {
+        \@items, [qw/name title categories author ts published/], {
           width => 410,
           title => 'Attributes',
           labelWidth => 70
