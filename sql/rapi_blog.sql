@@ -71,20 +71,18 @@ CREATE TABLE [post_tag] (
 
 DROP TABLE IF EXISTS [category];
 CREATE TABLE [category] (
-  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  [name] varchar(64) NOT NULL,
-  [description] varchar(1024) DEFAULT NULL,
-  CONSTRAINT [category_name_unique] UNIQUE ([name])
+  [name] varchar(64) PRIMARY KEY NOT NULL,
+  [description] varchar(1024) DEFAULT NULL
 );
 
 DROP TABLE IF EXISTS [post_category];
 CREATE TABLE [post_category] (
-  [id]          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  [post_id]     INTEGER NOT NULL,
-  [category_id] INTEGER NOT NULL,
+  [id]            INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [post_id]       INTEGER NOT NULL,
+  [category_name] varchar(64) NOT NULL,
   
-  FOREIGN KEY ([post_id])     REFERENCES [post] ([id])     ON DELETE CASCADE  ON UPDATE CASCADE,
-  FOREIGN KEY ([category_id]) REFERENCES [category] ([id]) ON DELETE RESTRICT ON UPDATE RESTRICT
+  FOREIGN KEY ([post_id])       REFERENCES [post] ([id])         ON DELETE CASCADE  ON UPDATE CASCADE,
+  FOREIGN KEY ([category_name]) REFERENCES [category] ([name]) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
 
 

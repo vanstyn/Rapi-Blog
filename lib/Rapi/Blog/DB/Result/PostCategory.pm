@@ -18,14 +18,14 @@ __PACKAGE__->add_columns(
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
   "post_id",
   { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
-  "category_id",
-  { data_type => "integer", is_foreign_key => 1, is_nullable => 0 },
+  "category_name",
+  { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 64 },
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->belongs_to(
-  "category",
+  "category_name",
   "Rapi::Blog::DB::Result::Category",
-  { id => "category_id" },
+  { name => "category_name" },
   { is_deferrable => 0, on_delete => "RESTRICT", on_update => "RESTRICT" },
 );
 __PACKAGE__->belongs_to(
@@ -36,8 +36,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-08-20 19:43:08
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:dyapwqxvZOT0rc98xfIfIw
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-08-20 20:36:08
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:gMnowO0yVdoLTVDPASrqBw
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration

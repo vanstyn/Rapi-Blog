@@ -205,19 +205,17 @@ sub _run_migrate_schemsum_8955354febf5675 {
     'PRAGMA foreign_keys=off',
     'BEGIN TRANSACTION',q~
 CREATE TABLE [category] (
-  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  [name] varchar(64) NOT NULL,
-  [description] varchar(1024) DEFAULT NULL,
-  CONSTRAINT [category_name_unique] UNIQUE ([name])
+  [name] varchar(64) PRIMARY KEY NOT NULL,
+  [description] varchar(1024) DEFAULT NULL
 )~,
 
 q~CREATE TABLE [post_category] (
-  [id]          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  [post_id]     INTEGER NOT NULL,
-  [category_id] INTEGER NOT NULL,
+  [id]            INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [post_id]       INTEGER NOT NULL,
+  [category_name] varchar(64) NOT NULL,
   
-  FOREIGN KEY ([post_id])     REFERENCES [post] ([id])     ON DELETE CASCADE  ON UPDATE CASCADE,
-  FOREIGN KEY ([category_id]) REFERENCES [category] ([id]) ON DELETE RESTRICT ON UPDATE RESTRICT
+  FOREIGN KEY ([post_id])       REFERENCES [post] ([id])         ON DELETE CASCADE  ON UPDATE CASCADE,
+  FOREIGN KEY ([category_name]) REFERENCES [category] ([name]) ON DELETE RESTRICT ON UPDATE RESTRICT
 )~,
 
      'COMMIT',
@@ -869,13 +867,6 @@ __PACKAGE__->config(
         iconCls        => 'ra-icon-pg',
         multiIconCls   => 'ra-icon-pg-multi',
         columns        => {
-          id => {
-            allow_add => 0,
-            header    => 'id',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
-          },
           name => {
             header => 'name',
             width => 140,
@@ -917,17 +908,11 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             profiles => [ 'hidden' ],
           },
-          category_id => {
-            header => 'category_id',
+          category_name => {
+            header => 'category_name',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
-          },
-          category => {
-            header => 'category',
-            #width => 100,
-            #renderer => 'RA.ux.App.someJsFunc',
-            #profiles => [],
+            #profiles => [ 'hidden' ],
           },
           post => {
             header => 'post',
