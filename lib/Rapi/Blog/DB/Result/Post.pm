@@ -355,6 +355,12 @@ sub tag_names_list {
 	split(/\s+/,$self->tag_names)
 }
 
+sub num_categories {
+  my $self = shift;
+  $self->post_categories->count
+}
+
+
 sub category_list {
   my $self = shift;
   sort $self
@@ -614,6 +620,14 @@ Multi-relationship recording the tags of this Post.
 =head2 tag_names_list 
 
 List of tag names. Like C<tag_names> but returns a list of strings rather than a single string.
+
+=head2 num_categories
+
+Returns the number of Categories this Post is in, which can be zero.
+
+=head2 category_list
+
+List of Category names (strings).
 
 =head2 image_url 
 
