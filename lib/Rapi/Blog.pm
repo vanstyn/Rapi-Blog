@@ -31,6 +31,11 @@ has 'fallback_builtin_scaffold', is => 'ro', isa => Bool, default => sub {0};
 has '+base_appname', default => sub { 'Rapi::Blog::App' };
 has '+debug',        default => sub {1};
 
+sub BUILD {
+  my $self = shift;
+  print STDERR join('',' -- ',(blessed $self),' v',$self->VERSION,' -- ',"\n") if ($self->debug);
+}
+
 has 'share_dir', is => 'ro', isa => Str, lazy => 1, default => sub {
   my $self = shift;
   $self->_get_share_dir;
