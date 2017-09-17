@@ -404,6 +404,20 @@ the entire application which can be used to perform actions based on the query s
 (e.g. C<[% c.model('DB::Post').search_rs(...) %]>) or anything else which can be reached via the context.
 
 
+=head1 AUTOMATIC DATABASE UPGRADES
+
+L<Rapi::Blog> was designed from the ground up to support automatic schema migrations for all publically
+released versions of the built-in Schema. This is done via scan/fingerprint of the schema of the existing 
+database to identify the known/previous schema version, and running the all DDL (i.e ALTER TABLE, etc) 
+needed to upgrade it to the current version. When the database does not match any known fingerprints 
+(including the fingerprint of the current version) the app will refuse to start.
+
+Whenever a database is upgraded, a backup of the old database file is made and saved in the directory
+C<.bkp.rapi_blog.db/> within the C<site_dir>.
+
+This means that under normal circumstances, you don't need to worry about upgrading sites from previous
+versions of C<Rapi::Blog> -- it should just work and automagically do the right thing.
+
 
 =head1 SEE ALSO
 
