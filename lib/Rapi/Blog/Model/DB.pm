@@ -32,8 +32,11 @@ before 'setup' => sub {
     );
   }
   
-  my $DiffObj = $self->_migrate_and_diff_deployed;
+  my ($DiffObj,$schemsum) = $self->_migrate_and_diff_deployed;
   
+  my $fn = (reverse split(/\//,$db_path))[0];
+  warn '  ** ' . __PACKAGE__ . " - loaded $fn [$schemsum]\n";
+
   my $diff = $DiffObj
     ->filter_out('*:relationships')
     ->filter_out('*:constraints')
@@ -80,7 +83,7 @@ sub _migrate_and_diff_deployed {
 
   $self->_migrate_for_schemsum($schemsum) 
     ? $self->_migrate_and_diff_deployed($seen)
-    : $DiffObj
+    : ($DiffObj,$schemsum)
 }
 
 # Dynamic, signature-based migrations
@@ -120,6 +123,7 @@ sub _migrate_for_schemsum {
     return 0;
   }
 }
+
 
 # This is the migration from the last dev state before public 1.000 release... was
 # never seen in the wild (this entry made for test/dev as we never expect to see it)
@@ -197,7 +201,7 @@ FROM [temp_user]
   return 1
 }
 
-
+# This is the first public migration, adds categories
 sub _run_migrate_schemsum_8955354febf5675 {
   my $self = shift;
   
@@ -228,6 +232,70 @@ q~CREATE TABLE [post_category] (
   
   return 1
 }
+
+
+# This is the second public migration from the schema as of v1.0101 release... 
+sub _run_migrate_schemsum_6c99c16bdcb0fab {
+  my $self = shift;
+  
+  my @statements = (
+    'PRAGMA foreign_keys=off',
+    'BEGIN TRANSACTION',
+    
+q~CREATE TABLE [section] (
+  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [parent_id] INTEGER DEFAULT NULL,
+  [name] varchar(64) NOT NULL,
+  [description] varchar(1024) DEFAULT NULL,
+  
+  FOREIGN KEY ([parent_id]) REFERENCES [section] ([id]) ON DELETE CASCADE ON UPDATE CASCADE
+)~,
+'CREATE UNIQUE INDEX [unique_subsection] ON [section] ([parent_id],[name])',
+
+    'ALTER TABLE [post] RENAME TO [temp_post]',q~
+CREATE TABLE [post] (
+  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [name] varchar(255) UNIQUE NOT NULL,
+  [title] varchar(255) DEFAULT NULL,
+  [image] varchar(255) DEFAULT NULL,
+  [ts] datetime NOT NULL,
+  [create_ts] datetime NOT NULL,
+  [update_ts] datetime NOT NULL,
+  [author_id] INTEGER NOT NULL,
+  [creator_id] INTEGER NOT NULL,
+  [updater_id] INTEGER NOT NULL,
+  [section_id] INTEGER DEFAULT NULL,
+  [published] BOOLEAN NOT NULL DEFAULT 0,
+  [publish_ts] datetime DEFAULT NULL,
+  [size] INTEGER DEFAULT NULL,
+  [tag_names] text default NULL,
+  [custom_summary] text default NULL,
+  [summary] text default NULL,
+  [body] text default '',
+  
+  FOREIGN KEY ([author_id])  REFERENCES [user]    ([id]) ON DELETE RESTRICT    ON UPDATE CASCADE,
+  FOREIGN KEY ([creator_id]) REFERENCES [user]    ([id]) ON DELETE RESTRICT    ON UPDATE CASCADE,
+  FOREIGN KEY ([updater_id]) REFERENCES [user]    ([id]) ON DELETE RESTRICT    ON UPDATE CASCADE,
+  FOREIGN KEY ([section_id]) REFERENCES [section] ([id]) ON DELETE SET DEFAULT ON UPDATE CASCADE
+)~, q~
+INSERT INTO [post] SELECT
+  [id],[name],[title],[image],[ts],[create_ts],[update_ts],[author_id],[creator_id],
+  [updater_id],null,[published],[publish_ts],[size],[tag_names],[custom_summary],[summary],[body]
+FROM [temp_post]
+~,
+ 'DROP TABLE [temp_post]',
+  
+ 'COMMIT',
+ 'PRAGMA foreign_keys=on',
+  );
+  
+  my $db = $self->_one_off_connect;
+  
+  $db->storage->dbh->do($_) for (@statements);
+ 
+  return 1
+}
+
 
 
 ## This is the migration from the first public release of the schema (v1.0000)
@@ -572,7 +640,19 @@ __PACKAGE__->config(
           categories => {
             header => 'Categories',
             width  => 180
-          }
+          },
+          section_id => {
+            header => 'section_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => [ 'hidden' ],
+          },
+          section => {
+            header => 'section',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
         },
       },
       PostTag => {
@@ -873,19 +953,19 @@ __PACKAGE__->config(
         columns        => {
           name => {
             header => 'name',
-            width => 140,
+            width  => 140,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           description => {
             header => 'description',
-            width => 280,
+            width  => 280,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           post_categories => {
             header => 'post_categories',
-            width => 190,
+            width  => 190,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -902,7 +982,7 @@ __PACKAGE__->config(
           id => {
             allow_add => 0,
             header    => 'id',
-            width => 45,
+            width     => 45,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -910,7 +990,7 @@ __PACKAGE__->config(
             header => 'post_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           category_name => {
             header => 'category_name',
@@ -921,6 +1001,60 @@ __PACKAGE__->config(
           post => {
             header => 'post',
             #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+        },
+      },
+      Section => {
+        display_column => 'name',
+        title          => 'Section',
+        title_multi    => 'Section Rows',
+        iconCls        => 'ra-icon-pg',
+        multiIconCls   => 'ra-icon-pg-multi',
+        columns        => {
+          id => {
+            allow_add => 0,
+            header    => 'id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          parent_id => {
+            header => 'parent_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => [ 'hidden' ],
+          },
+          name => {
+            header => 'name',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          description => {
+            header => 'description',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          parent => {
+            header => 'parent',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          posts => {
+            header => 'posts',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          sections => {
+            header => 'sections',
+            #width => 100,
+            #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
