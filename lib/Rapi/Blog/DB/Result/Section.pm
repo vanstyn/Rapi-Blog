@@ -16,13 +16,6 @@ __PACKAGE__->table("section");
 __PACKAGE__->add_columns(
   "id",
   { data_type => "integer", is_auto_increment => 1, is_nullable => 0 },
-  "parent_id",
-  {
-    data_type      => "integer",
-    default_value  => \"null",
-    is_foreign_key => 1,
-    is_nullable    => 1,
-  },
   "name",
   { data_type => "varchar", is_nullable => 0, size => 64 },
   "description",
@@ -31,6 +24,13 @@ __PACKAGE__->add_columns(
     default_value => \"null",
     is_nullable => 1,
     size => 1024,
+  },
+  "parent_id",
+  {
+    data_type      => "integer",
+    default_value  => \"null",
+    is_foreign_key => 1,
+    is_nullable    => 1,
   },
 );
 __PACKAGE__->set_primary_key("id");
@@ -60,8 +60,8 @@ __PACKAGE__->has_many(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-10-03 18:30:46
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:c1GdRBNIYNKFc5wrrIdVcg
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-10-04 14:52:49
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:V0GvpLRp6WXqAyPQ0DKGaw
 
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;

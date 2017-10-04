@@ -28,9 +28,9 @@ INSERT INTO [user] VALUES(0,'(system)','System User',null,null,1,1,1);
 DROP TABLE IF EXISTS [section];
 CREATE TABLE [section] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  [parent_id] INTEGER DEFAULT NULL,
   [name] varchar(64) NOT NULL,
   [description] varchar(1024) DEFAULT NULL,
+  [parent_id] INTEGER DEFAULT NULL,
   
   FOREIGN KEY ([parent_id]) REFERENCES [section] ([id]) ON DELETE CASCADE ON UPDATE CASCADE
 );
