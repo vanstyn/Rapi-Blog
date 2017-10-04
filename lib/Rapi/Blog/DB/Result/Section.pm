@@ -58,10 +58,28 @@ __PACKAGE__->has_many(
   { "foreign.parent_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+__PACKAGE__->has_many(
+  "trk_section_posts",
+  "Rapi::Blog::DB::Result::TrkSectionPost",
+  { "foreign.section_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
+  "trk_section_sections_sections",
+  "Rapi::Blog::DB::Result::TrkSectionSection",
+  { "foreign.section_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
+__PACKAGE__->has_many(
+  "trk_section_sections_subsections",
+  "Rapi::Blog::DB::Result::TrkSectionSection",
+  { "foreign.subsection_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-10-04 14:52:49
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:V0GvpLRp6WXqAyPQ0DKGaw
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-10-04 18:42:02
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:9NPmvsrCunpxPOYQuwBskg
 
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
@@ -117,7 +135,8 @@ sub parents_name_list {
 
 sub full_path_names {
   my ($self, $delim) = @_;
-  my @path = '', reverse($self->parents_name_list), $self->name;
+  my @parents = reverse $self->parents_name_list;
+  my @path = ('', @parents, $self->name);
   return join($delim,@path) if ($delim);
   return wantarray ? @path : \@path
 }

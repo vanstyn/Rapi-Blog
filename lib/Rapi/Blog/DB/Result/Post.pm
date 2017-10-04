@@ -115,6 +115,12 @@ __PACKAGE__->belongs_to(
     on_update     => "CASCADE",
   },
 );
+__PACKAGE__->has_many(
+  "trk_section_posts",
+  "Rapi::Blog::DB::Result::TrkSectionPost",
+  { "foreign.post_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 __PACKAGE__->belongs_to(
   "updater",
   "Rapi::Blog::DB::Result::User",
@@ -123,8 +129,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-10-03 20:39:57
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:u1+EILqxBAEMNzFgS1Wpjw
+# Created by DBIx::Class::Schema::Loader v0.07045 @ 2017-10-04 18:42:02
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:EgoroG32J0nSECxuTHx0yQ
 
 __PACKAGE__->load_components('+RapidApp::DBIC::Component::TableSpec');
 __PACKAGE__->TableSpec_m2m( categories => "post_categories", 'category_name');

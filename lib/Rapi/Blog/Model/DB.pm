@@ -284,7 +284,27 @@ INSERT INTO [post] SELECT
 FROM [temp_post]
 ~,
  'DROP TABLE [temp_post]',
+ 
+q~CREATE TABLE [trk_section_posts] (
+  [id]            INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [section_id]    INTEGER NOT NULL,
+  [post_id]       INTEGER NOT NULL,
+  [depth]         INTEGER NOT NULL,
   
+  FOREIGN KEY ([section_id]) REFERENCES [section] ([id]) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY ([post_id])    REFERENCES [post] ([id])    ON DELETE CASCADE ON UPDATE CASCADE
+)~,
+
+q~CREATE TABLE [trk_section_sections] (
+  [id]            INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [section_id]    INTEGER NOT NULL,
+  [subsection_id] INTEGER NOT NULL,
+  [depth]         INTEGER NOT NULL,
+  
+  FOREIGN KEY ([section_id])    REFERENCES [section] ([id]) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY ([subsection_id]) REFERENCES [section] ([id]) ON DELETE CASCADE ON UPDATE CASCADE
+)~, 
+ 
  'COMMIT',
  'PRAGMA foreign_keys=on',
   );
