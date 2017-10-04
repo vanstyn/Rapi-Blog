@@ -160,6 +160,7 @@ if($schema) {
       dump_directory => $applib,
       use_moose	=> 1, generate_pod => 0,
       components => ["InflateColumn::DateTime"],
+      skip_load_external => 1
     },
     [ 
       @connect,
