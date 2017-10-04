@@ -648,8 +648,8 @@ __PACKAGE__->config(
             profiles => [ 'hidden' ],
           },
           section => {
-            header => 'section',
-            #width => 100,
+            header => 'Section',
+            width => 150,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -1009,7 +1009,7 @@ __PACKAGE__->config(
       Section => {
         display_column => 'name',
         title          => 'Section',
-        title_multi    => 'Section Rows',
+        title_multi    => 'Sections',
         iconCls        => 'ra-icon-pg',
         multiIconCls   => 'ra-icon-pg-multi',
         columns        => {
@@ -1028,32 +1028,32 @@ __PACKAGE__->config(
           },
           name => {
             header => 'name',
-            #width => 100,
+            width => 150,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           description => {
             header => 'description',
-            #width => 100,
+            width => 280,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           parent => {
             header => 'parent',
-            #width => 100,
+            width => 160,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           posts => {
             header => 'posts',
-            #width => 100,
+            width => 140,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
           sections => {
             header => 'sections',
-            #width => 100,
+            width => 140,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
