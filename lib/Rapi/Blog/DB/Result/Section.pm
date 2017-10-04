@@ -140,6 +140,19 @@ sub _validate_depth {
     : 1
 }
 
+sub posts_count {
+  my $self = shift;
+  # In case the ResultSet has pre-loaded this value, don't do another query:
+  my $preload = try{$self->get_column('posts_count')};
+  defined $preload ? $preload : $self->posts->count
+}
+
+sub sections_count {
+  my $self = shift;
+  # In case the ResultSet has pre-loaded this value, don't do another query:
+  my $preload = try{$self->get_column('sections_count')};
+  defined $preload ? $preload : $self->sections->count
+}
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
@@ -204,6 +217,14 @@ which will be last.
 If a delimeter argument is supplied, the list will be returned as a string joined by that delimeter.
 If no argument is supplied, when called in LIST context the list is returned, when called in SCALAR
 context, the default delimeter of C<'/'> is used and the path is returned as a joined string.
+
+=head2 posts_count
+
+Returns the count of direct Posts in this Section.
+
+=head2 sections_count
+
+Returns the count of direct sub-sections of this Section.
 
 =head1 SEE ALSO
 

@@ -191,6 +191,7 @@ around 'get_template_vars' => sub {
     list_posts      => sub { $self->Model->resultset('Post')     ->list_posts(@_)      },
     list_tags       => sub { $self->Model->resultset('Tag')      ->list_tags(@_)       },
     list_categories => sub { $self->Model->resultset('Category') ->list_categories(@_) },
+    list_sections   => sub { $self->Model->resultset('Section')  ->list_sections(@_)   },
     list_users      => sub { $self->Model->resultset('User')     ->list_users(@_)      },
     
     # TODO: consider mount_url
