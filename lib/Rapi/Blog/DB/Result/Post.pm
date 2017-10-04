@@ -275,6 +275,16 @@ sub category_list {
     ->all
 }
 
+sub section_name {
+  my $self = shift;
+  $self->section ? $self->section->get_column('name') : undef
+}
+
+sub section_name_or {
+  my ($self, $default) = @_;
+  $self->section_name || $default
+}
+
 sub _set_column_defaults {
   my $self = shift;
   my $for = shift || '';
@@ -507,6 +517,11 @@ an empty string will cause C<summary> to be auto-generated.
 
 The main content body of the Post in HTML/Markdown format.
 
+=head2 section
+
+The section of the Post, if one is set, or C<undef>. FK to L<Rapi::Blog::DB::Result::Section> object. 
+C<section> is a relationship, the underlying foreign-key column is C<section_id> which is hidden.
+
 =head1 METHODS
 
 =head2 comments 
@@ -533,6 +548,15 @@ Returns the number of Categories this Post is in, which can be zero.
 =head2 category_list
 
 List of Category names (strings).
+
+=head2 section_name
+
+Returns the text name of the Section or C<undef> if the Post has no Section set.
+
+=head2 section_name_or
+
+Convenience method, works just like C<section_names>, except when there is no Section, the value
+of the supplied argument is returned instead of C<undef>.
 
 =head2 image_url 
 

@@ -109,6 +109,19 @@ sub delete {
   $self->next::method(@_)
 }
 
+
+sub parents_name_list {
+  my $self = shift;
+  $self->parent ? ($self->parent->name, $self->parent->parents_name_list) : ()
+}
+
+sub full_path_names {
+  my ($self, $delim) = @_;
+  my @path = '', reverse($self->parents_name_list), $self->name;
+  return join($delim,@path) if ($delim);
+  return wantarray ? @path : \@path
+}
+
 sub _validate_depth {
   my $self = shift;
   my $level = shift || 1;
@@ -132,3 +145,91 @@ sub _validate_depth {
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;
 1;
+
+__END__
+
+=head1 NAME
+
+Rapi::Blog::DB::Result::Section - Section row object
+
+=head1 DESCRIPTION
+
+This is the default Section Result class/row object for L<Rapi::Blog>. Posts can optionally be 
+assigned to exactly one section, but sections may be sub-sections of other sections, forming
+a hierarchy/tree structure.
+
+This is a L<DBIx::Class::Row>.
+
+=head1 COLUMNS
+
+=head2 id
+
+Auto-increment section id. Read-only.
+
+=head2 name
+
+The unique name of the Section at the current location in the hierarchy (i.e. the Section name can be
+reused if it has a different parent Section).
+
+=head2 description
+
+Optionally text description of the Section
+
+=head2 parent
+
+The parent Section that this Section belongs to, or C<undef> if this is a top-level Section. This
+is an FK relationship to another Section row object. C<parent> is a relationship name, the 
+underlying foreign-key column is C<parent_id> which is hidden.
+
+=head1 METHODS
+
+=head2 posts
+
+Multi-relationship to all the Posts in this Section.
+
+=head2 sections
+
+Multi-relationship to all the immediate child Sections in this Section.
+
+=head2 parents_name_list
+
+Returns a C<LIST> of all the names of parent Sections up the chain to the top, ordered from child to 
+parent, excluding the name of the calling Section.
+
+=head2 full_path_names
+
+Returns the path-ordered (parent to child) Section names, including the name of the calling Section
+which will be last.
+
+If a delimeter argument is supplied, the list will be returned as a string joined by that delimeter.
+If no argument is supplied, when called in LIST context the list is returned, when called in SCALAR
+context, the default delimeter of C<'/'> is used and the path is returned as a joined string.
+
+=head1 SEE ALSO
+
+=over
+
+=item * 
+
+L<Rapi::Blog>
+
+=item *
+
+L<http://rapi.io/blog>
+
+=back
+
+
+=head1 AUTHOR
+
+Henry Van Styn <vanstyn@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2017 by IntelliTree Solutions llc.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
+=cut
+
