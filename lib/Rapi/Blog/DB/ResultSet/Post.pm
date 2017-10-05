@@ -131,6 +131,12 @@ sub list_posts {
   if(exists $P->{section_id}) {
     $Rs = $Rs->search_rs({ 'me.section_id' => $P->{section_id} });
   }
+  elsif($P->{under_section_id}) {
+    $Rs = $Rs->search_rs(
+      { 'trk_section_posts.section_id' => $P->{under_section_id} },
+      { join => 'trk_section_posts' }
+    );
+  }
   
   return $Rs->_list_api
 }
