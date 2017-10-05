@@ -73,7 +73,7 @@ sub _all_columns_except {
 __PACKAGE__->load_components('+Rapi::Blog::DB::Component::ResultSet::ListAPI');
 
 sub _api_default_params {{ limit => 20 }}
-sub _api_param_arg_order { [qw/search tag page limit sort category/] } 
+sub _api_param_arg_order { [qw/search tag page limit sort category section_id/] } 
 
 
 # Method exposed to templates:
@@ -127,6 +127,11 @@ sub list_posts {
 			$Rs = $Rs->most_comments_first;
 		}
 	}
+  
+  if($P->{section_id}) {
+    $P->{section_id} = undef if ($P->{section_id} eq 'none');
+    $Rs = $Rs->search_rs({ 'me.section_id' => $P->{section_id} });
+  }
   
   return $Rs->_list_api
 }
