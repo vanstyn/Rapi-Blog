@@ -14,7 +14,7 @@ sub by_popularity {
   my $self = shift;
   
   $self->search_rs(undef, { 
-    order_by => { '-desc' => $self->correlate('posts')->count_rs->as_query },
+    order_by => { '-desc' => $self->correlate('trk_section_posts')->count_rs->as_query },
   })
 }
 
@@ -40,8 +40,8 @@ sub list_sections {
   my $Rs = $self
     ->search_rs(undef,{ '+columns' => {
       # pre-load 'posts_count' -- the Row class will use it (see Result::Section)
-      posts_count    => $self->correlate('posts')    ->count_rs->as_query,
-      sections_count => $self->correlate('sections') ->count_rs->as_query,
+      posts_count       => $self->correlate('trk_section_posts')             ->count_rs->as_query,
+      subsections_count => $self->correlate('trk_section_sections_sections') ->count_rs->as_query,
       
     }});
   

@@ -202,14 +202,14 @@ sub posts_count {
   my $self = shift;
   # In case the ResultSet has pre-loaded this value, don't do another query:
   my $preload = try{$self->get_column('posts_count')};
-  defined $preload ? $preload : $self->posts->count
+  defined $preload ? $preload : $self->trk_section_posts->count
 }
 
-sub sections_count {
+sub subsections_count {
   my $self = shift;
   # In case the ResultSet has pre-loaded this value, don't do another query:
-  my $preload = try{$self->get_column('sections_count')};
-  defined $preload ? $preload : $self->sections->count
+  my $preload = try{$self->get_column('subsections_count')};
+  defined $preload ? $preload : $self->trk_section_sections_sections->count
 }
 
 
