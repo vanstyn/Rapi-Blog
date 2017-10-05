@@ -216,6 +216,15 @@ around 'get_template_vars' => sub {
       }
     },
     
+    resolve_section_id => sub {
+      if(my $id = shift) {
+        my $Section = $self->Model->resultset('Section')
+          ->search_rs({ 'me.id' => $id })
+          ->first;
+        return $Section ? $Section->name : $id
+      }
+    },
+    
     # Expose this here so its available to non-priv templates:
     mount_url => sub { $c->mount_url }
     
