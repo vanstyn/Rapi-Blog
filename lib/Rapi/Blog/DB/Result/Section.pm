@@ -86,6 +86,8 @@ use Rapi::Blog::Util;
 
 __PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');
 
+sub schema { (shift)->result_source->schema }
+
 sub insert {
   my $self = shift;
   my $columns = shift;
@@ -141,6 +143,14 @@ sub full_path_names {
   return wantarray ? @path : \@path
 }
 
+sub all_section_ids {
+  my $self = shift;
+  my @ids = ( $self->get_column('id') );
+  push @ids, $self->parent->all_section_ids if ($self->parent);
+  @ids
+}
+
+
 sub _validate_depth {
   my $self = shift;
   my $level = shift || 1;
@@ -158,6 +168,7 @@ sub _validate_depth {
     ? $self->parent->_validate_depth($level+1,$seen)
     : 1
 }
+
 
 sub posts_count {
   my $self = shift;

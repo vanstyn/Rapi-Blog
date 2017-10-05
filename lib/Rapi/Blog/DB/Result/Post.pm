@@ -324,6 +324,10 @@ sub _set_column_defaults {
     $self->create_ts($now_ts);
     $self->creator_id( $uid );
   }
+  
+  if ($for eq 'insert' || $self->is_column_changed('section_id')) {
+    $self->_apply_track_sections
+  }
 
 }
 
@@ -383,6 +387,25 @@ sub _generate_auto_summary {
   }
   
   return $buf
+}
+
+
+sub _apply_track_sections {
+  my $self = shift;
+  
+  $self->trk_section_posts->delete_all;
+  return unless ($self->section);
+  
+  my @ids = $self->section->all_section_ids;
+  my ($id, $depth) = ($self->get_column('id'), 0);
+
+  $self->trk_section_posts->populate([
+    map {{
+      section_id => $_,
+      post_id    => $id,
+      depth      => $depth++
+    }} @ids
+  ])
 }
 
 
