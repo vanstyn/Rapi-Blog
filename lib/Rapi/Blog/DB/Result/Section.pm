@@ -100,7 +100,11 @@ sub insert {
   
   $self->_validate_depth;
   
-  $self->next::method
+  $self->next::method;
+  
+  $self->_track_as_subsection;
+  
+  $self
 }
 
 sub update {
@@ -115,7 +119,11 @@ sub update {
   
   $self->_validate_depth;
   
-  $self->next::method
+  $self->next::method;
+  
+  $self->_track_as_subsection;
+  
+  $self
 }
 
 
@@ -169,6 +177,26 @@ sub _validate_depth {
     : 1
 }
 
+
+sub _track_as_subsection {
+  my $self = (shift)->get_from_storage;
+  
+  # Clear all existing rows listing us as a subsection:
+  $self->trk_section_sections_subsections->delete_all;
+  return unless ($self->parent);
+  
+  my @ids = $self->parent->all_section_ids;
+  my ($id, $depth) = ($self->get_column('id'), 0);
+
+  $self->trk_section_sections_subsections->populate([
+    map {{
+      section_id    => $_,
+      subsection_id => $id,
+      depth         => $depth++
+    }} @ids
+  ])
+}
+  
 
 sub posts_count {
   my $self = shift;
