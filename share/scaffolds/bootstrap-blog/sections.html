@@ -17,14 +17,24 @@
     <ul>
       [% IF this_section_id == 'none' %]
         [% SET posts_result = list_posts( limit => 1, section_id => 'none' ) %]
-        <li>
-          <i>unsectioned</i> ([% posts_result.total %] posts)
-        </li>
+        [% IF posts_result.total > 0 %]
+          <li>
+            <a href="[%- mount_url -%]/list?section_id=none">
+              <i>unsectioned</i>
+            </a> ([% posts_result.total %] posts)
+          </li>
+        [% END %]
       [% END %]
       [% FOREACH section IN sections %]
         [% SET count = count + 1 %]
         <li>
-          [% section.name %] ([% section.posts_count %] posts)
+          [% IF section.posts_count > 0 %]
+            <a href="[%- mount_url -%]/list?under_section_id=[% section.id %]">
+              [% section.name %]
+            </a>
+          [% ELSE %]
+            [% section.name %]
+          [% END %] ([% section.posts_count %] posts)
           [% PROCESS list_subsections this_section_id = section.id %]
         </li>
       [% END %]
