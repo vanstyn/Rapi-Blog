@@ -74,7 +74,7 @@ __PACKAGE__->load_components('+Rapi::Blog::DB::Component::ResultSet::ListAPI');
 
 sub _api_default_params {{ limit => 20 }}
 sub _api_param_arg_order { [qw/search tag page limit sort category section_id/] } 
-
+sub _api_params_undef_map {{ section_id => 'none' }};
 
 # Method exposed to templates:
 
@@ -128,8 +128,7 @@ sub list_posts {
 		}
 	}
   
-  if($P->{section_id}) {
-    $P->{section_id} = undef if ($P->{section_id} eq 'none');
+  if(exists $P->{section_id}) {
     $Rs = $Rs->search_rs({ 'me.section_id' => $P->{section_id} });
   }
   

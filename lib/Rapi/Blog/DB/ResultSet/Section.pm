@@ -26,16 +26,13 @@ __PACKAGE__->load_components('+Rapi::Blog::DB::Component::ResultSet::ListAPI');
 
 sub _api_default_params {{ limit => 200, sort => 'alphabetical' }}
 sub _api_param_arg_order { [qw/search parent_id/] } 
+sub _api_params_undef_map {{ parent_id => 'none' }};
 
 # Method exposed to templates:
 sub list_sections {
   my ($self, @args) = @_;
   
   my $P = $self->_list_api_params(@args);
-  
-  if(exists $P->{parent_id}) {
-    $P->{parent_id} = undef if (!$P->{parent_id} || $P->{parent_id} eq 'none');
-  }
   
   my $Rs = $self
     ->search_rs(undef,{ '+columns' => {
