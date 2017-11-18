@@ -968,8 +968,8 @@ __PACKAGE__->config(
         display_column => 'name',
         title          => 'Category',
         title_multi    => 'Categories',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
+        iconCls        => 'icon-image',
+        multiIconCls   => 'icon-images',
         columns        => {
           name => {
             header => 'name',
@@ -1030,8 +1030,8 @@ __PACKAGE__->config(
         display_column => 'name',
         title          => 'Section',
         title_multi    => 'Sections',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
+        iconCls        => 'icon-element',
+        multiIconCls   => 'icon-chart-organisation',
         columns        => {
           id => {
             allow_add => 0,
