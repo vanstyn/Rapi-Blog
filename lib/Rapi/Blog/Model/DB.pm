@@ -690,7 +690,7 @@ __PACKAGE__->config(
         title          => 'Post-Tag Link',
         title_multi    => 'Post-Tag Links',
         iconCls        => 'icon-node',
-        multiIconCls   => 'icon-nodes',
+        multiIconCls   => 'icon-logic-and-blue',
         columns        => {
           id => {
             allow_add => 0,
@@ -1007,7 +1007,7 @@ __PACKAGE__->config(
         title          => 'Post-Category Link',
         title_multi    => 'Post-Category Links',
         iconCls        => 'icon-node',
-        multiIconCls   => 'icon-nodes',
+        multiIconCls   => 'icon-logic-and',
         columns        => {
           id => {
             allow_add => 0,
