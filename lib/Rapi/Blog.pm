@@ -216,6 +216,14 @@ sub _build_base_config {
     'RapidApp' => {
       module_root_namespace => 'adm',
       local_assets_dir => $loc_assets_dir,
+      
+      load_modules => {
+        sections => {
+          class  => 'Rapi::Blog::Module::SectionTree',
+          params => {}
+        }
+      },
+      
     },
     
     'Model::RapidApp::CoreSchema' => {
