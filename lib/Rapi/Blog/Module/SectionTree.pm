@@ -5,6 +5,7 @@ use Moose;
 extends 'RapidApp::Module::Tree';
 
 use RapidApp::Util qw(:all);
+use Rapi::Blog::Util;
 
 has '+root_node_text',      default => 'Sections';
 has '+show_root_node',      default => 1;
@@ -26,6 +27,24 @@ sub BUILD {
   );
 
 }
+
+sub is_admin {
+  my $self = shift;
+  my $User = Rapi::Blog::Util->get_User;
+  $User && $User->admin ? 1 : 0
+}
+
+around 'content' => sub {
+  my ($orig, $self, @args) = @_;
+  my $cfg = $self->$orig(@args);
+  
+  unless ($self->is_admin) {
+    my @ops = qw/add delete rename copy move/;
+    $cfg->{$_.'_node_url'} = undef for (@ops);
+  }
+
+  return $cfg
+};
 
 
 sub get_node_id {
@@ -78,6 +97,8 @@ sub fetch_nodes {
 
 sub add_node {
   my ($self,$name,$node,$params) = @_;
+  
+  die usererr "Create Section: PERMISSION DENIED" unless ($self->is_admin);
 
   my $id = $self->get_node_id($node);
   
@@ -99,6 +120,8 @@ sub add_node {
 
 sub rename_node {
   my ($self,$node,$name,$params) = @_;
+  
+  die usererr "Rename Section: PERMISSION DENIED" unless ($self->is_admin);
   
   my $id = $self->get_node_id($node);
   die "Cannot rename the root node" unless ($id);
@@ -122,6 +145,8 @@ sub delete_node {
   my $self = shift;
   my $node = shift;
   
+  die usererr "Delete Section: PERMISSION DENIED" unless ($self->is_admin);
+  
   my $id = $self->get_node_id($node);
   die "Cannot rename the root node" unless ($id);
   
@@ -141,6 +166,8 @@ sub move_node {
   my $node = shift;
   my $target = shift;
   my $point = shift;
+  
+  die usererr "Move Section: PERMISSION DENIED" unless ($self->is_admin);
   
   my $id  = $self->get_node_id($node);
   my $tid = $self->get_node_id($target);
