@@ -5,7 +5,7 @@ use warnings;
 
 # ABSTRACT: RapidApp-powered blog
 
-use RapidApp 1.3004;
+use RapidApp 1.3005_01;
 
 use Moose;
 extends 'RapidApp::Builder';
@@ -224,6 +224,16 @@ sub _build_base_config {
         }
       },
       
+    },
+    
+    'Plugin::RapidApp::NavCore' => {
+      custom_navtree_nodes => [
+        {
+          text    => 'Manage Sections',
+          iconCls => 'icon-sitemap-color',
+          url     => '/adm/sections' 
+        }
+      ]
     },
     
     'Model::RapidApp::CoreSchema' => {

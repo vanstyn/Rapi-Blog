@@ -19,7 +19,7 @@ sub BUILD {
   my $self = shift;
   
   $self->apply_extconfig(
-    tabTitle   => 'Sections',
+    tabTitle   => 'Manage Sections',
     tabIconCls => 'icon-sitemap-color',
     border     => \1,
     autoScroll => \1
