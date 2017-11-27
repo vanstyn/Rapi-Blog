@@ -229,9 +229,34 @@ sub _build_base_config {
     'Plugin::RapidApp::NavCore' => {
       custom_navtree_nodes => [
         {
-          text    => 'Manage Sections',
-          iconCls => 'icon-sitemap-color',
-          url     => '/adm/sections' 
+          text    => 'Taxonomies',
+          iconCls => 'icon-fa-cogs',
+          cls		=> 'pad-top-7px',
+          style => 'padding-top: 30px;',
+          expand => 1,
+          children => [
+            {
+              text    => 'Tags',
+              iconCls => 'icon-tags-blue',
+              url     => '/adm/main/db/db_tag' 
+            },
+            {
+              text    => 'Categories',
+              iconCls => 'icon-images',
+              url     => '/adm/main/db/db_category' 
+            },
+            {
+              text    => 'Sections (Tree)',
+              iconCls => 'icon-sitemap-color',
+              url     => '/adm/sections' 
+            },
+            {
+              text    => 'Sections (Grid)',
+              iconCls => 'icon-chart-organisation',
+              url     => '/adm/main/db/db_section' 
+            },
+
+          ]
         }
       ]
     },
