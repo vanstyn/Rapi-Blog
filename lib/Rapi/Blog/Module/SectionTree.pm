@@ -56,10 +56,8 @@ sub get_node_id {
   $id
 }
 
-sub Rs {
-  my $self = shift;
-  $self->c->model('DB::Section')
-}
+sub Rs  { (shift)->c->model('DB::Section') }
+sub pRs { (shift)->c->model('DB::Post')    }
 
 sub Sections_of {
   my ($self, $id) = @_;
@@ -68,11 +66,28 @@ sub Sections_of {
     ->all
 }
 
+sub Posts_of {
+  my ($self, $id) = @_;
+  $self->pRs
+    ->search_rs({ 'me.section_id' => $id })
+    ->all
+}
+
 sub get_Section {
   my ($self, $id) = @_;
   $self->Rs->find($id)
 }
 
+sub get_Post {
+  my ($self, $id) = @_;
+  $self->pRs->find($id)
+}
+
+sub get_post_id {
+  my ($self, $id) = @_;
+  my ($junk,$post_id) = split(/^p-/,$id,2);
+  $post_id
+}
 
 sub fetch_nodes {
   my ($self, $node) = @_;
@@ -87,7 +102,25 @@ sub fetch_nodes {
       text => $Section->name
     };
     
+    $cfg->{expanded} = \1 unless ($Section->sections->count > 0);
+    
     push @nodes, $cfg;
+  }
+  
+  if($id) {
+    foreach my $Post ($self->Posts_of($id)) {
+      my $cfg = {
+        id          => join('-','p',$Post->id),
+        text        => $Post->title,
+        iconCls     => 'icon-post',
+        leaf        => \1,
+        expanded    => \1,
+        allowDrop   => \0,
+        allowAdd    => \0,
+        allowDelete => \0
+      };
+      push @nodes, $cfg;
+    }
   }
   
   \@nodes
@@ -102,6 +135,9 @@ sub add_node {
 
   my $id = $self->get_node_id($node);
   
+  # should be redundant:
+  die usererr "Cannot add a Section to a post" if ($self->get_post_id($id));
+  
   my $Section = $self->Rs->create({
     parent_id => $id,
     name      => $name
@@ -114,6 +150,7 @@ sub add_node {
       id   => $Section->id,
       text => $Section->name
     }
+
   };
 }
 
@@ -121,34 +158,50 @@ sub add_node {
 sub rename_node {
   my ($self,$node,$name,$params) = @_;
   
-  die usererr "Rename Section: PERMISSION DENIED" unless ($self->is_admin);
+  die usererr "Rename: PERMISSION DENIED" unless ($self->is_admin);
   
   my $id = $self->get_node_id($node);
   die "Cannot rename the root node" unless ($id);
-  
-  my $Section = $self->get_Section($id) or die "Section id '$id' not found";
   
   # strip whitespace
   $name =~ s/^\s+//;
   $name =~ s/\s+$//;
   
-  $Section->update({ name => $name });
-  
-  return {
-    msg    => 'Renamed',
-    success  => \1,
-    new_text => $Section->name,
-  };
+  if(my $post_id = $self->get_post_id($id)) {
+    my $Post = $self->get_Post($post_id) or die "Post id '$post_id' not found";
+    
+    $Post->update({ title => $name });
+    
+    return {
+      msg    => 'Renamed',
+      success  => \1,
+      new_text => $Post->title,
+    };
+  }
+  else {
+    my $Section = $self->get_Section($id) or die "Section id '$id' not found";
+    
+    $Section->update({ name => $name });
+    
+    return {
+      msg    => 'Renamed',
+      success  => \1,
+      new_text => $Section->name,
+    };
+  }
 }
 
 sub delete_node {
   my $self = shift;
   my $node = shift;
   
-  die usererr "Delete Section: PERMISSION DENIED" unless ($self->is_admin);
+  die usererr "Delete: PERMISSION DENIED" unless ($self->is_admin);
   
   my $id = $self->get_node_id($node);
   die "Cannot rename the root node" unless ($id);
+  
+  # should be redundant:
+  die usererr "Posts not allowed to be deleted from here" if ($self->get_post_id($id));
   
   my $Section = $self->get_Section($id) or die "Section id '$id' not found";
   
@@ -172,10 +225,21 @@ sub move_node {
   my $id  = $self->get_node_id($node);
   my $tid = $self->get_node_id($target);
   
-  my $Section = $self->get_Section($id) or die "Section id '$id' not found";
+  # should be redundant:
+  die usererr "Posts cannot contain sub-items" if ($self->get_post_id($tid));
   
-  $Section->parent_id($tid);
-  $Section->update
+  if(my $post_id = $self->get_post_id($id)) {
+    my $Post = $self->get_Post($post_id) or die "Post id '$post_id' not found";
+    
+    $Post->section_id($tid);
+    $Post->update
+  }
+  else {
+    my $Section = $self->get_Section($id) or die "Section id '$id' not found";
+    
+    $Section->parent_id($tid);
+    $Section->update
+  }
 }
 
 
