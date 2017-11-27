@@ -15,6 +15,10 @@ has '+no_dragdrop_menu',    default => 1;
 has '+setup_tbar',          default => 1;
 has '+no_recursive_delete', default => 0;
 
+has '+add_button_text',       default => 'Add Section';
+has '+add_button_iconCls',    default => 'icon-folder-add';
+has '+delete_button_text',    default => 'Delete Section';
+has '+delete_button_iconCls', default => 'icon-folder-delete';
 
 sub BUILD {
   my $self = shift;
