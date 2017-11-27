@@ -231,9 +231,8 @@ sub _build_base_config {
         {
           text    => 'Taxonomies',
           iconCls => 'icon-fa-cogs',
-          cls		=> 'pad-top-7px',
-          style => 'padding-top: 30px;',
-          expand => 1,
+          cls		=> 'pad-top-4px',
+          expand => \1,
           children => [
             {
               text    => 'Tags',
@@ -257,7 +256,90 @@ sub _build_base_config {
             },
 
           ]
-        }
+        },
+        {
+          text     => 'Content',
+          iconCls  => 'icon-folder-table',
+          children => [
+            {
+              text    => 'Posts',
+              iconCls => 'icon-posts',
+              url     => '/adm/main/db/db_post' 
+            },
+            {
+              text    => 'Comments',
+              iconCls => 'icon-comments',
+              url     => '/adm/main/db/db_comment' 
+            },
+          ]
+        },
+        
+        {
+          text    => 'Index &amp; tracking tables',
+          iconCls => 'icon-database-gear',
+          children => [
+            {
+              text    => 'Post-Category Links',
+              iconCls => 'icon-logic-and',
+              url     => '/adm/main/db/db_postcategory' 
+            },
+            {
+              text    => 'Post-Tag Links',
+              iconCls => 'icon-logic-and-blue',
+              url     => '/adm/main/db/db_posttag' 
+            },
+            {
+              text    => 'Track Section-Posts',
+              iconCls => 'icon-table-relationship',
+              url     => '/adm/main/db/db_trksectionpost' 
+            },
+            {
+              text    => 'Track Section-Sections',
+              iconCls => 'icon-table-relationship',
+              url     => '/adm/main/db/db_trksectionsection' 
+            },
+          ]
+        },
+        
+        {
+          text    => 'Stats &amp; settings',
+          iconCls => 'icon-group-gear',
+          children => [
+            {
+              text    => 'Users',
+              iconCls => 'icon-users',
+              url     => '/adm/main/db/db_user' 
+            },
+            {
+              text    => 'Roles',
+              iconCls => 'ra-icon-user-prefs',
+              url     => '/adm/main/db/rapidapp_coreschema_role' 
+            },
+            {
+              text    => 'Hits',
+              iconCls => 'icon-world-gos',
+              url     => '/adm/main/db/db_hit' 
+            },
+            {
+              text    => 'Sessions',
+              iconCls => 'ra-icon-environment-network',
+              url     => '/adm/main/db/db_session' 
+            },
+            
+            {
+              text    => 'All Saved Views',
+              iconCls => 'ra-icon-data-views',
+              url     => '/adm/main/db/rapidapp_coreschema_savedstate' 
+            },
+            
+            {
+              text    => 'Default Views by Source',
+              iconCls => 'ra-icon-data-preferences',
+              url     => '/adm/main/db/rapidapp_coreschema_defaultview' 
+            },
+          ]
+        },
+        
       ]
     },
     
