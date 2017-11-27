@@ -19,6 +19,8 @@ has '+no_recursive_delete', default => 0;
 sub BUILD {
   my $self = shift;
   
+  $self->root_node->{iconCls} = 'icon-sitemap-color';
+  
   $self->apply_extconfig(
     tabTitle   => 'Manage Sections',
     tabIconCls => 'icon-sitemap-color',
@@ -96,6 +98,14 @@ sub fetch_nodes {
   
   my @nodes = ();
   
+  push @nodes, { 
+    id               => 'unsectioned', 
+    text             => '<i style="opacity:0.6;">unsectioned</i>',
+    iconCls          => 'icon-outbox',
+    allowAdd         => \0,
+    rootValidActions => \1,
+  } unless($id); 
+  
   foreach my $Section ($self->Sections_of($id)) {
     my $cfg = {
       id   => $Section->id,
@@ -108,6 +118,7 @@ sub fetch_nodes {
   }
   
   if($id) {
+    $id = undef if ($id eq 'unsectioned');
     foreach my $Post ($self->Posts_of($id)) {
       my $cfg = {
         id          => join('-','p',$Post->id),
@@ -224,6 +235,8 @@ sub move_node {
   
   my $id  = $self->get_node_id($node);
   my $tid = $self->get_node_id($target);
+  
+  $tid = undef if ($tid eq 'unsectioned');
   
   # should be redundant:
   die usererr "Posts cannot contain sub-items" if ($self->get_post_id($tid));
