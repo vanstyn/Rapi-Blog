@@ -19,7 +19,7 @@ require Module::Locate;
 use Path::Class qw/file dir/;
 use YAML::XS 0.64 'LoadFile';
 
-our $VERSION = '1.0200';
+our $VERSION = 1.0200_01;
 our $TITLE = "Rapi::Blog v" . $VERSION;
 
 has 'site_path',        is => 'ro', required => 1;
@@ -185,6 +185,15 @@ has 'default_view_path', is => 'ro', lazy => 1, default => sub {
 has 'preview_path', is => 'ro', lazy => 1, default => sub {
   my $self = shift;
   return $self->scaffold_cnf->{preview_path} || $self->default_view_path
+};
+
+
+after 'bootstrap' => sub { 
+  my $self = shift;
+  
+  my $c = $self->appname;
+  $c->setup_plugins(['+Rapi::Blog::CatalystApp']);
+  
 };
 
 
