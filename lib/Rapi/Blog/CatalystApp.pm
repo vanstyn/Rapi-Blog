@@ -11,13 +11,18 @@ use RapidApp::Util qw(:all);
 
 
 around 'authenticate' => sub {
-  my ($orig, $self, @args) = @_;
+  my ($orig, $c, @args) = @_;
   
-  #scream(\@args);
+  my $opt = $args[0];
+  if((ref($opt)||'') eq 'HASH' && $opt->{username}) {
+    my $User = $c->model('DB::User')->search_rs({ 'me.username' => $opt->{username} })->first;
+    if ($User && $User->has_column('disabled') && $User->disabled) {
+      $c->log->debug("Denied login for '$opt->{username}' -- account disabled");
+      return 0;
+    }
+  }
   
-  # TODO ...
-  
-  $self->$orig(@args);
+  $c->$orig(@args);
 
 };
 

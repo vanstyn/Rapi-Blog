@@ -21,9 +21,10 @@ CREATE TABLE [user] (
   [email] varchar(255) DEFAULT NULL,
   [admin] BOOLEAN NOT NULL DEFAULT 0,
   [author] BOOLEAN NOT NULL DEFAULT 0,
-  [comment] BOOLEAN NOT NULL DEFAULT 1
+  [comment] BOOLEAN NOT NULL DEFAULT 1,
+  [disabled] BOOLEAN NOT NULL DEFAULT 0
 );
-INSERT INTO [user] VALUES(0,'(system)','System User',null,null,1,1,1);
+INSERT INTO [user] VALUES(0,'(system)','System User',null,null,1,1,1,0);
 
 DROP TABLE IF EXISTS [section];
 CREATE TABLE [section] (

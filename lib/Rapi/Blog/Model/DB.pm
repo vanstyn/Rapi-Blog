@@ -125,6 +125,23 @@ sub _migrate_for_schemsum {
 }
 
 
+# This is the migration from v1.02
+sub _run_migrate_schemsum_fea65238f92786e {
+  my $self = shift;
+  
+  my @statements = (
+    'ALTER TABLE [user] ADD COLUMN [disabled] BOOLEAN NOT NULL DEFAULT 0'
+  );
+  
+  my $db = $self->_one_off_connect;
+  
+  $db->storage->dbh->do($_) for (@statements);
+  
+  return 1
+}
+
+
+
 # This is the migration from the last dev state before public 1.000 release... was
 # never seen in the wild (this entry made for test/dev as we never expect to see it)
 sub _run_migrate_schemsum_7ef8b36d22d6c7d {
@@ -806,6 +823,12 @@ __PACKAGE__->config(
           },
           email => {
             header => 'email',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          disabled => {
+            header => 'disabled',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
