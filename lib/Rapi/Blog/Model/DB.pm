@@ -130,7 +130,26 @@ sub _run_migrate_schemsum_fea65238f92786e {
   my $self = shift;
   
   my @statements = (
-    'ALTER TABLE [user] ADD COLUMN [disabled] BOOLEAN NOT NULL DEFAULT 0'
+    'ALTER TABLE [user] ADD COLUMN [disabled] BOOLEAN NOT NULL DEFAULT 0',
+    
+    q~CREATE TABLE [user_reset_token_type] (
+      [name] varchar(16) PRIMARY KEY NOT NULL,
+      [description] varchar(1024) DEFAULT NULL
+    )~,
+    q~INSERT INTO [user_reset_token_type] VALUES('enable','Enable a disabled user account')~,
+    q~INSERT INTO [user_reset_token_type] VALUES('password_reset','Change a user password')~,
+
+    q~CREATE TABLE [user_reset_token] (
+      [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+      [type] varchar(16) NOT NULL,
+      [user_id] INTEGER NOT NULL,
+      [create_ts] datetime NOT NULL,
+      [expire_ts] datetime NOT NULL,
+      [token_hash] varchar(128) UNIQUE NOT NULL,
+      
+      FOREIGN KEY ([type]) REFERENCES [user_reset_token_type] ([name]) ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY ([user_id]) REFERENCES [user] ([id]) ON DELETE CASCADE ON UPDATE CASCADE
+    )~
   );
   
   my $db = $self->_one_off_connect;
@@ -833,6 +852,13 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
+          user_reset_tokens => {
+            header => 'user_reset_tokens',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
         },
       },
       Comment => {
@@ -1221,6 +1247,86 @@ __PACKAGE__->config(
           subsection => {
             header => 'subsection',
             #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+        },
+      },
+      UserResetToken => {
+        display_column => 'id',
+        title          => 'UserResetToken',
+        title_multi    => 'UserResetToken Rows',
+        iconCls        => 'ra-icon-pg',
+        multiIconCls   => 'ra-icon-pg-multi',
+        columns        => {
+          id => {
+            allow_add => 0,
+            header    => 'id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          type => {
+            header => 'type',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          user_id => {
+            header => 'user_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => [ 'hidden' ],
+          },
+          create_ts => {
+            header => 'create_ts',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          expire_ts => {
+            header => 'expire_ts',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          token_hash => {
+            header => 'token_hash',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          user => {
+            header => 'user',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+        },
+      },
+      UserResetTokenType => {
+        display_column => 'name',
+        title          => 'UserResetTokenType',
+        title_multi    => 'UserResetTokenType Rows',
+        iconCls        => 'ra-icon-pg',
+        multiIconCls   => 'ra-icon-pg-multi',
+        columns        => {
+          name => {
+            header => 'name',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          description => {
+            header => 'description',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          user_reset_tokens => {
+            header => 'user_reset_tokens',
+            #width => 100,
+            #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },

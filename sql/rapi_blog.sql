@@ -26,6 +26,29 @@ CREATE TABLE [user] (
 );
 INSERT INTO [user] VALUES(0,'(system)','System User',null,null,1,1,1,0);
 
+DROP TABLE IF EXISTS [user_reset_token_type];
+CREATE TABLE [user_reset_token_type] (
+  [name] varchar(16) PRIMARY KEY NOT NULL,
+  [description] varchar(1024) DEFAULT NULL
+);
+INSERT INTO [user_reset_token_type] VALUES('enable','Enable a disabled user account');
+INSERT INTO [user_reset_token_type] VALUES('password_reset','Change a user password');
+
+
+DROP TABLE IF EXISTS [user_reset_token];
+CREATE TABLE [user_reset_token] (
+  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [type] varchar(16) NOT NULL,
+  [user_id] INTEGER NOT NULL,
+  [create_ts] datetime NOT NULL,
+  [expire_ts] datetime NOT NULL,
+  [token_hash] varchar(128) UNIQUE NOT NULL,
+  
+  FOREIGN KEY ([type]) REFERENCES [user_reset_token_type] ([name]) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY ([user_id]) REFERENCES [user] ([id]) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+
 DROP TABLE IF EXISTS [section];
 CREATE TABLE [section] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,

@@ -75,10 +75,16 @@ __PACKAGE__->has_many(
   { "foreign.updater_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
+__PACKAGE__->has_many(
+  "user_reset_tokens",
+  "Rapi::Blog::DB::Result::UserResetToken",
+  { "foreign.user_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2018-10-01 18:24:30
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:353EyHNckKllVUWFpTuODg
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2018-10-01 22:28:38
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MA2JlPVjgM4WP/7XSQPnPA
 
 use RapidApp::Util ':all';
 
