@@ -29,7 +29,7 @@ sub add_comment {
   # Ignore via generic redirect if its not a POST
   $c->req->method eq 'POST' or return $c->res->redirect( $c->mount_url.'/', 307 );
   
-  my $User = $c->user->linkedRow or return $self->error_response($c,
+  my $User = Rapi::Blog::Util->get_User or return $self->error_response($c,
     "Not logged in or unable to find current user"
   );
   
