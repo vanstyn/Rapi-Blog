@@ -9,11 +9,37 @@ use Moo;
 extends 'RapidApp::Template::AccessStore';
 use Types::Standard ':all';
 
+use Rapi::Blog::Scaffold;
+
 use Plack::App::File;
 use Plack::Builder;
 use Plack::Middleware::ConditionalGET;
 
 sub _cache_slots { (shift)->local_cache->{template_row_slot} //= {} }
+
+has 'Scaffolds', is => 'ro', isa => ArrayRef[InstanceOf['Rapi::Blog::Scaffold']], lazy => 1, default => sub {
+  my $self = shift;
+  [
+    Rapi::Blog::Scaffold->new(
+      dir    => $self->scaffold_dir,
+      config => $self->scaffold_cnf
+    )
+  
+  ]
+
+};
+
+sub _first_scaffold_true {
+  my ($self, $meth, @args) = @_;
+  my $value;
+  for my $Scaffold (@{ $self->Scaffolds }) {
+    $value = $Scaffold->$meth(@args);
+    last if ($value);
+  }
+  $value
+}
+
+
 
 has 'scaffold_dir',  is => 'ro', isa => InstanceOf['Path::Class::Dir'], required => 1;
 has 'scaffold_cnf',  is => 'ro', isa => HashRef, required => 1;
@@ -104,48 +130,65 @@ sub _compile_path_list_regex {
 sub _is_static_path {
   my ($self, $template) = @_;
   $self->_cache_slots->{$template}{_is_static_path} //= do {
-    my $Regexp = $self->_static_path_regexp;
-    $Regexp ? $template =~ $Regexp : 0
+    $self->_first_scaffold_true('_is_static_path',$template)
+    #my $Regexp = $self->_static_path_regexp;
+    #$Regexp ? $template =~ $Regexp : 0
   }
 }
 
 sub _is_private_path {
   my ($self, $template) = @_;
   $self->_cache_slots->{$template}{_is_private_path} //= do {
-    my $Regexp = $self->_private_path_regexp;
-    $Regexp ? $template =~ $Regexp : 0
+    $self->_first_scaffold_true('_is_private_path',$template)
+    #my $Regexp = $self->_private_path_regexp;
+    #$Regexp ? $template =~ $Regexp : 0
   }
 }
+
 
 sub _resolve_scaffold_file {
   my ($self, $template) = @_;
-  $self->_cache_slots->{$template}{_resolve_scaffold_file} //= 
-    $self->__resolve_scaffold_file($template)
+  $self->_cache_slots->{$template}{_resolve_scaffold_file} //= do {
+    $self->_first_scaffold_true('_resolve_scaffold_file',$template)
+    #$self->__resolve_scaffold_file($template)
+  }
 }
 
-sub __resolve_scaffold_file {
-  my ($self, $template,$recur) = @_;
-  my $File = $self->scaffold_dir->file($template);
-  # If not found, try once more by appending the default file extenson:
-  return $self->__resolve_scaffold_file(join('.',$template,$self->default_ext),1) unless (
-    $recur || -f $File || ! $self->default_ext
-  );
-  -f $File ? $File : undef
-}
+
+#sub _resolve_scaffold_file {
+#  my ($self, $template) = @_;
+#  $self->_cache_slots->{$template}{_resolve_scaffold_file} //= 
+#    $self->__resolve_scaffold_file($template)
+#}
+#
+#sub __resolve_scaffold_file {
+#  my ($self, $template,$recur) = @_;
+#  my $File = $self->scaffold_dir->file($template);
+#  # If not found, try once more by appending the default file extenson:
+#  return $self->__resolve_scaffold_file(join('.',$template,$self->default_ext),1) unless (
+#    $recur || -f $File || ! $self->default_ext
+#  );
+#  -f $File ? $File : undef
+#}
 
 sub _resolve_static_path {
   my ($self, $template) = @_;
-  return $template if ($self->_is_static_path($template));
-  
-  for my $def (@{ $self->view_wrappers }) {
-    my $path = $def->{path} or die "Bad view_wrapper definition -- 'path' is required";
-    $path =~ s/\/?/\//; $path =~ s/^\///;
-    my ($pre, $loc_tpl) = split(/$path/,$template,2);
-    return $loc_tpl if ($pre eq '' && $loc_tpl && $self->_is_static_path($loc_tpl));
-  }
-  
-  return undef
+  $self->_first_scaffold_true('_resolve_static_path',$template)
 }
+
+#sub _resolve_static_path {
+#  my ($self, $template) = @_;
+#  return $template if ($self->_is_static_path($template));
+#  
+#  for my $def (@{ $self->view_wrappers }) {
+#    my $path = $def->{path} or die "Bad view_wrapper definition -- 'path' is required";
+#    $path =~ s/\/?/\//; $path =~ s/^\///;
+#    my ($pre, $loc_tpl) = split(/$path/,$template,2);
+#    return $loc_tpl if ($pre eq '' && $loc_tpl && $self->_is_static_path($loc_tpl));
+#  }
+#  
+#  return undef
+#}
 
 sub _File_mtime {
   my ($self, $File) = @_;
@@ -281,49 +324,71 @@ sub _match_path {
   return ($name && $pfx eq '') ? $name : undef;
 }
 
-sub split_name_wrapper {
-  my ($self, $template) = @_;
-  
-  my ($name, $wrapper);
-  
-  for my $def (@{ $self->view_wrappers }) {
-    my $path = $def->{path} or die "Bad view_wrapper definition -- 'path' is required";
-    if ($name = $self->_match_path($path, $template)) {
-      $wrapper = $def;
-      last;
-    }
-  }
-  
-  $name ||= $self->_match_path($self->internal_post_path, $template);
-
-  ($name, $wrapper);
-}
+#sub split_name_wrapper {
+#  my ($self, $template) = @_;
+#  
+#  my ($name, $wrapper);
+#  
+#  for my $def (@{ $self->view_wrappers }) {
+#    my $path = $def->{path} or die "Bad view_wrapper definition -- 'path' is required";
+#    if ($name = $self->_match_path($path, $template)) {
+#      $wrapper = $def;
+#      last;
+#    }
+#  }
+#  
+#  $name ||= $self->_match_path($self->internal_post_path, $template);
+#
+#  ($name, $wrapper);
+#}
 
 
 sub local_name {
   my ($self, $template) = @_;
   $self->_cache_slots->{$template}{local_name} //= do {
-    my ($name, $wrapper) = $self->split_name_wrapper($template);
-    $name
+    $self->_first_scaffold_true('local_name',$template)
   }
 }
 
+#sub local_name {
+#  my ($self, $template) = @_;
+#  $self->_cache_slots->{$template}{local_name} //= do {
+#    my ($name, $wrapper) = $self->split_name_wrapper($template);
+#    $name
+#  }
+#}
+
+
 sub wrapper_def {
   my ($self, $template) = @_;
-  my ($name, $wrapper) = $self->split_name_wrapper($template);
-  return $wrapper;
+  $self->_cache_slots->{$template}{wrapper_def} //= do {
+    $self->_first_scaffold_true('wrapper_def',$template)
+  }
 }
 
+#sub wrapper_def {
+#  my ($self, $template) = @_;
+#  my ($name, $wrapper) = $self->split_name_wrapper($template);
+#  return $wrapper;
+#}
 
 sub owns_tpl {
   my ($self, $template) = @_;
   $self->_cache_slots->{$template}{owns_tpl} //= do {
-    $self->local_name($template) 
-      || $self->_is_static_path($template) 
-      || $self->_resolve_scaffold_file($template) 
-    ? 1 : 0
+    $self->_first_scaffold_true('owns_tpl',$template)
   }
 }
+
+
+#sub owns_tpl {
+#  my ($self, $template) = @_;
+#  $self->_cache_slots->{$template}{owns_tpl} //= do {
+#    $self->local_name($template) 
+#      || $self->_is_static_path($template) 
+#      || $self->_resolve_scaffold_file($template) 
+#    ? 1 : 0
+#  }
+#}
 
 sub template_exists {
   my ($self, $template) = @_;
@@ -380,8 +445,12 @@ sub _template_content {
     return $self->_File_content($File);
   }
   
-  my ($name, $wrapper) = $self->split_name_wrapper($template);
-  return undef unless ($name);
+  my $name = $self->local_name($template) or return undef;
+  
+  #my ($name, $wrapper) = $self->split_name_wrapper($template);
+  #return undef unless ($name);
+  
+  my $wrapper = $self->wrapper_def($template);
   
   if($wrapper) {
     my $wrap_name = $wrapper->{wrapper} or die "Bad view_wrapper definition -- 'wrapper' is required";
