@@ -7,8 +7,12 @@ use RapidApp::Util ':all';
 
 use DateTime;
 
-sub now_ts {
-  my $dt = DateTime->now( time_zone => 'local' );
+sub now_ts { &dt_to_ts( &now_dt ) }
+sub now_dt { DateTime->now( time_zone => 'local' ) }
+
+sub dt_to_ts {
+  shift if ($_[0] && $_[0] eq __PACKAGE__);
+  my $dt = shift;
   join(' ',$dt->ymd('-'),$dt->hms(':'));
 }
 
