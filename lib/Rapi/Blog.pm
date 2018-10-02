@@ -19,6 +19,8 @@ require Module::Locate;
 use Path::Class qw/file dir/;
 use YAML::XS 0.64 'LoadFile';
 
+require Rapi::Blog::Template::AccessStore::Factory;
+
 our $VERSION = 1.0200_01;
 our $TITLE = "Rapi::Blog v" . $VERSION;
 
@@ -134,59 +136,6 @@ sub _get_builtin_scaffold_dir {
 	$Scaffolds->subdir($scaffold_name)
 }
 
-has 'scaffold_cnf', is => 'ro', init_arg => undef, lazy => 1, default => sub {
-  my $self = shift;
-  
-  my $defaults = {
-    favicon            => 'favicon.ico',
-    landing_page       => 'index.html',
-    internal_post_path => 'private/post/',
-    not_found          => 'rapidapp/public/http-404.html',
-    view_wrappers      => [],
-    static_paths       => ['/'],
-    private_paths      => [],
-    default_ext        => 'html',
-  
-  };
-  
-  my $cnf = clone( $self->scaffold_config );
-  
-  my $yaml_file = $self->scaffold_dir->file('scaffold.yml');
-  if (-f $yaml_file) {
-    my $data = LoadFile( $yaml_file );
-    %$cnf = ( %$data, %$cnf );
-  }
-  
-  %$cnf = ( %$defaults, %$cnf );
-
-  return $cnf
-
-}, isa => HashRef;
-
-has 'default_view_path', is => 'ro', lazy => 1, default => sub {
-  my $self = shift;
-  
-  return $self->scaffold_cnf->{default_view_path} if ($self->scaffold_cnf->{default_view_path});
-  
-  # first marked 'default' or first type 'include' or first anything
-  my @wrappers = grep { $_->{path} } @{$self->scaffold_cnf->{view_wrappers} || []};
-  my $def = List::Util::first { $_->{default} } @wrappers;
-  $def ||= List::Util::first { $_->{type} eq 'include' } @wrappers;
-  $def ||= $self->scaffold_cnf->{view_wrappers}[0];
-  
-  unless($def) {
-    warn "\n ** Waring: scaffold has no suitable view_wrappers to use as 'default_view_path'\n\n";
-    return undef;
-  }
-
-  return $def->{path}
-};
-
-has 'preview_path', is => 'ro', lazy => 1, default => sub {
-  my $self = shift;
-  return $self->scaffold_cnf->{preview_path} || $self->default_view_path
-};
-
 
 after 'bootstrap' => sub { 
   my $self = shift;
@@ -204,6 +153,18 @@ sub _build_plugins { [qw/
   RapidApp::NavCore
   RapidApp::CoreSchemaAdmin
 /]}
+
+
+has 'access_class_params', is => 'ro', lazy => 1, default => sub {
+  my $self = shift;
+  Rapi::Blog::Template::AccessStore::Factory->params_factory({
+    scaffold_dir    => $self->scaffold_dir,
+    scaffold_config => $self->scaffold_config,
+    get_Model => sub { $self->base_appname->model('DB') }
+  })
+}, isa => HashRef;
+
+sub scaffold_cnf { (shift)->access_class_params->{scaffold_cnf} }
 
 sub _build_base_config {
   my $self = shift;
@@ -379,21 +340,8 @@ sub _build_base_config {
       edit_alias_path => '/tple', #<-- already the default
       default_template_extension => undef,
       include_paths => [ $tpl_dir ],
-      access_class => 'Rapi::Blog::Template::AccessStore',
-      access_params => {
-        scaffold_dir  => $self->scaffold_dir,
-        scaffold_cnf  => $self->scaffold_cnf,
-        static_paths  => $self->scaffold_cnf->{static_paths},
-        private_paths => $self->scaffold_cnf->{private_paths},
-        default_ext   => $self->scaffold_cnf->{default_ext},
-        
-        internal_post_path => $self->scaffold_cnf->{internal_post_path},
-        view_wrappers      => $self->scaffold_cnf->{view_wrappers},
-        default_view_path  => $self->default_view_path,
-        preview_path       => $self->preview_path,
-
-        get_Model => sub { $self->base_appname->model('DB') } 
-      } 
+      access_class  => 'Rapi::Blog::Template::AccessStore',
+      access_params => $self->access_class_params,
     }
   };
   
