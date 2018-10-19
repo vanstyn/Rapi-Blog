@@ -24,6 +24,8 @@ sub BUILD {
   scream({
     path => $self->path,
     applies => $self->applies,
+    claimed => $self->claimed,
+    valid_not_found => $self->valid_not_found_template,
     $self->PathMatch->matches ? (
       type => $self->PathMatch->type,
       rank => $self->PathMatch->match_rank,
@@ -44,6 +46,14 @@ has 'PathMatch', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   
   my @scaffolds = @{ $self->AccessStore->Scaffolds };
   scalar(@scaffolds) > 0 or die "Fatal error -- no Scaffolds detected. At least one Scaffold must be loaded.";
+  
+  if (my $uuid = $self->ctx->stash->{rapi_blog_only_scaffold_uuid}) {
+    @scaffolds = grep { $_->uuid eq $uuid } @scaffolds;
+    scalar(@scaffolds) > 0 or die join('',
+      "Fatal error -- rapi_blog_only_scaffold_uuid is set ('$uuid') but there ",
+      "is no Scaffold with that uuid"
+    );
+  }
   
   my $BestMatch = undef;
   $BestMatch = Rapi::Blog::Scaffold::PathMatch
@@ -67,7 +77,9 @@ sub scaffold_file    { (shift)->PathMatch->scaffold_file(@_)    }
 sub post_name_exists { (shift)->PathMatch->post_name_exists(@_) }
 sub post_name        { (shift)->PathMatch->post_name(@_)        }
 sub direct_post_name { (shift)->PathMatch->direct_post_name(@_) }
-sub ViewWrapper      { (shift)->PathMatch->ViewWrapper(@_)                 }
+sub ViewWrapper      { (shift)->PathMatch->ViewWrapper(@_)      }
+sub is_static        { (shift)->PathMatch->is_static(@_)        }
+sub is_private       { (shift)->PathMatch->is_private(@_)       }
 
 
 # true or false if dispatching applies for this path
@@ -83,6 +95,13 @@ has 'exists', is => 'ro', init_arg => undef, lazy => 1, default => sub {
 }, isa => Bool;
 
 
+has 'valid_not_found_template', is => 'ro', init_arg => undef, lazy => 1, default => sub {
+  my $self = shift;
+  my $tpl = $self->Scaffold->config->not_found or return undef;
+  $self->Scaffold->_resolve_scaffold_file($tpl) ? $tpl : undef
+}, isa => Maybe[Str];
+
+
 has 'exist_in_Provider', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
   $self->AccessStore->Controller->get_Provider->template_exists_locally($self->path)
@@ -92,9 +111,11 @@ has 'claimed', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
   $self->applies or return 0;
   $self->exists and return 1;
-  $self->Scaffold->config->not_found or return 0;
-  return 0 unless ($self->PathMatch->is_static || $self->PathMatch->is_private);
-  
+  return 0 unless (
+    ($self->PathMatch->is_static || $self->PathMatch->is_private)
+    && $self->valid_not_found_template
+  );
+ 
   # Only claim the path for "not found" if it doesn't exist in the Provider (i.e. RapidApp core templates)
   $self->exist_in_Provider ? 0 : 1
 }, isa => Bool;
@@ -137,50 +158,30 @@ has 'maybe_psgi_response', is => 'ro', init_arg => undef, lazy => 1, default => 
   my $self = shift;
   $self->claimed or return undef;
   
-  my ($c, $template) = ($self->ctx, $self->path);
-
-  # Return 404 for private paths:
-  if ($self->Scaffold->_is_private_path($template)) {
-    return $self->_forward_to_404_template($c) unless (
-      $c->req->action =~ /^\/rapidapp\/template\// # does not apply to internal tpl reqs
-      || $c->stash->{__forward_to_404_template} # because the 404 can be a private path
-    );
+  if ($self->is_static && $self->exists) {
+    if(my $tpl = $self->Scaffold->_resolve_static_path($self->path)) {
+      my $env = {
+        %{ $self->ctx->req->env },
+        PATH_INFO   => "/$tpl",
+        SCRIPT_NAME => ''
+      };
+      return $self->Scaffold->static_path_app->($env)
+    }
   }
-
-  if(my $tpl = $self->Scaffold->_resolve_static_path($template)) {
-    my $env = {
-      %{ $c->req->env },
-      PATH_INFO   => "/$tpl",
-      SCRIPT_NAME => ''
-    };
-    return $self->Scaffold->static_path_app->($env)
+  elsif ($self->is_private || !$self->exists) {
+    # Should be redundanr since we already checked this when we claimed the path
+    my $tpl = $self->valid_not_found_template or die "unexpected error, we no longer have a valid_not_found_template";
+    
+    # Make sure the same Scaffold handles the 404 not found:
+    $self->ctx->stash->{rapi_blog_only_scaffold_uuid} = $self->Scaffold->uuid;
+    
+    $self->ctx->res->status(404);
+    $self->ctx->detach( '/rapidapp/template/view', [$tpl] )
   }
-  
-  $self->exists ? undef : $self->_forward_to_404_template
-
-
+  else {
+    return undef
+  }
 }, isa => Maybe[ArrayRef];
-
-
-
-
-sub _forward_to_404_template {
-  my $self = shift;
-  
-  my $c = $self->ctx;
-  
-  my $tpl = $self->Scaffold->config->not_found || 'rapidapp/public/http-404.html';
-  
-  # catch deep recursion:
-  die "Error dispatching 404 not found template" if ($c->stash->{__forward_to_404_template}++);
-  
-  $c->res->status(404);
-  $c->detach( '/rapidapp/template/view', [$tpl] )
-}
-
-
-
-
 
 
 

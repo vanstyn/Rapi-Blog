@@ -187,7 +187,7 @@ around 'get_template_vars' => sub {
     %{ $self->$orig(@args) },
     %{ $self->templateData($template) || {} },
     
-    scaffold        => $self->scaffold_cnf,
+    #scaffold        => $self->scaffold_cnf,
     list_posts      => sub { $self->Model->resultset('Post')     ->list_posts(@_)      },
     list_tags       => sub { $self->Model->resultset('Tag')      ->list_tags(@_)       },
     list_categories => sub { $self->Model->resultset('Category') ->list_categories(@_) },
@@ -229,6 +229,10 @@ around 'get_template_vars' => sub {
     mount_url => sub { $c->mount_url }
     
   };
+  
+  if (my $Scaffold = $self->DispatchRule_for($template)->Scaffold) {
+    $vars->{scaffold} = $Scaffold->config;
+  }
   
   return $vars
   
