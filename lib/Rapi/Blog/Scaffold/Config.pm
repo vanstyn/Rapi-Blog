@@ -60,6 +60,16 @@ sub _load_from_yaml {
 }
 
 
+sub all_as_hash {
+  my $self = shift;
+  
+  return {
+    map  { $_ => $self->$_ }
+     grep { ! /^_/ } # exclude "private" attributes with start with underscore '_'
+     keys %{ $self->_extra_params },
+     $self->meta->get_attribute_list
+  }
+}
 
 
 1;

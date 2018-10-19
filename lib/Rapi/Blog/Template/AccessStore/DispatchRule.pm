@@ -28,7 +28,7 @@ sub BUILD {
       type => $self->PathMatch->type,
       rank => $self->PathMatch->match_rank,
       
-      scaf_config => $self->Scaffold->config
+      scaf_config => $self->Scaffold->config->all_as_hash
       
       
     ) : ()
