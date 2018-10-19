@@ -5,14 +5,24 @@ use warnings;
 use RapidApp::Util qw(:all);
 use Rapi::Blog::Util;
 use Scalar::Util 'blessed';
+use List::Util;
+use String::Random;
 
 use Moo;
 use Types::Standard ':all';
 
 use Rapi::Blog::Scaffold::Config;
+use Rapi::Blog::Scaffold::ViewWrapper;
+
+use Plack::App::File;
+use Plack::Builder;
+use Plack::Middleware::ConditionalGET;
 
 require Path::Class;
 use YAML::XS 0.64 'LoadFile';
+
+has 'uuid', is => 'ro', init_arg => undef, 
+  default => sub { join('-','scfld',String::Random->new->randregex('[a-z0-9A-Z]{20}')) };
 
 has 'dir', 
   is       => 'ro', 
@@ -26,13 +36,44 @@ has 'config',
   isa     => InstanceOf['Rapi::Blog::Scaffold::Config'],
   default => sub {{}},
   coerce  => sub { blessed $_[0] ? $_[0] : Rapi::Blog::Scaffold::Config->new($_[0]) };
-  
+
+# The Scaffold needs to be able to check if a given Post exists in the database  
+has 'Post_exists_fn', is => 'ro', required => 1, isa => CodeRef;
+
 
 sub static_paths       { (shift)->config->static_paths       }
 sub private_paths      { (shift)->config->private_paths      }
 sub default_ext        { (shift)->config->default_ext        }
 sub view_wrappers      { (shift)->config->view_wrappers      }
 sub internal_post_path { (shift)->config->internal_post_path }
+
+# This is a unique, private path which is automatically generated that allows this
+# scaffold to own a path which it can use fetch a post, and be sure another scaffold
+# wont claim the path
+has 'unique_int_post_path', is => 'ro', init_arg => undef, lazy => 1, default => sub {
+  my $self = shift;
+  join('','_',$self->uuid,'/private/post/')
+};
+
+
+# If this Scaffold can handle a path which it owns but doesn't exist:
+sub handles_not_found {
+  my $self = shift;
+  my $template = $self->config->not_found or return 0;
+  $self->_resolve_scaffold_file($template) ? 1 : 0
+}
+
+
+has 'ViewWrappers', is => 'ro', init_arg => undef, lazy => 1, default => sub {
+  my $self = shift;
+  return [ map {
+    Rapi::Blog::Scaffold::ViewWrapper->new( 
+      Scaffold => $self, %$_ 
+    ) 
+  } @{$self->config->view_wrappers} ]
+}, isa => ArrayRef[InstanceOf['Rapi::Blog::Scaffold::ViewWrapper']];
+
+
 
 
 sub BUILD {
@@ -46,6 +87,34 @@ sub _load_yaml_config {
   
   my $yaml_file = $self->dir->file('scaffold.yml');
   $self->config->_load_from_yaml($yaml_file) if (-f $yaml_file);
+}
+
+
+sub owns_path {
+  my ($self, $path) = @_;
+  $self->owns_path_as($path) ? 1 : 0
+}
+
+sub _resolve_path_to_post {
+  my ($self, $path) = @_;
+  
+  my ($pfx,$name) = split($self->unique_int_post_path,$path,2);
+  ($name && $pfx eq '') ? $name : undef
+}
+
+
+
+sub owns_path_as_view {
+  my ($self, $path) = @_;
+
+  for my $VW (@{ $self->ViewWrappers }) {
+    my $name = $VW->resolve_claimed_post_name($path) or next;
+    return 1 if ($self->handles_not_found || $VW->handles_not_found);
+    # If we don't hadle not found, only claim the template if the resolved post exists:
+    return 1 if ($self->Post_exists_fn->($name));
+  }
+
+  return 0
 }
 
 
@@ -89,6 +158,25 @@ sub _compile_path_list_regex {
 }
 
 
+has 'static_path_app', is => 'ro', lazy => 1, default => sub {
+  my $self = shift;
+  my $app = builder {
+    enable "ConditionalGET";
+    Plack::App::File->new(root => $self->dir)->to_app;
+  };
+  
+  sub {
+    my $env = shift;
+    my $res = $app->($env);
+    # limit caching to 10 minutes now that we return 304s
+    push @{$res->[1]}, 'Cache-Control', 'public, max-age=600';
+    
+    $res
+  }
+};
+
+
+
 sub _is_static_path {
   my ($self, $template) = @_;
   my $Regexp = $self->_static_path_regexp;
@@ -104,7 +192,16 @@ sub _is_private_path {
 
 sub _resolve_scaffold_file {
   my ($self, $template) = @_;
-  $self->__resolve_scaffold_file($template)
+  
+  
+  
+  
+  my $ret = $self->__resolve_scaffold_file($template);
+  
+  #scream_color(RED,$template,"$ret");
+  
+  $ret
+  
 }
 
 sub __resolve_scaffold_file {
@@ -130,57 +227,6 @@ sub _resolve_static_path {
   
   return undef
 }
-
-
-
-sub _match_path {
-  my ($self, $path, $template) = @_;
-  
-  my ($pfx,$name) = split($path,$template,2);
-  return ($name && $pfx eq '') ? $name : undef;
-}
-
-
-sub split_name_wrapper {
-  my ($self, $template) = @_;
-  
-  my ($name, $wrapper);
-  
-  for my $def (@{ $self->view_wrappers }) {
-    my $path = $def->{path} or die "Bad view_wrapper definition -- 'path' is required";
-    if ($name = $self->_match_path($path, $template)) {
-      $wrapper = $def;
-      last;
-    }
-  }
-  
-  $name ||= $self->_match_path($self->internal_post_path, $template);
-
-  ($name, $wrapper);
-}
-
-
-sub local_name {
-  my ($self, $template) = @_;
-  my ($name, $wrapper) = $self->split_name_wrapper($template);
-  $name 
-}
-
-sub wrapper_def {
-  my ($self, $template) = @_;
-  my ($name, $wrapper) = $self->split_name_wrapper($template);
-  return $wrapper;
-}
-
-
-sub owns_tpl {
-  my ($self, $template) = @_;
-  $self->local_name($template) 
-    || $self->_is_static_path($template) 
-    || $self->_resolve_scaffold_file($template) 
-  ? 1 : 0
-}
-
 
 
 

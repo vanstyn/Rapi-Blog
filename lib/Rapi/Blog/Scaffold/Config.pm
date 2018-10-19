@@ -10,14 +10,14 @@ use Types::Standard ':all';
 
 use YAML::XS 0.64 'LoadFile';
 
-has 'favicon',            is => 'rw', isa => Maybe[Str], default => sub { 'favicon.ico' };
-has 'landing_page',       is => 'rw', isa => Maybe[Str], default => sub { 'index.html' };
-has 'internal_post_path', is => 'rw', isa => Maybe[Str], default => sub { 'private/post/' };
-has 'not_found',          is => 'rw', isa => Maybe[Str], default => sub { 'rapidapp/public/http-404.html' };
-has 'view_wrappers',      is => 'rw', isa => ArrayRef,   default => sub { [] };
-has 'static_paths',       is => 'rw', isa => ArrayRef,   default => sub { ['/'] };
-has 'private_paths',      is => 'rw', isa => ArrayRef,   default => sub { [] };
-has 'default_ext',        is => 'rw', isa => Maybe[Str], default => sub { 'html' };
+has 'favicon',            is => 'rw', isa => Maybe[Str],        default => sub { 'favicon.ico' };
+has 'landing_page',       is => 'rw', isa => Maybe[Str],        default => sub { 'index.html' };
+has 'internal_post_path', is => 'rw', isa => Maybe[Str],        default => sub { 'private/post/' };
+has 'not_found',          is => 'rw', isa => Maybe[Str],        default => sub { undef };
+has 'view_wrappers',      is => 'rw', isa => ArrayRef[HashRef], default => sub { [] };
+has 'static_paths',       is => 'rw', isa => ArrayRef,          default => sub { ['/'] };
+has 'private_paths',      is => 'rw', isa => ArrayRef,          default => sub { [] };
+has 'default_ext',        is => 'rw', isa => Maybe[Str],        default => sub { 'html' };
 
 
 has '_supplied_params', is => 'ro', isa => HashRef, required => 1;

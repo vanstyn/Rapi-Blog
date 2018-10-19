@@ -5,7 +5,7 @@ use warnings;
 
 # ABSTRACT: RapidApp-powered blog
 
-use RapidApp 1.3101;
+use RapidApp 1.3102_01;
 
 use Moose;
 extends 'RapidApp::Builder';
@@ -19,7 +19,7 @@ require Module::Locate;
 use Path::Class qw/file dir/;
 use YAML::XS 0.64 'LoadFile';
 
-our $VERSION = 1.0200_01;
+our $VERSION = 1.0200_03;
 our $TITLE = "Rapi::Blog v" . $VERSION;
 
 has 'site_path',        is => 'ro', required => 1;
@@ -27,6 +27,8 @@ has 'scaffold_path',    is => 'ro', isa => Maybe[Str], default => sub { undef };
 has 'builtin_scaffold', is => 'ro', isa => Maybe[Str], default => sub { undef };
 has 'scaffold_config',  is => 'ro', isa => HashRef, default => sub {{}};
 has 'fallback_builtin_scaffold', is => 'ro', isa => Bool, default => sub {0};
+
+has 'underlay_scaffolds', is => 'ro', isa => ArrayRef[Str], default => sub {[]};
 
 has '+base_appname', default => sub { 'Rapi::Blog::App' };
 has '+debug',        default => sub {1};
@@ -195,6 +197,23 @@ after 'bootstrap' => sub {
   $c->setup_plugins(['+Rapi::Blog::CatalystApp']);
   
 };
+
+
+sub _get_underlay_scaffold_dirs {
+  my $self = shift;
+
+  my $CommonUnderlay = dir( $self->share_dir )->subdir('common_underlay')->absolute;
+  -d $CommonUnderlay or die join('',
+    " Fatal error: Unable to locate common underlay scaffold dir (this could ",
+    "indicate a problem with your Rapi::Blog installation)\n\n"
+  );
+  
+  return [ 
+    @{$self->underlay_scaffolds}, 
+    $CommonUnderlay 
+  ]
+}
+
 
 
 sub _build_version { $VERSION }
@@ -391,6 +410,8 @@ sub _build_base_config {
         view_wrappers      => $self->scaffold_cnf->{view_wrappers},
         default_view_path  => $self->default_view_path,
         preview_path       => $self->preview_path,
+        
+        underlay_scaffold_dirs => $self->_get_underlay_scaffold_dirs,
 
         get_Model => sub { $self->base_appname->model('DB') } 
       } 
