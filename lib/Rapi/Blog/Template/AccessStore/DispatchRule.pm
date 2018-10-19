@@ -24,7 +24,7 @@ sub BUILD {
   scream({
     path => $self->path,
     applies => $self->applies,
-    $self->PathMatch ? (
+    $self->PathMatch->matches ? (
       type => $self->PathMatch->type,
       rank => $self->PathMatch->match_rank,
       
@@ -41,31 +41,24 @@ sub BUILD {
 # Figure out the *best* PathMatch amoung all our Scaffolds and their various dispatch modes:
 has 'PathMatch', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
+  
+  my @scaffolds = @{ $self->AccessStore->Scaffolds };
+  scalar(@scaffolds) > 0 or die "Fatal error -- no Scaffolds detected. At least one Scaffold must be loaded.";
+  
+  my $BestMatch = undef;
+  $BestMatch = Rapi::Blog::Scaffold::PathMatch
+    ->new( path => $self->path, Scaffold => $_ )
+    ->us_or_better($BestMatch) 
+  for @scaffolds;
  
-  
-  my @list = 
-    grep { $_->matches }
-    map { Rapi::Blog::Scaffold::PathMatch->new( path => $self->path, Scaffold => $_ ) } 
-    @{ $self->AccessStore->Scaffolds };
-  
-  
-  my @ordered = sort { $a->match_rank <=> $b->match_rank } @list;
-  
-  
-  #scream(\@list);
-  
-  my $BestMatch = $ordered[0];
-  
-  #scream_color(GREEN, $BestMatch);
-  
   $BestMatch
 
-}, isa => Maybe[InstanceOf['Rapi::Blog::Scaffold::PathMatch']];
+}, isa => InstanceOf['Rapi::Blog::Scaffold::PathMatch'];
 
 
 has 'Scaffold', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
-  $self->PathMatch ? $self->PathMatch->Scaffold : undef
+  $self->PathMatch->matches ? $self->PathMatch->Scaffold : undef
 }, isa => Maybe[InstanceOf['Rapi::Blog::Scaffold']];
 
 

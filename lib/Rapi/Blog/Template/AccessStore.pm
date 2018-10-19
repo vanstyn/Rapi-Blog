@@ -387,27 +387,6 @@ sub template_psgi_response {
   my ($self, $template, $c) = @_;
   
   $self->DispatchRule_for($template)->maybe_psgi_response
-  
-  #return undef unless ($self->DispatchRule_for($template)->applies);
-  #
-  ## Return 404 for private paths:
-  #if ($self->_is_private_path($template)) {
-  #  return $self->_forward_to_404_template($c) unless (
-  #    $c->req->action =~ /^\/rapidapp\/template\// # does not apply to internal tpl reqs
-  #    || $c->stash->{__forward_to_404_template} # because the 404 can be a private path
-  #  );
-  #}
-  #
-  #if(my $tpl = $self->_resolve_static_path($template)) {
-  #  my $env = {
-  #    %{ $c->req->env },
-  #    PATH_INFO   => "/$tpl",
-  #    SCRIPT_NAME => ''
-  #  };
-  #  return $self->static_path_app->($env)
-  #}
-  #
-  #$self->template_exists($template) ? undef : $self->_forward_to_404_template($c)
 }
 
 sub _forward_to_404_template {

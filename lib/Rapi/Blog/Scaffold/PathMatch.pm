@@ -12,10 +12,16 @@ use Types::Standard ':all';
 has 'Scaffold',  is => 'ro', required => 1, isa => InstanceOf['Rapi::Blog::Scaffold'];
 has 'path',      is => 'ro', required => 1, isa => Str;
 
-sub matches {
-  my $self = shift;
-  $self->match_rank ? 1 : 0
+sub us_or_better {
+  my ($this,$that) = @_;
+  $that && $that->match_rank < $this->match_rank ? $that : $this
 }
+
+
+has 'matches', is => 'ro', init_arg => undef, lazy => 1, default => sub {
+  my $self = shift;
+  $self->match_rank && $self->match_rank < 100 ? 1 : 0
+}, isa => Bool;
 
 has 'match_rank', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
@@ -32,7 +38,7 @@ has 'match_rank', is => 'ro', init_arg => undef, lazy => 1, default => sub {
     return 5 if ($self->is_static || $self->is_private);
   }
   
-  undef
+  100
   
 }, isa => Maybe[Int];
 

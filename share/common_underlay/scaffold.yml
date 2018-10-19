@@ -5,3 +5,5 @@
 
 private_paths : [ private/, scaffold.yml ]
 not_found     : private/404-page-not-found.html
+#static_paths  : []
+default_ext   : htm
