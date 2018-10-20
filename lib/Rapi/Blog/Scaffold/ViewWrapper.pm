@@ -48,7 +48,7 @@ sub handles_not_found {
 }
 
 
-sub resolve_claimed_post_name {
+sub resolve_subpath {
   my $self = shift;
   my $template = shift or return undef;
   

@@ -12,7 +12,7 @@ use Moo;
 use Types::Standard ':all';
 
 has 'AccessStore',  is => 'ro', required => 1, isa => InstanceOf['Rapi::Blog::Template::AccessStore'];
-has 'path',         is => 'ro', required => 1, isa => Str;
+has 'init_path',    is => 'ro', required => 1, isa => Str;
 has 'ctx',          is => 'ro', required => 1;
 
 sub BUILD {
@@ -21,21 +21,21 @@ sub BUILD {
   # init immediately:
   $self->applies;
   
-  scream({
-    path => $self->path,
-    applies => $self->applies,
-    claimed => $self->claimed,
-    valid_not_found => $self->valid_not_found_template,
-    $self->PathMatch->matches ? (
-      type => $self->PathMatch->type,
-      rank => $self->PathMatch->match_rank,
-      
-      scaf_config => $self->Scaffold->config->all_as_hash
-      
-      
-    ) : ()
-    
-  })
+  #scream({
+  #  path => $self->path,
+  #  applies => $self->applies,
+  #  claimed => $self->claimed,
+  #  valid_not_found => $self->valid_not_found_template,
+  #  $self->PathMatch->matches ? (
+  #    type => $self->PathMatch->type,
+  #    rank => $self->PathMatch->match_rank,
+  #    
+  #    scaf_config => $self->Scaffold->config->all_as_hash
+  #    
+  #    
+  #  ) : ()
+  #  
+  #})
   
 }
 
@@ -57,11 +57,11 @@ has 'PathMatch', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   
   my $BestMatch = undef;
   $BestMatch = Rapi::Blog::Scaffold::PathMatch
-    ->new( path => $self->path, Scaffold => $_ )
+    ->new( path => $self->init_path, Scaffold => $_ )
     ->us_or_better($BestMatch) 
   for @scaffolds;
  
-  $BestMatch
+  $BestMatch->resolved_PathMatch || $BestMatch
 
 }, isa => InstanceOf['Rapi::Blog::Scaffold::PathMatch'];
 
@@ -73,6 +73,7 @@ has 'Scaffold', is => 'ro', init_arg => undef, lazy => 1, default => sub {
 
 
 # deligations:
+sub path             { (shift)->PathMatch->path(@_)             }
 sub scaffold_file    { (shift)->PathMatch->scaffold_file(@_)    }
 sub post_name_exists { (shift)->PathMatch->post_name_exists(@_) }
 sub post_name        { (shift)->PathMatch->post_name(@_)        }
@@ -104,7 +105,7 @@ has 'valid_not_found_template', is => 'ro', init_arg => undef, lazy => 1, defaul
 
 has 'exist_in_Provider', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
-  $self->AccessStore->Controller->get_Provider->template_exists_locally($self->path)
+  $self->AccessStore->Controller->get_Provider->template_exists_locally($self->PathMatch->path)
 }, isa => Bool;
 
 has 'claimed', is => 'ro', init_arg => undef, lazy => 1, default => sub {
@@ -159,7 +160,7 @@ has 'maybe_psgi_response', is => 'ro', init_arg => undef, lazy => 1, default => 
   $self->claimed or return undef;
   
   if ($self->is_static && $self->exists) {
-    if(my $tpl = $self->Scaffold->_resolve_static_path($self->path)) {
+    if(my $tpl = $self->Scaffold->_resolve_static_path($self->PathMatch->path)) {
       my $env = {
         %{ $self->ctx->req->env },
         PATH_INFO   => "/$tpl",

@@ -9,8 +9,30 @@ use List::Util;
 use Moo;
 use Types::Standard ':all';
 
-has 'Scaffold',  is => 'ro', required => 1, isa => InstanceOf['Rapi::Blog::Scaffold'];
-has 'path',      is => 'ro', required => 1, isa => Str;
+has 'Scaffold',         is => 'ro', required => 1, isa => InstanceOf['Rapi::Blog::Scaffold'];
+has 'path',             is => 'ro', required => 1, isa => Str;
+has 'origin_PathMatch', is => 'ro', isa => Maybe[InstanceOf[__PACKAGE__]], default => sub { undef };
+
+# This allows *relative* paths to static resources to work when loaded via a view/url prefix
+has 'resolved_PathMatch', is => 'ro', init_arg => undef, lazy => 1, default => sub {
+  my $self = shift;
+  return undef;
+  my $subpath = $self->view_subpath or return undef;
+  my $PM = __PACKAGE__->new( 
+    path             => $subpath, 
+    Scaffold         => $self->Scaffold, 
+    origin_PathMatch => $self
+  );
+  $PM->scaffold_file ? $PM : undef
+}, isa => Maybe[InstanceOf[__PACKAGE__]];
+
+sub BUILD {
+  my $self = shift;
+
+  # init
+  $self->resolved_PathMatch;
+}
+
 
 sub us_or_better {
   my ($this,$that) = @_;
@@ -26,7 +48,7 @@ has 'matches', is => 'ro', init_arg => undef, lazy => 1, default => sub {
 has 'match_rank', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
   
-  return 1 if $self->scaffold_file;
+  return 1 if $self->scaffold_file || $self->resolved_PathMatch;
   
   if($self->post_name_exists) {
     return 2 if ($self->direct_post_name);
@@ -64,6 +86,13 @@ has 'is_private', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   $self->Scaffold->_is_private_path($self->path)
 }, isa => Bool;
 
+
+has 'view_subpath', is => 'ro', init_arg => undef, lazy => 1, default => sub {
+  my $self = shift;
+  ! $self->origin_PathMatch && $self->ViewWrapper 
+    ? $self->ViewWrapper->resolve_subpath($self->path) 
+    : undef
+}, isa => Maybe[Str];
 
 
 has 'scaffold_file', is => 'ro', init_arg => undef, lazy => 1, default => sub {
@@ -115,7 +144,7 @@ has 'ViewWrapper_info', is => 'ro', init_arg => undef, lazy => 1, default => sub
   return undef if ($self->scaffold_file || $self->direct_post_name);
   my $info;
   for my $VW (@{ $self->Scaffold->ViewWrappers }) {
-    my $post_name = $VW->resolve_claimed_post_name($self->path) or next;
+    my $post_name = $VW->resolve_subpath($self->path) or next;
     $info = { ViewWrapper => $VW, post_name => $post_name, exists => $self->_post_name_exists($post_name) };
     last if ($info->{exists});
     if($VW->valid_not_found_template) {

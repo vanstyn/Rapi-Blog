@@ -108,7 +108,7 @@ sub owns_path_as_view {
   my ($self, $path) = @_;
 
   for my $VW (@{ $self->ViewWrappers }) {
-    my $name = $VW->resolve_claimed_post_name($path) or next;
+    my $name = $VW->resolve_subpath($path) or next;
     return 1 if ($self->handles_not_found || $VW->handles_not_found);
     # If we don't hadle not found, only claim the template if the resolved post exists:
     return 1 if ($self->Post_exists_fn->($name));

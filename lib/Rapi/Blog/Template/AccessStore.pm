@@ -85,7 +85,7 @@ sub DispatchRule_for {
   my ($self,@args) = @_;
   my $path = join('/',@args);  
   $self->_cache_slots->{$path}{DispatchRule} ||= Rapi::Blog::Template::AccessStore::DispatchRule->new(
-    path => $path, AccessStore => $self, ctx => RapidApp->active_request_context
+    init_path => $path, AccessStore => $self, ctx => RapidApp->active_request_context
   )
 }
 
@@ -187,7 +187,7 @@ around 'get_template_vars' => sub {
     %{ $self->$orig(@args) },
     %{ $self->templateData($template) || {} },
     
-    #scaffold        => $self->scaffold_cnf,
+    scaffold        => $self->scaffold_cnf,
     list_posts      => sub { $self->Model->resultset('Post')     ->list_posts(@_)      },
     list_tags       => sub { $self->Model->resultset('Tag')      ->list_tags(@_)       },
     list_categories => sub { $self->Model->resultset('Category') ->list_categories(@_) },
@@ -230,9 +230,9 @@ around 'get_template_vars' => sub {
     
   };
   
-  if (my $Scaffold = $self->DispatchRule_for($template)->Scaffold) {
-    $vars->{scaffold} = $Scaffold->config;
-  }
+  #if (my $Scaffold = $self->DispatchRule_for($template)->Scaffold) {
+  #  $vars->{scaffold} = $Scaffold->config;
+  #}
   
   return $vars
   
