@@ -15,7 +15,7 @@ has 'landing_page',       is => 'rw', isa => Maybe[Str],        default => sub {
 has 'internal_post_path', is => 'rw', isa => Maybe[Str],        default => sub { 'private/post/' };
 has 'not_found',          is => 'rw', isa => Maybe[Str],        default => sub { undef };
 has 'view_wrappers',      is => 'rw', isa => ArrayRef[HashRef], default => sub { [] };
-has 'static_paths',       is => 'rw', isa => ArrayRef,          default => sub { ['/'] };
+has 'static_paths',       is => 'rw', isa => ArrayRef,          default => sub { [] };
 has 'private_paths',      is => 'rw', isa => ArrayRef,          default => sub { [] };
 has 'default_ext',        is => 'rw', isa => Maybe[Str],        default => sub { 'html' };
 
