@@ -30,7 +30,7 @@ sub BUILD {
 sub _enforce_wrapper_exists {
   my $self = shift;
   my $wrapper = $self->wrapper;
-  $self->Scaffold->_resolve_scaffold_file($wrapper) or die join('',
+  $self->Scaffold->resolve_file($wrapper) or die join('',
     "Error! view wrapper '$wrapper' not found within scaffold"
   )
 }
@@ -39,7 +39,7 @@ sub _enforce_wrapper_exists {
 sub valid_not_found_template {
   my $self = shift;
   my $nft = $self->not_found_template;
-  $nft && $self->Scaffold->_resolve_scaffold_file($nft) ? $nft : undef
+  $nft && $self->Scaffold->resolve_file($nft) ? $nft : undef
 }
 
 sub handles_not_found {
@@ -54,6 +54,7 @@ sub resolve_subpath {
   
   # First check to see if this is even our path prefix:
   my ($pfx,$name) = split($self->path,$template,2);
+
   ($name && $pfx eq '') ? $name : undef
 }
 

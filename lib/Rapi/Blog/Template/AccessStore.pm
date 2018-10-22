@@ -11,7 +11,7 @@ extends 'RapidApp::Template::AccessStore';
 use Types::Standard ':all';
 
 use Rapi::Blog::Scaffold;
-use Rapi::Blog::Template::AccessStore::DispatchRule;
+use Rapi::Blog::Template::Dispatcher;
 
 use Plack::App::File;
 use Plack::Builder;
@@ -27,66 +27,33 @@ has 'Scaffolds', is => 'ro', isa => ArrayRef[InstanceOf['Rapi::Blog::Scaffold']]
     Rapi::Blog::Scaffold->new(
       dir    => $self->scaffold_dir,
       config => $self->scaffold_cnf,
-      Post_exists_fn => $self->Post_exists_fn
     ), 
     map { Rapi::Blog::Scaffold->new( 
       dir => $_,
-      Post_exists_fn => $self->Post_exists_fn
     ) } @{ $self->underlay_scaffold_dirs }
   ]
 };
 
 
-has 'Post_exists_fn', is => 'ro', init_arg => undef, lazy => 1, default => sub {
-  my $self = shift;
-  my $Rs = $self->Model->resultset('Post');
-  sub {
-    my $name = shift;
-    $Rs->permission_filtered->search_rs({ 'me.name' => $name })->count ? 1 : 0
-  };
-};
 
-has 'Post_mtime_fn', is => 'ro', init_arg => undef, lazy => 1, default => sub {
-  my $self = shift;
-  my $Rs = $self->Model->resultset('Post');
-  sub {
-    my $name = shift;
-    
-    my $Row = $Rs->permission_filtered
-      ->search_rs(undef,{
-        columns => ['update_ts']
-      })
-      ->search_rs({ 'me.name' => $name })
-      ->first or return undef;
-  
-    return Date::Parse::str2time( $Row->get_column('update_ts') )
-  };
-};
-
-has 'Post_content_fn', is => 'ro', init_arg => undef, lazy => 1, default => sub {
-  my $self = shift;
-  my $Rs = $self->Model->resultset('Post');
-  sub {
-    my $name = shift;
-    
-    my $Row = $Rs->permission_filtered
-      ->search_rs(undef,{
-        columns => ['body']
-      })
-      ->search_rs({ 'me.name' => $name })
-      ->first or return undef;
-  
-    return $Row->get_column('body')
-  };
-};
-
-
-sub DispatchRule_for {
+sub Dispatcher_for {
   my ($self,@args) = @_;
   my $path = join('/',@args);  
-  $self->_cache_slots->{$path}{DispatchRule} ||= Rapi::Blog::Template::AccessStore::DispatchRule->new(
-    init_path => $path, AccessStore => $self, ctx => RapidApp->active_request_context
-  )
+  $self->_cache_slots->{$path}{Dispatcher} ||= Rapi::Blog::Template::Dispatcher->new(
+    path => $path, AccessStore => $self, ctx => RapidApp->active_request_context
+  )->resolve
+}
+
+sub PostDispatcher_for {
+  my $self = shift;
+  my $Dispatcher = $self->Dispatcher_for(@_) or return undef;
+  $Dispatcher->type eq 'Post' ? $Dispatcher : undef
+}
+
+sub Post_name_for {
+  my $self = shift;
+  my $Dispatcher = $self->PostDispatcher_for(@_) or return undef;
+  $Dispatcher->name
 }
 
 
@@ -100,7 +67,7 @@ around 'template_external_tpl' => sub {
   my ($orig,$self,@args) = @_;
   my $template = join('/',@args);
   
-  $self->DispatchRule_for($template)->claimed ? 1 : $self->$orig(@args)
+  $self->Dispatcher_for($template)->claimed ? 1 : $self->$orig(@args)
 };
 
 
@@ -109,69 +76,17 @@ around 'template_external_tpl' => sub {
 around 'template_admin_tpl' => sub {
   my ($orig,$self,@args) = @_;
   my $template = join('/',@args);
-  $self->DispatchRule_for($template)->post_name ? 0 : $self->$orig(@args)
+  $self->Dispatcher_for($template)->restrict ? 0 : $self->$orig(@args)
 };
 
 
 
 
-
-
-sub _is_static_path {
-  my ($self, $template) = @_;
-  $self->_cache_slots->{$template}{_is_static_path} //= do {
-    $self->DispatchRule_for($template)->Scaffold->_is_static_path($template)
-  }
-}
-
-sub _is_private_path {
-  my ($self, $template) = @_;
-  $self->_cache_slots->{$template}{_is_private_path} //= do {
-    $self->DispatchRule_for($template)->Scaffold->_is_private_path($template)
-  }
-}
-
-
-sub _resolve_scaffold_file {
-  my ($self, $template) = @_;
-  $self->_cache_slots->{$template}{_resolve_scaffold_file} //= do {
-    $self->DispatchRule_for($template)->Scaffold->_resolve_scaffold_file($template)
-  }
-}
-
-
-sub _resolve_static_path {
-  my ($self, $template) = @_;
-  $self->DispatchRule_for($template)->Scaffold->_resolve_static_path($template)
-}
-
-
-sub _File_mtime {
-  my ($self, $File) = @_;
-  my $Stat = $File->stat or return undef;
-  $Stat->mtime
-}
-
-
-sub _File_content {
-  my ($self, $File) = @_;
-  scalar $File->slurp
-}
-
 sub templateData {
   my ($self, $template) = @_;
   die 'template name argument missing!' unless ($template);
   
-  $self->_cache_slots->{$template}{templateData} //= do {
-    my $data = {};
-    if(my $name = $self->DispatchRule_for($template)->post_name) {
-      $data->{Row} = $data->{Post} = $self->Model->resultset('Post')
-        ->permission_filtered
-        ->search_rs({ 'me.name' => $name })
-        ->first; 
-    }
-    $data
-  }
+  $self->Dispatcher_for($template)->template_vars
 }
 
 # -----------------
@@ -280,12 +195,12 @@ sub cur_ts {
 
 sub owns_tpl {
   my ($self, $template) = @_;
-  $self->DispatchRule_for($template)->claimed
+  $self->Dispatcher_for($template)->claimed
 }
 
 sub template_exists {
   my ($self, $template) = @_;
-  $self->DispatchRule_for($template)->exists
+  $self->Dispatcher_for($template)->exists
 }
 
 
@@ -297,7 +212,7 @@ sub template_mtime {
 sub _template_mtime {
   my ($self, $template) = @_;
   
-  $self->DispatchRule_for($template)->mtime
+  $self->Dispatcher_for($template)->mtime
 }
 
 sub template_content {
@@ -308,14 +223,14 @@ sub template_content {
 sub _template_content {
   my ($self, $template) = @_;
   
-  $self->DispatchRule_for($template)->content
+  $self->Dispatcher_for($template)->content
 }
 
 
 sub create_template {
   my ($self, $template, $content) = @_;
   
-  my $name = $self->DispatchRule_for($template)->post_name or return undef;
+  my $name = $self->Post_name_for($template) or return undef;
   
   my $create = {
     name => $name,
@@ -329,7 +244,7 @@ sub create_template {
 
 sub update_template {
   my ($self, $template, $content) = @_;
-  my $name = $self->DispatchRule_for($template)->post_name or return undef;
+  my $name = $self->Post_name_for($template) or return undef;
   
   my $Row = $self->Model->resultset('Post')
     ->search_rs({ 'me.name' => $name })
@@ -341,7 +256,7 @@ sub update_template {
 
 sub delete_template {
   my ($self, $template) = @_;
-  my $name = $self->DispatchRule_for($template)->post_name or return undef;
+  my $name = $self->Post_name_for($template) or return undef;
   
   my $Row = $self->Model->resultset('Post')
     ->search_rs({ 'me.name' => $name })
@@ -355,7 +270,7 @@ around 'get_template_format' => sub {
   my $template = join('/',@args);
   
   # By rule all local tempaltes (Post rows) are markdown
-  return $self->DispatchRule_for($template)->post_name
+  return $self->Post_name_for($template)
     ? 'markdown'
     : $self->$orig(@args)
 };
@@ -370,14 +285,14 @@ around 'template_post_processor_class' => sub {
   my $template = join('/',@args);
   
   # By rule, never use a post processor with a wrapper view:
-  return undef if $self->DispatchRule_for($template)->ViewWrapper;
+  return undef if $self->Dispatcher_for($template)->find_parent_type('ViewWrapper');
   
   # Render markdown with our MarkdownElement post-processor if the next template
   # (i.e. which is including us) is one of our wrapper/views. This will defer
   # rendering of markdown to the client-side with the marked.js library
   if($self->process_Context && $self->get_template_format($template) eq 'markdown') {
     if(my $next_template = $self->process_Context->next_template) {
-      if($self->DispatchRule_for($next_template)->ViewWrapper) {
+      if($self->Dispatcher_for($next_template)->is_type('ViewWrapper')) {
         return 'Rapi::Blog::Template::Postprocessor::MarkdownElement'
       }
     }
@@ -389,8 +304,7 @@ around 'template_post_processor_class' => sub {
 
 sub template_psgi_response {
   my ($self, $template, $c) = @_;
-  
-  $self->DispatchRule_for($template)->maybe_psgi_response
+  $self->Dispatcher_for($template)->maybe_psgi_response
 }
 
 

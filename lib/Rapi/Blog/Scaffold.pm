@@ -38,7 +38,7 @@ has 'config',
   coerce  => sub { blessed $_[0] ? $_[0] : Rapi::Blog::Scaffold::Config->new($_[0]) };
 
 # The Scaffold needs to be able to check if a given Post exists in the database  
-has 'Post_exists_fn', is => 'ro', required => 1, isa => CodeRef;
+#has 'Post_exists_fn', is => 'ro', required => 1, isa => CodeRef;
 
 
 sub static_paths       { (shift)->config->static_paths       }
@@ -55,13 +55,8 @@ has 'unique_int_post_path', is => 'ro', init_arg => undef, lazy => 1, default =>
   join('','_',$self->uuid,'/private/post/')
 };
 
+sub not_found_template { (shift)->config->not_found }
 
-# If this Scaffold can handle a path which it owns but doesn't exist:
-sub handles_not_found {
-  my $self = shift;
-  my $template = $self->config->not_found or return 0;
-  $self->_resolve_scaffold_file($template) ? 1 : 0
-}
 
 
 has 'ViewWrappers', is => 'ro', init_arg => undef, lazy => 1, default => sub {
@@ -90,6 +85,20 @@ sub _load_yaml_config {
 }
 
 
+sub resolve_ViewWrapper {
+  my $self = shift;
+  my $path = shift or return undef;
+  
+  my $subpath;
+  my $VW = List::Util::first { $subpath = $_->resolve_subpath($path) } @{ $self->ViewWrappers };
+  return undef unless $VW;
+  
+  wantarray ? ($VW, $subpath) : $VW
+}
+
+
+
+
 sub owns_path {
   my ($self, $path) = @_;
   $self->owns_path_as($path) ? 1 : 0
@@ -100,21 +109,6 @@ sub _resolve_path_to_post {
   
   my ($pfx,$name) = split($self->unique_int_post_path,$path,2);
   ($name && $pfx eq '') ? $name : undef
-}
-
-
-
-sub owns_path_as_view {
-  my ($self, $path) = @_;
-
-  for my $VW (@{ $self->ViewWrappers }) {
-    my $name = $VW->resolve_subpath($path) or next;
-    return 1 if ($self->handles_not_found || $VW->handles_not_found);
-    # If we don't hadle not found, only claim the template if the resolved post exists:
-    return 1 if ($self->Post_exists_fn->($name));
-  }
-
-  return 0
 }
 
 
@@ -190,44 +184,33 @@ sub _is_private_path {
 }
 
 
-sub _resolve_scaffold_file {
-  my ($self, $template) = @_;
+sub resolve_path {
+  my $self = shift;
+  my $path = shift or return undef;
   
+  my $File = $self->resolve_file($path);
   
+  # If not found, try once more by appending the default file extenson:
+  $File = $self->resolve_file(join('.',$path,$self->default_ext)) if (!$File && $self->default_ext);
   
-  
-  my $ret = $self->__resolve_scaffold_file($template);
-  
-  #scream_color(RED,$template,"$ret");
-  
-  $ret
-  
+  $File
 }
 
-sub __resolve_scaffold_file {
-  my ($self, $template,$recur) = @_;
-  my $File = $self->dir->file($template);
-  # If not found, try once more by appending the default file extenson:
-  return $self->__resolve_scaffold_file(join('.',$template,$self->default_ext),1) unless (
-    $recur || -f $File || ! $self->default_ext
-  );
+
+sub resolve_file {
+  my $self = shift;
+  my $path = shift or return undef;
+  
+  my $File = $self->dir->file($path);
   -f $File ? $File : undef
 }
 
-sub _resolve_static_path {
-  my ($self, $template) = @_;
-  return $template if ($self->_is_static_path($template));
-  
-  for my $def (@{ $self->view_wrappers }) {
-    my $path = $def->{path} or die "Bad view_wrapper definition -- 'path' is required";
-    $path =~ s/\/?/\//; $path =~ s/^\///;
-    my ($pre, $loc_tpl) = split(/$path/,$template,2);
-    return $loc_tpl if ($pre eq '' && $loc_tpl && $self->_is_static_path($loc_tpl));
-  }
-  
-  return undef
-}
 
+sub resolve_static_file {
+  my ($self, $path) = @_;
+  $path && $self->_is_static_path($path) or return undef;
+  $self->resolve_file($path)
+}
 
 
 1;
