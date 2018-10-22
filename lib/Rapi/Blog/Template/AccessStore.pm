@@ -393,18 +393,5 @@ sub template_psgi_response {
   $self->DispatchRule_for($template)->maybe_psgi_response
 }
 
-sub _forward_to_404_template {
-  my $self = shift;
-  my $c = shift || RapidApp->active_request_context;
-  
-  my $tpl = $self->scaffold_cnf->{not_found} || 'rapidapp/public/http-404.html';
-  
-  # catch deep recursion:
-  die "Error dispatching 404 not found template" if ($c->stash->{__forward_to_404_template}++);
-  
-  $c->res->status(404);
-  $c->detach( '/rapidapp/template/view', [$tpl] )
-}
-
 
 1;
