@@ -55,13 +55,13 @@ has 'PathMatch', is => 'ro', init_arg => undef, lazy => 1, default => sub {
     );
   }
   
-  my $BestMatch = undef;
-  $BestMatch = Rapi::Blog::Scaffold::PathMatch
-    ->new( path => $self->init_path, Scaffold => $_ )
-    ->us_or_better($BestMatch) 
-  for @scaffolds;
+  my $Best = undef;
+  for (@scaffolds) {
+    my $Next = Rapi::Blog::Scaffold::PathMatch->new( path => $self->init_path, Scaffold => $_ );
+    $Best = $Best ? $Best->us_or_better($Next) : $Next;
+  }
  
-  $BestMatch->resolved_PathMatch || $BestMatch
+  $Best->resolved_PathMatch || $Best
 
 }, isa => InstanceOf['Rapi::Blog::Scaffold::PathMatch'];
 
@@ -112,11 +112,8 @@ has 'claimed', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
   $self->applies or return 0;
   $self->exists and return 1;
-  return 0 unless (
-    ($self->PathMatch->is_static || $self->PathMatch->is_private)
-    && $self->valid_not_found_template
-  );
- 
+  $self->valid_not_found_template or return 0;
+
   # Only claim the path for "not found" if it doesn't exist in the Provider (i.e. RapidApp core templates)
   $self->exist_in_Provider ? 0 : 1
 }, isa => Bool;
@@ -175,6 +172,9 @@ has 'maybe_psgi_response', is => 'ro', init_arg => undef, lazy => 1, default => 
     
     # Make sure the same Scaffold handles the 404 not found:
     $self->ctx->stash->{rapi_blog_only_scaffold_uuid} = $self->Scaffold->uuid;
+    
+    # Needed to prevent deep recursion when the not found template is private:
+    $self->ctx->stash->{rapi_blog_detach_404_template}++ and return undef;
     
     $self->ctx->res->status(404);
     $self->ctx->detach( '/rapidapp/template/view', [$tpl] )

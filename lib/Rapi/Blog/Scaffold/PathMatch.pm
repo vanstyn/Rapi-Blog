@@ -55,10 +55,7 @@ has 'match_rank', is => 'ro', init_arg => undef, lazy => 1, default => sub {
     return 3 if ($self->ViewWrapper);
   }
   
-  if ($self->handles_not_found) {
-    return 4 if $self->ViewWrapper;
-    return 5 if ($self->is_static || $self->is_private);
-  }
+  return 4 if ($self->handles_not_found);
   
   100
   
