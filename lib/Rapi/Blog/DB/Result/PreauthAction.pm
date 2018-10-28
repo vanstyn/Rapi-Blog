@@ -56,6 +56,32 @@ __PACKAGE__->belongs_to(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:a79G7ycr1rODRs4M44Pa1w
 
 
+__PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');
+
+use RapidApp::Util ':all';
+use Rapi::Blog::Util;
+
+
+sub insert {
+  my $self = shift;
+  my $columns = shift;
+
+  $self->set_inflated_columns($columns) if $columns;
+  
+  my $now_dt = Rapi::Blog::Util->now_dt;
+
+  $self->create_ts( Rapi::Blog::Util->dt_to_ts($now_dt) );
+  
+  $self->expire_ts( Rapi::Blog::Util->dt_to_ts(
+    $now_dt->clone->add( hours => 1 )
+  )) unless $self->expire_ts;
+  
+  $self->next::method;
+  
+  return $self;
+}
+
+
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;
 1;

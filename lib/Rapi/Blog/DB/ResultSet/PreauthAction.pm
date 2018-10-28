@@ -22,7 +22,7 @@ sub create_auth_key {
   my ($self, $type, $user_id) = @_;
   
   my $key = String::Random->new->randregex('[a-z0-9A-Z]{50}');
-  my $key_hash = $self->_hash_token($key);
+  my $key_hash = $self->_hash_auth_key($key);
 
   $self->create({
     type       => $type,
