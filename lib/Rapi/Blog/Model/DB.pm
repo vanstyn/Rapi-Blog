@@ -132,22 +132,24 @@ sub _run_migrate_schemsum_fea65238f92786e {
   my @statements = (
     'ALTER TABLE [user] ADD COLUMN [disabled] BOOLEAN NOT NULL DEFAULT 0',
     
-    q~CREATE TABLE [user_reset_token_type] (
+    q~CREATE TABLE [preauth_action_type] (
       [name] varchar(16) PRIMARY KEY NOT NULL,
       [description] varchar(1024) DEFAULT NULL
     )~,
-    q~INSERT INTO [user_reset_token_type] VALUES('enable','Enable a disabled user account')~,
-    q~INSERT INTO [user_reset_token_type] VALUES('password_reset','Change a user password')~,
+    q~INSERT INTO [preauth_action_type] VALUES('enable_account','Enable a disabled user account')~,
+    q~INSERT INTO [preauth_action_type] VALUES('password_reset','Change a user password')~,
 
-    q~CREATE TABLE [user_reset_token] (
+    q~CREATE TABLE [preauth_action] (
       [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
       [type] varchar(16) NOT NULL,
-      [user_id] INTEGER NOT NULL,
+      [active] BOOLEAN NOT NULL DEFAULT 1,
       [create_ts] datetime NOT NULL,
       [expire_ts] datetime NOT NULL,
-      [token_hash] varchar(128) UNIQUE NOT NULL,
+      [user_id] INTEGER,
+      [auth_key] varchar(128) UNIQUE NOT NULL,
+      [json_data] text,
       
-      FOREIGN KEY ([type]) REFERENCES [user_reset_token_type] ([name]) ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY ([type]) REFERENCES [preauth_action_type] ([name]) ON DELETE CASCADE ON UPDATE CASCADE,
       FOREIGN KEY ([user_id]) REFERENCES [user] ([id]) ON DELETE CASCADE ON UPDATE CASCADE
     )~
   );
@@ -852,8 +854,8 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
-          user_reset_tokens => {
-            header => 'user_reset_tokens',
+          preauth_actions => {
+            header => 'preauth_actions',
             #width => 100,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
@@ -1252,10 +1254,10 @@ __PACKAGE__->config(
           },
         },
       },
-      UserResetToken => {
+      PreauthAction => {
         display_column => 'id',
-        title          => 'UserResetToken',
-        title_multi    => 'UserResetToken Rows',
+        title          => 'PreauthAction',
+        title_multi    => 'PreauthAction Rows',
         iconCls        => 'ra-icon-pg',
         multiIconCls   => 'ra-icon-pg-multi',
         columns        => {
@@ -1272,11 +1274,11 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
-          user_id => {
-            header => 'user_id',
+          active => {
+            header => 'active',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            #profiles => [],
           },
           create_ts => {
             header => 'create_ts',
@@ -1290,8 +1292,20 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
-          token_hash => {
-            header => 'token_hash',
+          user_id => {
+            header => 'user_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => [ 'hidden' ],
+          },
+          auth_key => {
+            header => 'auth_key',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          json_data => {
+            header => 'json_data',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -1304,10 +1318,10 @@ __PACKAGE__->config(
           },
         },
       },
-      UserResetTokenType => {
+      PreauthActionType => {
         display_column => 'name',
-        title          => 'UserResetTokenType',
-        title_multi    => 'UserResetTokenType Rows',
+        title          => 'PreauthActionType',
+        title_multi    => 'PreauthActionType Rows',
         iconCls        => 'ra-icon-pg',
         multiIconCls   => 'ra-icon-pg-multi',
         columns        => {
@@ -1323,8 +1337,8 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
-          user_reset_tokens => {
-            header => 'user_reset_tokens',
+          preauth_actions => {
+            header => 'preauth_actions',
             #width => 100,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',

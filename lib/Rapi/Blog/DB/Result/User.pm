@@ -76,15 +76,15 @@ __PACKAGE__->has_many(
   { cascade_copy => 0, cascade_delete => 0 },
 );
 __PACKAGE__->has_many(
-  "user_reset_tokens",
-  "Rapi::Blog::DB::Result::UserResetToken",
+  "preauth_actions",
+  "Rapi::Blog::DB::Result::PreauthAction",
   { "foreign.user_id" => "self.id" },
   { cascade_copy => 0, cascade_delete => 0 },
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2018-10-01 22:28:38
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:MA2JlPVjgM4WP/7XSQPnPA
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2018-10-27 23:38:05
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:2klRAJnak1zgM9iKuGRQCQ
 
 use RapidApp::Util ':all';
 
