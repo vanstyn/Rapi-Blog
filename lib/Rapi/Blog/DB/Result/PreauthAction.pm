@@ -33,6 +33,12 @@ __PACKAGE__->add_columns(
 );
 __PACKAGE__->set_primary_key("id");
 __PACKAGE__->add_unique_constraint("auth_key_unique", ["auth_key"]);
+__PACKAGE__->has_many(
+  "preauth_action_events",
+  "Rapi::Blog::DB::Result::PreauthActionEvent",
+  { "foreign.action_id" => "self.id" },
+  { cascade_copy => 0, cascade_delete => 0 },
+);
 __PACKAGE__->belongs_to(
   "type",
   "Rapi::Blog::DB::Result::PreauthActionType",
@@ -52,8 +58,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2018-10-27 23:38:05
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:a79G7ycr1rODRs4M44Pa1w
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2018-10-28 02:04:56
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:E2FlZX3VbC1RQIbYEE5pHA
 
 
 __PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');

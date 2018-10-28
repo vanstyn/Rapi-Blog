@@ -347,7 +347,39 @@ q~CREATE TABLE [trk_section_sections] (
 sub _run_migrate_schemsum_fea65238f92786e {
   my $self = shift;
   
+# All this just so we can change hit.post_id from not null to nullable:
+my @modify_hit = (
+ 'PRAGMA foreign_keys=off', 'BEGIN TRANSACTION',
+  
+ 'ALTER TABLE [hit] RENAME TO [temp_hit]',q~
+CREATE TABLE [hit] (
+  [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  [post_id] INTEGER,
+  [ts] datetime NOT NULL,
+  [client_ip] varchar(16),
+  [client_hostname] varchar(255),
+  [uri] varchar(512),
+  [method] varchar(8),
+  [user_agent] varchar(1024),
+  [referer] varchar(512),
+  [serialized_request] text,
+  
+  FOREIGN KEY ([post_id])   REFERENCES [post] ([id])    ON DELETE CASCADE ON UPDATE CASCADE
+)~, q~
+INSERT INTO [hit] 
+ SELECT [id],[post_id],[ts],[client_ip],[client_hostname],[uri], [method],[user_agent],[referer],[serialized_request]
+ FROM [temp_hit]
+~,
+ 'DROP TABLE [temp_hit]',
+ 
+ 'COMMIT', 'PRAGMA foreign_keys=on'
+);
+  
+  
   my @statements = (
+  
+    @modify_hit,
+  
     'ALTER TABLE [user] ADD COLUMN [disabled] BOOLEAN NOT NULL DEFAULT 0',
     
     q~CREATE TABLE [preauth_action_type] (
@@ -369,7 +401,30 @@ sub _run_migrate_schemsum_fea65238f92786e {
       
       FOREIGN KEY ([type]) REFERENCES [preauth_action_type] ([name]) ON DELETE CASCADE ON UPDATE CASCADE,
       FOREIGN KEY ([user_id]) REFERENCES [user] ([id]) ON DELETE CASCADE ON UPDATE CASCADE
+    )~,
+    
+    q~CREATE TABLE [preauth_event_type] (
+      [id]          INTEGER PRIMARY KEY NOT NULL,
+      [name]        varchar(16) UNIQUE NOT NULL,
+      [description] varchar(1024) DEFAULT NULL
+    )~,
+    q~INSERT INTO [preauth_event_type] VALUES(1,'Valid',     'Pre-Authorization Action accessed and is valid')~,
+    q~INSERT INTO [preauth_event_type] VALUES(2,'Invalid',   'Pre-Authorization Action exists but is invalid')~,
+    q~INSERT INTO [preauth_event_type] VALUES(3,'Deactivate','Pre-Authorization Action deactivated')~,
+    
+    q~CREATE TABLE [preauth_action_event] (
+      [id]        INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+      [ts]        datetime NOT NULL,
+      [type_id]   INTEGER NOT NULL,
+      [action_id] INTEGER NOT NULL,
+      [hit_id]    INTEGER,
+      [info]      text,
+      
+      FOREIGN KEY ([type_id])   REFERENCES [preauth_event_type] ([id]) ON DELETE RESTRICT ON UPDATE CASCADE,
+      FOREIGN KEY ([action_id]) REFERENCES [preauth_action]     ([id]) ON DELETE RESTRICT ON UPDATE CASCADE,
+      FOREIGN KEY ([hit_id])    REFERENCES [hit]                ([id]) ON DELETE RESTRICT ON UPDATE CASCADE
     )~
+    
   );
   
   my $db = $self->_one_off_connect;
@@ -1048,6 +1103,13 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
+          preauth_action_events => {
+            header => 'preauth_action_events',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
         },
       },
       Category => {
@@ -1321,7 +1383,7 @@ __PACKAGE__->config(
             header => 'user_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           auth_key => {
             header => 'auth_key',
@@ -1338,6 +1400,13 @@ __PACKAGE__->config(
           user => {
             header => 'user',
             #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          preauth_action_events => {
+            header => 'preauth_action_events',
+            #width => 100,
+            #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
@@ -1364,6 +1433,105 @@ __PACKAGE__->config(
           },
           preauth_actions => {
             header => 'preauth_actions',
+            #width => 100,
+            #sortable => 1,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+        },
+      },
+      PreauthActionEvent => {
+        display_column => 'id',
+        title          => 'PreauthActionEvent',
+        title_multi    => 'PreauthActionEvent Rows',
+        iconCls        => 'ra-icon-pg',
+        multiIconCls   => 'ra-icon-pg-multi',
+        columns        => {
+          id => {
+            allow_add => 0,
+            header    => 'id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          ts => {
+            header => 'ts',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          type_id => {
+            header => 'type_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => [ 'hidden' ],
+          },
+          action_id => {
+            header => 'action_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => [ 'hidden' ],
+          },
+          hit_id => {
+            header => 'hit_id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            profiles => [ 'hidden' ],
+          },
+          info => {
+            header => 'info',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          action => {
+            header => 'action',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          hit => {
+            header => 'hit',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          type => {
+            header => 'type',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+        },
+      },
+      PreauthEventType => {
+        display_column => 'name',
+        title          => 'PreauthEventType',
+        title_multi    => 'PreauthEventType Rows',
+        iconCls        => 'ra-icon-pg',
+        multiIconCls   => 'ra-icon-pg-multi',
+        columns        => {
+          id => {
+            allow_add => 0,
+            header    => 'id',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          name => {
+            header => 'name',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          description => {
+            header => 'description',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
+          preauth_action_events => {
+            header => 'preauth_action_events',
             #width => 100,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
