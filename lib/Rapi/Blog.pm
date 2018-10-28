@@ -71,7 +71,8 @@ has '+inject_components', default => sub {
 
   return [
     [ $model => 'Model::DB' ],
-    [ 'Rapi::Blog::Controller::Remote' => 'Controller::Remote' ]
+    [ 'Rapi::Blog::Controller::Remote' => 'Controller::Remote' ],
+    [ 'Rapi::Blog::Controller::Remote::PreauthAction' => 'Controller::Remote::PreauthAction' ]
   ]
 };
 

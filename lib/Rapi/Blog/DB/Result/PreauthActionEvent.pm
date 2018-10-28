@@ -57,6 +57,17 @@ __PACKAGE__->belongs_to(
 # DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:CTXzUj/Ria83CXwXwZqAfQ
 
 
+sub insert {
+  my ($self, $columns) = @_;
+  $self->set_inflated_columns($columns) if $columns;
+  
+  $self->ts or $self->ts( Rapi::Blog::Util->now_ts );
+  
+  $self->next::method;
+  
+  return $self;
+}
+
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
 __PACKAGE__->meta->make_immutable;
 1;

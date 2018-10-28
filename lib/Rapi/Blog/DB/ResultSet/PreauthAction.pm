@@ -21,7 +21,7 @@ sub _hash_auth_key {
 sub create_auth_key {
   my ($self, $type, $user_id) = @_;
   
-  my $key = String::Random->new->randregex('[a-z0-9A-Z]{50}');
+  my $key = String::Random->new->randregex('[a-z0-9A-Z]{15}');
   my $key_hash = $self->_hash_auth_key($key);
 
   $self->create({
@@ -31,14 +31,10 @@ sub create_auth_key {
   }) and return $key
 }
 
-
 sub lookup_key {
   my ($self, $key) = @_;
-  
   $self->search_rs({ 'me.auth_key' => $self->_hash_auth_key($key) })->first
-
 }
-
 
 
 1;

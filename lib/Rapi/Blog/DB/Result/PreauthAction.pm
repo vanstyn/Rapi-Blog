@@ -67,6 +67,16 @@ __PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 
+sub evRsCmeth {
+  my ($self, $meth, @args) = @_;
+  
+  my $evRow = $self->preauth_action_events->$meth(@args);
+  
+  my $trk = $self->{_track_created_Events};
+  push @$trk, $evRow if (ref($trk)||'' eq 'ARRAY');
+
+  $evRow
+}
 
 sub insert {
   my $self = shift;
@@ -86,6 +96,71 @@ sub insert {
   
   return $self;
 }
+
+
+sub deactivate {
+  my ($self, $info) = @_;
+  
+  $self->active or die "Already inactive!";
+  
+  my %pkt = (
+    type_id   => 3, # Deactivate
+    action_id => $self->get_column('id'),
+    info      => $info
+  );
+  
+  my $Hit = $self->{_currently_validating_Hit};
+  
+  my $eventRow = $Hit
+    ? $self->evRsCmeth( create_with_hit => $Hit,\%pkt ) 
+    : $self->evRsCmeth( create => \%pkt );
+  
+  $self->active(0);
+  $self->update;
+  
+  $self
+}
+
+
+
+sub not_expired {
+  my ($self, $test_dt) = shift;
+  $test_dt ||= Rapi::Blog::Util->now_dt;
+  
+  return 1 if (
+        Rapi::Blog::Util->dt_to_ts($self->expire_ts)
+     gt Rapi::Blog::Util->dt_to_ts($test_dt)
+  );
+  
+  $self->deactivate('Expired') if ($self->active);
+
+  return 0
+}
+
+
+sub enforce_valid {
+  my $self = shift;
+  $self->active && $self->not_expired
+}
+
+
+sub request_validate {
+  my ($self, $Hit) = @_;
+  
+  local $self->{_currently_validating_Hit} = $Hit;
+  
+  my %pkt = ( action_id => $self->get_column('id') );
+  
+  if($self->enforce_valid) {
+    $self->evRsCmeth( create_with_hit => $Hit,{ %pkt, type_id => 1 } );
+    return 1;
+  }
+  else {
+    $self->evRsCmeth( create_with_hit => $Hit,{ %pkt, type_id => 2 } );
+    return 0;
+  }
+}
+
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
