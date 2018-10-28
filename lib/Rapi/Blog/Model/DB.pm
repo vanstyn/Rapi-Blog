@@ -125,44 +125,14 @@ sub _migrate_for_schemsum {
 }
 
 
-# This is the migration from v1.02
-sub _run_migrate_schemsum_fea65238f92786e {
-  my $self = shift;
-  
-  my @statements = (
-    'ALTER TABLE [user] ADD COLUMN [disabled] BOOLEAN NOT NULL DEFAULT 0',
-    
-    q~CREATE TABLE [preauth_action_type] (
-      [name] varchar(16) PRIMARY KEY NOT NULL,
-      [description] varchar(1024) DEFAULT NULL
-    )~,
-    q~INSERT INTO [preauth_action_type] VALUES('enable_account','Enable a disabled user account')~,
-    q~INSERT INTO [preauth_action_type] VALUES('password_reset','Change a user password')~,
-
-    q~CREATE TABLE [preauth_action] (
-      [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-      [type] varchar(16) NOT NULL,
-      [active] BOOLEAN NOT NULL DEFAULT 1,
-      [create_ts] datetime NOT NULL,
-      [expire_ts] datetime NOT NULL,
-      [user_id] INTEGER,
-      [auth_key] varchar(128) UNIQUE NOT NULL,
-      [json_data] text,
-      
-      FOREIGN KEY ([type]) REFERENCES [preauth_action_type] ([name]) ON DELETE CASCADE ON UPDATE CASCADE,
-      FOREIGN KEY ([user_id]) REFERENCES [user] ([id]) ON DELETE CASCADE ON UPDATE CASCADE
-    )~
-  );
-  
-  my $db = $self->_one_off_connect;
-  
-  $db->storage->dbh->do($_) for (@statements);
-  
-  return 1
-}
+###############################################################################
+######################      SCHEMA MIGRATION METHODS      #####################
+###############################################################################
 
 
-
+######################################
+###     Migration from  pre-v1     ###
+######################################
 # This is the migration from the last dev state before public 1.000 release... was
 # never seen in the wild (this entry made for test/dev as we never expect to see it)
 sub _run_migrate_schemsum_7ef8b36d22d6c7d {
@@ -238,6 +208,17 @@ FROM [temp_user]
   
   return 1
 }
+######################################
+
+
+######################################
+###     Migration from v1.0000     ###
+######################################
+
+#sub _run_migrate_schemsum_8955354febf5675 {
+#  my $self = shift;
+#  scream('[1] WE WOULD RUN MIGRATION FOR schemsum-8955354febf5675 !!!');
+#}
 
 # This is the first public migration, adds categories
 sub _run_migrate_schemsum_8955354febf5675 {
@@ -270,8 +251,12 @@ q~CREATE TABLE [post_category] (
   
   return 1
 }
+######################################
 
 
+######################################
+###     Migration from v1.0101     ###
+######################################
 # This is the second public migration from the schema as of v1.0101 release... 
 sub _run_migrate_schemsum_6c99c16bdcb0fab {
   my $self = shift;
@@ -353,15 +338,55 @@ q~CREATE TABLE [trk_section_sections] (
  
   return 1
 }
+######################################
+
+
+######################################
+###     Migration from v1.0200     ###
+######################################
+sub _run_migrate_schemsum_fea65238f92786e {
+  my $self = shift;
+  
+  my @statements = (
+    'ALTER TABLE [user] ADD COLUMN [disabled] BOOLEAN NOT NULL DEFAULT 0',
+    
+    q~CREATE TABLE [preauth_action_type] (
+      [name] varchar(16) PRIMARY KEY NOT NULL,
+      [description] varchar(1024) DEFAULT NULL
+    )~,
+    q~INSERT INTO [preauth_action_type] VALUES('enable_account','Enable a disabled user account')~,
+    q~INSERT INTO [preauth_action_type] VALUES('password_reset','Change a user password')~,
+
+    q~CREATE TABLE [preauth_action] (
+      [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+      [type] varchar(16) NOT NULL,
+      [active] BOOLEAN NOT NULL DEFAULT 1,
+      [create_ts] datetime NOT NULL,
+      [expire_ts] datetime NOT NULL,
+      [user_id] INTEGER,
+      [auth_key] varchar(128) UNIQUE NOT NULL,
+      [json_data] text,
+      
+      FOREIGN KEY ([type]) REFERENCES [preauth_action_type] ([name]) ON DELETE CASCADE ON UPDATE CASCADE,
+      FOREIGN KEY ([user_id]) REFERENCES [user] ([id]) ON DELETE CASCADE ON UPDATE CASCADE
+    )~
+  );
+  
+  my $db = $self->_one_off_connect;
+  
+  $db->storage->dbh->do($_) for (@statements);
+  
+  return 1
+}
+######################################
 
 
 
-## This is the migration from the first public release of the schema (v1.0000)
-#sub _run_migrate_schemsum_8955354febf5675 {
-#  my $self = shift;
-#  
-#  scream('[1] WE WOULD RUN MIGRATION FOR schemsum-8955354febf5675 !!!');
-#}
+###############################################################################
+######################       END MIGRATION METHODS        #####################
+###############################################################################
+
+
 
 #>>>
 
