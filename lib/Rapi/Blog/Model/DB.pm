@@ -1343,10 +1343,10 @@ __PACKAGE__->config(
       },
       PreauthAction => {
         display_column => 'id',
-        title          => 'PreauthAction',
-        title_multi    => 'PreauthAction Rows',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
+        title          => 'Pre Authorization',
+        title_multi    => 'Pre Authorizations',
+        iconCls        => 'icon-preauth-action',
+        multiIconCls   => 'icon-preauth-actions',
         columns        => {
           id => {
             allow_add => 0,
@@ -1414,10 +1414,10 @@ __PACKAGE__->config(
       },
       PreauthActionType => {
         display_column => 'name',
-        title          => 'PreauthActionType',
-        title_multi    => 'PreauthActionType Rows',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
+        title          => 'Pre-Auth Type',
+        title_multi    => 'Pre-Auth Types',
+        iconCls        => 'icon-preauth-action-type',
+        multiIconCls   => 'icon-preauth-action-types',
         columns        => {
           name => {
             header => 'name',
@@ -1442,10 +1442,10 @@ __PACKAGE__->config(
       },
       PreauthActionEvent => {
         display_column => 'id',
-        title          => 'PreauthActionEvent',
-        title_multi    => 'PreauthActionEvent Rows',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
+        title          => 'Pre-Auth Event',
+        title_multi    => 'Pre-Auth Events',
+        iconCls        => 'icon-preauth-event',
+        multiIconCls   => 'icon-preauth-events',
         columns        => {
           id => {
             allow_add => 0,
@@ -1506,10 +1506,10 @@ __PACKAGE__->config(
       },
       PreauthEventType => {
         display_column => 'name',
-        title          => 'PreauthEventType',
-        title_multi    => 'PreauthEventType Rows',
-        iconCls        => 'ra-icon-pg',
-        multiIconCls   => 'ra-icon-pg-multi',
+        title          => 'Pre-Auth Event Type',
+        title_multi    => 'Pre-Auth Event Types',
+        iconCls        => 'icon-preauth-event-type',
+        multiIconCls   => 'icon-preauth-event-types',
         columns        => {
           id => {
             allow_add => 0,
