@@ -12,7 +12,7 @@ use warnings;
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 
-use Rapi::Blog::Util::ActionSession;
+use Rapi::Blog::PreAuth::ActionSession;
 
 sub index :Path :Args(1) {
   my ($self, $c, $key) = @_;
@@ -22,7 +22,7 @@ sub index :Path :Args(1) {
     ->lookup_key($key) 
   or return $self->_handle_not_found_key($c, $key);
   
-  my $paSes = Rapi::Blog::Util::ActionSession->new(
+  my $paSes = Rapi::Blog::PreAuth::ActionSession->new(
     PreauthAction => $PreauthAction,
     request       => $c->request
   );

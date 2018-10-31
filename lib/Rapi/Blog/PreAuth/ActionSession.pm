@@ -1,4 +1,4 @@
-package Rapi::Blog::Util::ActionSession;
+package Rapi::Blog::PreAuth::ActionSession;
 use strict;
 use warnings;
 
