@@ -67,13 +67,19 @@ __PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 
+sub active_request_Hit {
+  my ($self, $new) = @_;
+  $self->{_active_request_Hit} = $new if ($new);
+  $self->{_active_request_Hit}
+}
+
 
 sub create_event {
   my ($self, $pkt) = @_;
   
   $pkt->{action_id} = $self->get_column('id');
   
-  my $Hit = $self->{_currently_validating_Hit};
+  my $Hit = $self->active_request_Hit;
   
   $Hit 
     ? $self->evRsCmeth( create_with_hit => $Hit, $pkt ) 
@@ -85,7 +91,7 @@ sub evRsCmeth {
   
   my $evRow = $self->preauth_action_events->$meth(@args);
   
-  my $trk = $self->{_track_created_Events};
+  my $trk = $self->{_track_created_Events}; # <-- This is not currently being set and may be removed
   push @$trk, $evRow if (ref($trk)||'' eq 'ARRAY');
 
   $evRow
@@ -153,7 +159,7 @@ sub enforce_valid {
 sub request_validate {
   my ($self, $Hit) = @_;
   
-  local $self->{_currently_validating_Hit} = $Hit;
+  $self->active_request_Hit($Hit);
   
   if($self->enforce_valid) {
     $self->create_event({ type_id => 1 }); # Valid
@@ -167,20 +173,22 @@ sub request_validate {
 
 
 sub actor_execute {
-  my $self = shift;
+  my ($self, $c, @args) = @_;
   
   $self->active or die "Action not active! cannot execute";
   
-  my $info;
+  my ($Actor, $info);
+  my $not_final = 0;
 
   try {
-    my $Actor = $self->type
+    $Actor = $self->type
       ->actor_class
-      ->new( PreauthAction => $self );
+      ->new( ctx => $c, PreauthAction => $self );
       
-    $Actor->execute or die "Actor ->execute did not return true";
-    
-    $info = $Actor->result;
+    $Actor->execute(@args) or die "Actor ->execute did not return true";
+
+    $info      = $Actor->info;
+    $not_final = $Actor->not_final;
     
   } catch {
     my $err = shift;
@@ -192,8 +200,10 @@ sub actor_execute {
     info    => $info
   });
   
-  $self->deactivate('Executed')
+  $self->deactivate('Executed') unless ($not_final);
   
+  # Return the post-executed Actor object:
+  $Actor
 }
 
 

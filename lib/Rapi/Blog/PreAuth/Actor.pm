@@ -10,12 +10,26 @@ use Types::Standard qw(:all);
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 
+# Catalyst context:
+has 'ctx', is => 'ro', required => 1;
+
 has 'PreauthAction',
   is       => 'ro',
   required => 1,
   isa => InstanceOf['Rapi::Blog::DB::Result::PreauthAction'];
 
+has 'not_final', is => 'rw', default => sub { 0 }  , isa => Bool;
+has 'info',      is => 'rw', default => sub { '' } , isa => Str; 
 
+# If and what template the controller should render after execution
+has 'render_template', is => 'rw', default => sub { undef } , isa => Maybe[Str];
+
+# Where the controller should redirect the user to after execution
+#  This takes priority over 'render_template' so child Actors should override
+#  the base setiing which is to just redirect the user to the site root
+has 'redirect_url',    is => 'rw', default => sub { '/' } ,   isa => Maybe[Str];
+
+sub req_params { (shift)->ctx->request->params }
 
 
 sub execute { ... }

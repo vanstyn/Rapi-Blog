@@ -11,13 +11,30 @@ use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 
 
+
+
 sub execute {
   my $self = shift;
   
+  my $params = $self->req_params;
   
-
+  my $pw = $params->{new_password} or return $self->execute_prompt;
+  
+  
+  
+  
+  1
 }
 
+
+sub execute_prompt {
+  my $self = shift;
+
+  $self->not_final(1);
+
+
+  1
+}
 
 
 
@@ -29,7 +46,7 @@ __END__
 
 =head1 NAME
 
-Rapi::Blog::PreAuth::Actor::ChangePassword - Handles password_reset
+Rapi::Blog::PreAuth::Actor::PasswordReset - Handles password_reset
 
 
 =head1 DESCRIPTION

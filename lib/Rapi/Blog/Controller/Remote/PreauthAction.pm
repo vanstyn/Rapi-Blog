@@ -12,8 +12,6 @@ use warnings;
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 
-use Rapi::Blog::PreAuth::ActionSession;
-
 sub index :Path :Args(1) {
   my ($self, $c, $key) = @_;
   
@@ -22,33 +20,34 @@ sub index :Path :Args(1) {
     ->lookup_key($key) 
   or return $self->_handle_not_found_key($c, $key);
   
-  my $paSes = Rapi::Blog::PreAuth::ActionSession->new(
-    PreauthAction => $PreauthAction,
-    request       => $c->request
-  );
-  
-  $paSes->start;
-  
-  my $evs = $paSes->Events;
-  
-  my $dinfo = {
-    _started  => $paSes->started,
-    _finished => $paSes->finished,
-    _invalid  => $paSes->invalid,
-    _open     => $paSes->open,
+  my $Hit = $c
+    ->model('DB::Hit')
+    ->create_from_request({}, $c->request );
     
-    count_events => scalar(@$evs),
-    
-    dump_events => [ map { { $_->get_columns } } @$evs ]
-    
-  };
+  $PreauthAction->request_validate($Hit) or return $self->_handle_invalid($c);
   
-  scream($dinfo);
+  my $Actor = $PreauthAction->actor_execute( $c );
   
+  if (my $url = $Actor->redirect_url) {
+    $url =~ s/^\///;
+    return $c->res->redirect( join('/', $c->mount_url, $url), 307 );
+  }
   
-  return $self->_response_plain($c, "Key: '$key' \n\n\n" . Dumper($dinfo));
+  my $tpl = $Actor->render_template or die "Error - Actor has neither redirect or render instructions, this is a bug";
   
+  return $c->detach( '/rapidapp/template/view', [$tpl] );
 }
+
+
+sub _handle_invalid {
+  my ($self, $c) = @_;
+
+  # TBD
+  # ...
+
+  return $self->_response_plain($c, "Action is not valid");
+}
+
 
 
 sub _handle_not_found_key {
