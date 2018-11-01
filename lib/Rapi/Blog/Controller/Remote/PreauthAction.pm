@@ -28,6 +28,17 @@ sub index :Path :Args(1) {
   
   my $Actor = $PreauthAction->actor_execute( $c );
   
+  unless ($Actor) {
+    if(my $err = $PreauthAction->{_actor_execute_exception}) {
+      # TODO: handle this case properly, but for now just rethrow
+      die $err;
+    }
+    else {
+      die "unknown error occured attempting to execte action";
+    }
+  }
+
+  
   if (my $url = $Actor->redirect_url) {
     $url =~ s/^\///;
     return $c->res->redirect( join('/', $c->mount_url, $url), 307 );

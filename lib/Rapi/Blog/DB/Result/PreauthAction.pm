@@ -179,6 +179,8 @@ sub actor_execute {
   
   my ($Actor, $info);
   my $not_final = 0;
+  
+  $self->{_actor_execute_exception} = undef;
 
   try {
     $Actor = $self->type
@@ -192,6 +194,7 @@ sub actor_execute {
     
   } catch {
     my $err = shift;
+    $self->{_actor_execute_exception} = $err;
     $info = "Exception: $err";
   };
   
