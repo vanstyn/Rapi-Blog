@@ -191,6 +191,7 @@ CREATE TABLE [preauth_event_type] (
 INSERT INTO [preauth_event_type] VALUES(1,'Valid',     'Pre-Authorization Action accessed and is valid');
 INSERT INTO [preauth_event_type] VALUES(2,'Invalid',   'Pre-Authorization Action exists but is invalid');
 INSERT INTO [preauth_event_type] VALUES(3,'Deactivate','Pre-Authorization Action deactivated');
+INSERT INTO [preauth_event_type] VALUES(4,'Executed',  'Pre-Authorization Action executed');
 
 
 DROP TABLE IF EXISTS [preauth_action_event];

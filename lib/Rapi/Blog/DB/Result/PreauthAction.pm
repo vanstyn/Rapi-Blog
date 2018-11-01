@@ -67,6 +67,19 @@ __PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 
+
+sub create_event {
+  my ($self, $pkt) = @_;
+  
+  $pkt->{action_id} = $self->get_column('id');
+  
+  my $Hit = $self->{_currently_validating_Hit};
+  
+  $Hit 
+    ? $self->evRsCmeth( create_with_hit => $Hit, $pkt ) 
+    : $self->evRsCmeth( create => $pkt )
+}
+
 sub evRsCmeth {
   my ($self, $meth, @args) = @_;
   
@@ -103,17 +116,10 @@ sub deactivate {
   
   $self->active or die "Already inactive!";
   
-  my %pkt = (
-    type_id   => 3, # Deactivate
-    action_id => $self->get_column('id'),
-    info      => $info
-  );
-  
-  my $Hit = $self->{_currently_validating_Hit};
-  
-  my $eventRow = $Hit
-    ? $self->evRsCmeth( create_with_hit => $Hit,\%pkt ) 
-    : $self->evRsCmeth( create => \%pkt );
+  $self->create_event({ 
+    type_id => 3,     # Deactivate
+    info    => $info
+  });
   
   $self->active(0);
   $self->update;
@@ -149,17 +155,48 @@ sub request_validate {
   
   local $self->{_currently_validating_Hit} = $Hit;
   
-  my %pkt = ( action_id => $self->get_column('id') );
-  
   if($self->enforce_valid) {
-    $self->evRsCmeth( create_with_hit => $Hit,{ %pkt, type_id => 1 } );
+    $self->create_event({ type_id => 1 }); # Valid
     return 1;
   }
   else {
-    $self->evRsCmeth( create_with_hit => $Hit,{ %pkt, type_id => 2 } );
+    $self->create_event({ type_id => 2 }); # Invalid
     return 0;
   }
 }
+
+
+sub actor_execute {
+  my $self = shift;
+  
+  $self->active or die "Action not active! cannot execute";
+  
+  my $info;
+
+  try {
+    my $Actor = $self->type
+      ->actor_class
+      ->new( PreauthAction => $self );
+      
+    $Actor->execute or die "Actor ->execute did not return true";
+    
+    $info = $Actor->result;
+    
+  } catch {
+    my $err = shift;
+    $info = "Exception: $err";
+  };
+  
+  $self->create_event({ 
+    type_id => 4,     # Executed
+    info    => $info
+  });
+  
+  $self->deactivate('Executed')
+  
+}
+
+
 
 
 

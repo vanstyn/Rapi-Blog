@@ -94,7 +94,7 @@ __END__
 
 =head1 NAME
 
-Rapi::Blog::Util::ActionSession - Object class for preauth action sessions
+Rapi::Blog::PreAuth::ActionSession - Object class for preauth action sessions
 
 
 =head1 DESCRIPTION

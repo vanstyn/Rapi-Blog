@@ -411,6 +411,7 @@ INSERT INTO [hit]
     q~INSERT INTO [preauth_event_type] VALUES(1,'Valid',     'Pre-Authorization Action accessed and is valid')~,
     q~INSERT INTO [preauth_event_type] VALUES(2,'Invalid',   'Pre-Authorization Action exists but is invalid')~,
     q~INSERT INTO [preauth_event_type] VALUES(3,'Deactivate','Pre-Authorization Action deactivated')~,
+    q~INSERT INTO [preauth_event_type] VALUES(4,'Executed',  'Pre-Authorization Action executed')~,
     
     q~CREATE TABLE [preauth_action_event] (
       [id]        INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
