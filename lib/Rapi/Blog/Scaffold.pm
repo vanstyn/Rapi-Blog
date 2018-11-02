@@ -21,6 +21,17 @@ use Plack::Middleware::ConditionalGET;
 require Path::Class;
 use YAML::XS 0.64 'LoadFile';
 
+
+sub factory {
+  my ($self, $new) = @_;
+  
+  # passthrough is its already one of us:
+  return $new if (ref($new) && ref($new) eq __PACKAGE__);
+  
+  __PACKAGE__->new( dir => $new )
+}
+
+
 has 'uuid', is => 'ro', init_arg => undef, 
   default => sub { join('-','scfld',String::Random->new->randregex('[a-z0-9A-Z]{20}')) };
 

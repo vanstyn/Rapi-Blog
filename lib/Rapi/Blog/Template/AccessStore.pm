@@ -19,22 +19,8 @@ use Plack::Middleware::ConditionalGET;
 
 sub _cache_slots { (shift)->local_cache->{template_row_slot} //= {} }
 
-has 'underlay_scaffold_dirs',  is => 'ro', isa => ArrayRef, default => sub {[]};
-
-has 'Scaffolds', is => 'ro', isa => ArrayRef[InstanceOf['Rapi::Blog::Scaffold']], lazy => 1, default => sub {
-  my $self = shift;
-  [
-    Rapi::Blog::Scaffold->new(
-      dir    => $self->scaffold_dir,
-      config => $self->scaffold_cnf,
-    ), 
-    map { Rapi::Blog::Scaffold->new( 
-      dir => $_,
-    ) } @{ $self->underlay_scaffold_dirs }
-  ]
-};
-
-
+has 'Scaffolds',    is => 'ro', required => 1, isa => ArrayRef[InstanceOf['Rapi::Blog::Scaffold']];
+has 'scaffold_cfg', is => 'ro', required => 1, isa => InstanceOf['Rapi::Blog::Scaffold::Config'];
 
 sub Dispatcher_for {
   my ($self,@args) = @_;
@@ -57,11 +43,11 @@ sub Post_name_for {
 }
 
 
-has 'scaffold_dir',  is => 'ro', isa => InstanceOf['Path::Class::Dir'], required => 1;
-has 'scaffold_cnf',  is => 'ro', isa => HashRef, required => 1;
-has 'static_paths',  is => 'ro', isa => ArrayRef[Str], default => sub {[]};
-has 'private_paths', is => 'ro', isa => ArrayRef[Str], default => sub {[]};
-has 'default_ext',   is => 'ro', isa => Maybe[Str],    default => sub {undef};
+#has 'scaffold_dir',  is => 'ro', isa => InstanceOf['Path::Class::Dir'], required => 1;
+#has 'scaffold_cnf',  is => 'ro', isa => HashRef, required => 1;
+#has 'static_paths',  is => 'ro', isa => ArrayRef[Str], default => sub {[]};
+#has 'private_paths', is => 'ro', isa => ArrayRef[Str], default => sub {[]};
+#has 'default_ext',   is => 'ro', isa => Maybe[Str],    default => sub {undef};
 
 around 'template_external_tpl' => sub {
   my ($orig,$self,@args) = @_;
@@ -102,7 +88,7 @@ around 'get_template_vars' => sub {
     %{ $self->$orig(@args) },
     %{ $self->templateData($template) || {} },
     
-    scaffold        => $self->scaffold_cnf,
+    scaffold        => $self->scaffold_cfg,
     list_posts      => sub { $self->Model->resultset('Post')     ->list_posts(@_)      },
     list_tags       => sub { $self->Model->resultset('Tag')      ->list_tags(@_)       },
     list_categories => sub { $self->Model->resultset('Category') ->list_categories(@_) },
@@ -172,9 +158,9 @@ has 'Model', is => 'ro', lazy => 1, default => sub {
 
 
 has 'internal_post_path', is => 'ro', isa => Str, required => 1;
-has 'view_wrappers',      is => 'ro', isa => ArrayRef[HashRef], default => sub {[]};
-has 'default_view_path',  is => 'ro', isa => Maybe[Str], default => sub {undef};
-has 'preview_path',       is => 'ro', isa => Maybe[Str], default => sub {undef};
+#has 'view_wrappers',      is => 'ro', isa => ArrayRef[HashRef], default => sub {[]};
+#has 'default_view_path',  is => 'ro', isa => Maybe[Str], default => sub {undef};
+#has 'preview_path',       is => 'ro', isa => Maybe[Str], default => sub {undef};
 
 
 sub get_uid {

@@ -19,6 +19,8 @@ require Module::Locate;
 use Path::Class qw/file dir/;
 use YAML::XS 0.64 'LoadFile';
 
+use Rapi::Blog::Scaffold;
+
 our $VERSION = 1.0200_05;
 our $TITLE = "Rapi::Blog v" . $VERSION;
 
@@ -76,6 +78,8 @@ has '+inject_components', default => sub {
   ]
 };
 
+
+
 has 'site_dir', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
   
@@ -84,6 +88,45 @@ has 'site_dir', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   
   return $Dir
 }, isa => InstanceOf['Path::Class::Dir'];
+
+
+has 'scaffolds', is => 'ro', lazy => 1, default => sub { undef };
+
+has 'Scaffolds', is => 'ro', init_arg => undef, lazy => 1, default => sub {
+  my $self = shift;
+  
+  my $scafs = $self->scaffolds || [];
+  $scafs = [ $scafs ] unless (ref($scafs)||'' eq 'ARRAY');
+  $scafs = [ $self->scaffold_dir ] unless (scalar(@$scafs) > 0);
+  
+  my @list = map { 
+    Rapi::Blog::Scaffold->factory( $_ ) 
+  } @$scafs, $self->_get_underlay_scaffold_dirs;
+    
+  # Apply any custom configs to the *first* scaffold:
+  $self->scaffold_config and $list[0]->config->_apply_params( $self->scaffold_config );
+  
+  \@list
+
+}, isa => ArrayRef[InstanceOf['Rapi::Blog::Scaffold']];
+
+
+
+# Single merged config object which considers, prioritizes and flattens the configs of all scaffolds
+has 'scaffold_cfg', is => 'ro', init_arg => undef, lazy => 1, default => sub {
+  my $self = shift;
+  
+  my %merged = (
+    map {
+      %{ $_->config->_all_as_hash }
+    } reverse @{ $self->Scaffolds }
+  );
+  
+  Rapi::Blog::Scaffold::Config->new( %merged )
+
+}, isa => InstanceOf['Rapi::Blog::Scaffold::Config'];
+
+
 
 has 'scaffold_dir', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
@@ -136,59 +179,6 @@ sub _get_builtin_scaffold_dir {
 	
 	$Scaffolds->subdir($scaffold_name)
 }
-
-has 'scaffold_cnf', is => 'ro', init_arg => undef, lazy => 1, default => sub {
-  my $self = shift;
-  
-  my $defaults = {
-    favicon            => 'favicon.ico',
-    landing_page       => 'index.html',
-    internal_post_path => 'private/post/',
-    not_found          => 'rapidapp/public/http-404.html',
-    view_wrappers      => [],
-    static_paths       => ['/'],
-    private_paths      => [],
-    default_ext        => 'html',
-  
-  };
-  
-  my $cnf = clone( $self->scaffold_config );
-  
-  my $yaml_file = $self->scaffold_dir->file('scaffold.yml');
-  if (-f $yaml_file) {
-    my $data = LoadFile( $yaml_file );
-    %$cnf = ( %$data, %$cnf );
-  }
-  
-  %$cnf = ( %$defaults, %$cnf );
-
-  return $cnf
-
-}, isa => HashRef;
-
-has 'default_view_path', is => 'ro', lazy => 1, default => sub {
-  my $self = shift;
-  
-  return $self->scaffold_cnf->{default_view_path} if ($self->scaffold_cnf->{default_view_path});
-  
-  # first marked 'default' or first type 'include' or first anything
-  my @wrappers = grep { $_->{path} } @{$self->scaffold_cnf->{view_wrappers} || []};
-  my $def = List::Util::first { $_->{default} } @wrappers;
-  $def ||= List::Util::first { $_->{type} eq 'include' } @wrappers;
-  $def ||= $self->scaffold_cnf->{view_wrappers}[0];
-  
-  unless($def) {
-    warn "\n ** Waring: scaffold has no suitable view_wrappers to use as 'default_view_path'\n\n";
-    return undef;
-  }
-
-  return $def->{path}
-};
-
-has 'preview_path', is => 'ro', lazy => 1, default => sub {
-  my $self = shift;
-  return $self->scaffold_cnf->{preview_path} || $self->default_view_path
-};
 
 
 after 'bootstrap' => sub { 
@@ -394,36 +384,47 @@ sub _build_base_config {
     
     'Controller::RapidApp::Template' => {
       root_template_prefix  => '/',
-      root_template         => $self->scaffold_cnf->{landing_page},
+      root_template         => $self->scaffold_cfg->landing_page,
       read_alias_path => '/tpl',  #<-- already the default
       edit_alias_path => '/tple', #<-- already the default
       default_template_extension => undef,
       include_paths => [ $tpl_dir ],
       access_class => 'Rapi::Blog::Template::AccessStore',
       access_params => {
-        scaffold_dir  => $self->scaffold_dir,
-        scaffold_cnf  => $self->scaffold_cnf,
-        static_paths  => $self->scaffold_cnf->{static_paths},
-        private_paths => $self->scaffold_cnf->{private_paths},
-        default_ext   => $self->scaffold_cnf->{default_ext},
+      
+        Scaffolds          => $self->Scaffolds,
+        scaffold_cfg       => $self->scaffold_cfg,
         
-        internal_post_path => $self->scaffold_cnf->{internal_post_path},
-        view_wrappers      => $self->scaffold_cnf->{view_wrappers},
-        default_view_path  => $self->default_view_path,
-        preview_path       => $self->preview_path,
+        internal_post_path => $self->scaffold_cfg->internal_post_path,
         
-        underlay_scaffold_dirs => $self->_get_underlay_scaffold_dirs,
+      
+        #scaffold_dir  => $self->scaffold_dir,
+        #scaffold_cnf  => $self->scaffold_cnf,
+        #static_paths  => $self->scaffold_cnf->{static_paths},
+        #private_paths => $self->scaffold_cnf->{private_paths},
+        #default_ext   => $self->scaffold_cnf->{default_ext},
+        #
+        #internal_post_path => $self->scaffold_cnf->{internal_post_path},
+        #view_wrappers      => $self->scaffold_cnf->{view_wrappers},
+        #default_view_path  => $self->default_view_path,
+        #preview_path       => $self->preview_path,
+        #
+        #underlay_scaffold_dirs => $self->_get_underlay_scaffold_dirs,
 
         get_Model => sub { $self->base_appname->model('DB') } 
       } 
     }
   };
   
-  if(my $favname = $self->scaffold_cnf->{favicon}) {
-    my $Fav = $self->scaffold_dir->file($favname);
-    $config->{RapidApp}{default_favicon_url} = $Fav->stringify if (-f $Fav);
+  for (@{ $self->Scaffolds }) {
+    my $favname = $_->config->favicon or next;
+    my $Fav = $_->dir->file($favname);
+    if(-f $Fav) {
+      $config->{RapidApp}{default_favicon_url} = $Fav->stringify;
+      last;
+    }
   }
-  
+
   return $config
 }
 

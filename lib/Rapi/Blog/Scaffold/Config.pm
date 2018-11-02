@@ -26,9 +26,16 @@ around BUILDARGS => sub {
   my $class  = shift;
   my %params = (ref($_[0]) eq 'HASH') ? %{ $_[0] } : @_; # <-- arg as hash or hashref
 
-  $params{_supplied_params} = { map {$_=>1} keys %params };
+  $params{_supplied_params} = { %params };
   $class->$orig(%params)
 };
+
+
+sub BUILD {
+  my $self = shift;
+  $self->_apply_params( $self->_supplied_params )
+}
+
  
 has '_extra_params', is => 'rw', isa => HashRef, default => sub { {} };
 sub AUTOLOAD {
@@ -45,22 +52,53 @@ sub _load_from_yaml {
   
   my $data = LoadFile( $yaml_file );
   
-  for (keys %$data) {
-    if ($self->_supplied_params->{$_}) { # Don't override any user-supplied params
-      delete $data->{$_}
-    }
-    elsif ($self->can($_)) {
-      $self->$_( delete $data->{$_} ) 
-    }
-  }
+  $self->_apply_params( $data, 1 );
   
-  # Save leftover params so they can still be accessed via AUTOLOAD
-  $self->_extra_params( $data );
+  #for (keys %$data) {
+  #  if ($self->_supplied_params->{$_}) { # Don't override any user-supplied params
+  #    delete $data->{$_}
+  #  }
+  #  elsif ($self->can($_)) {
+  #    $self->$_( delete $data->{$_} ) 
+  #  }
+  #}
+  #
+  ## Save leftover params so they can still be accessed via AUTOLOAD
+  #$self->_extra_params( $data );
  
 }
 
 
-sub all_as_hash {
+
+sub _apply_params {
+  my ($self, $new_params, $no_ovr) = @_;
+  
+  my $params = clone( $new_params );
+  
+  for (keys %$params) {
+    if ($no_ovr && $self->_supplied_params->{$_}) { # Don't override any user-supplied params
+      delete $params->{$_}
+    }
+    elsif ($self->can($_)) {
+      $self->$_( delete $params->{$_} ) 
+    }
+  }
+  
+  # Save leftover params so they can still be accessed via AUTOLOAD
+  my $extra = $self->_extra_params || {};
+  $self->_extra_params( { %$extra, %$params } );
+}
+
+
+
+sub _has_param {
+  my ($self, $p) = @_;
+  $self->can($p) || exists $self->_extra_params->{$p}
+}
+
+
+
+sub _all_as_hash {
   my $self = shift;
   
   return {
