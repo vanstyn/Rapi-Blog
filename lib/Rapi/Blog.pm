@@ -101,7 +101,7 @@ has 'Scaffolds', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   
   my @list = map { 
     Rapi::Blog::Scaffold->factory( $_ ) 
-  } @$scafs, $self->_get_underlay_scaffold_dirs;
+  } @$scafs, @{ $self->_get_underlay_scaffold_dirs };
     
   # Apply any custom configs to the *first* scaffold:
   $self->scaffold_config and $list[0]->config->_apply_params( $self->scaffold_config );
