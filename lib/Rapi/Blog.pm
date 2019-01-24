@@ -419,15 +419,11 @@ sub _build_base_config {
     }
   };
   
-  for ($self->ScaffoldSet->all) {
-    my $favname = $_->config->favicon or next;
-    my $Fav = $_->dir->file($favname);
-    if(-f $Fav) {
-      $config->{RapidApp}{default_favicon_url} = $Fav->stringify;
-      last;
-    }
+  
+  if(my $faviconPath = $self->ScaffoldSet->first_config_value_filepath('favicon')) {
+    $config->{RapidApp}{default_favicon_url} = $faviconPath;
   }
-
+  
   return $config
 }
 
