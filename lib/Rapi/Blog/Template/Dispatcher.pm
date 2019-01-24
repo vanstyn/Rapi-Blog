@@ -130,7 +130,7 @@ sub us_or_better {
 sub _resolve_best_scaffold {
   my $self = shift;
   
-  my @scaffolds = @{ $self->AccessStore->Scaffolds };
+  my @scaffolds = $self->AccessStore->ScaffoldSet->all;
   scalar(@scaffolds) > 0 or die "Fatal error -- no Scaffolds detected. At least one Scaffold must be loaded.";
   
   if (my $uuid = $self->ctx->stash->{rapi_blog_only_scaffold_uuid}) {

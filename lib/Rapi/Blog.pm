@@ -20,6 +20,7 @@ use Path::Class qw/file dir/;
 use YAML::XS 0.64 'LoadFile';
 
 use Rapi::Blog::Scaffold;
+use Rapi::Blog::Scaffold::Set;
 
 our $VERSION = 1.0200_05;
 our $TITLE = "Rapi::Blog v" . $VERSION;
@@ -92,7 +93,7 @@ has 'site_dir', is => 'ro', init_arg => undef, lazy => 1, default => sub {
 
 has 'scaffolds', is => 'ro', lazy => 1, default => sub { undef };
 
-has 'Scaffolds', is => 'ro', init_arg => undef, lazy => 1, default => sub {
+has 'ScaffoldSet', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
   
   my $scafs = $self->scaffolds || [];
@@ -102,13 +103,15 @@ has 'Scaffolds', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my @list = map { 
     Rapi::Blog::Scaffold->factory( $_ ) 
   } @$scafs, @{ $self->_get_underlay_scaffold_dirs };
+  
+  my $Set = Rapi::Blog::Scaffold::Set->new( Scaffolds => \@list );
     
   # Apply any custom configs to the *first* scaffold:
-  $self->scaffold_config and $list[0]->config->_apply_params( $self->scaffold_config );
+  $self->scaffold_config and $Set->first->config->_apply_params( $self->scaffold_config );
   
-  \@list
+  $Set
 
-}, isa => ArrayRef[InstanceOf['Rapi::Blog::Scaffold']];
+}, isa => InstanceOf['Rapi::Blog::Scaffold::Set'];
 
 
 
@@ -119,7 +122,7 @@ has 'scaffold_cfg', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my %merged = (
     map {
       %{ $_->config->_all_as_hash }
-    } reverse @{ $self->Scaffolds }
+    } reverse ($self->ScaffoldSet->all)
   );
   
   Rapi::Blog::Scaffold::Config->new( %merged )
@@ -392,7 +395,7 @@ sub _build_base_config {
       access_class => 'Rapi::Blog::Template::AccessStore',
       access_params => {
       
-        Scaffolds          => $self->Scaffolds,
+        ScaffoldSet        => $self->ScaffoldSet,
         scaffold_cfg       => $self->scaffold_cfg,
         
         internal_post_path => $self->scaffold_cfg->internal_post_path,
@@ -416,7 +419,7 @@ sub _build_base_config {
     }
   };
   
-  for (@{ $self->Scaffolds }) {
+  for ($self->ScaffoldSet->all) {
     my $favname = $_->config->favicon or next;
     my $Fav = $_->dir->file($favname);
     if(-f $Fav) {
