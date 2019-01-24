@@ -424,6 +424,10 @@ sub _build_base_config {
     $config->{RapidApp}{default_favicon_url} = $faviconPath;
   }
   
+  if(my $loginTpl = $self->ScaffoldSet->first_config_value_file('login')) {
+    $config->{'Plugin::RapidApp::AuthCore'}{login_template} = $loginTpl;
+  }
+  
   return $config
 }
 
