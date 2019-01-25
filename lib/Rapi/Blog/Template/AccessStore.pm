@@ -19,6 +19,7 @@ use Plack::Middleware::ConditionalGET;
 
 sub _cache_slots { (shift)->local_cache->{template_row_slot} //= {} }
 
+has 'BlogCfg',      is => 'ro', required => 1, isa => HashRef;
 has 'ScaffoldSet',  is => 'ro', required => 1, isa => InstanceOf['Rapi::Blog::Scaffold::Set'];
 has 'scaffold_cfg', is => 'ro', required => 1, isa => InstanceOf['Rapi::Blog::Scaffold::Config'];
 

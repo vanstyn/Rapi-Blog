@@ -22,7 +22,7 @@ use YAML::XS 0.64 'LoadFile';
 use Rapi::Blog::Scaffold;
 use Rapi::Blog::Scaffold::Set;
 
-our $VERSION = 1.0200_05;
+our $VERSION = 1.0200_06;
 our $TITLE = "Rapi::Blog v" . $VERSION;
 
 has 'site_path',        is => 'ro', required => 1;
@@ -112,6 +112,29 @@ has 'ScaffoldSet', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   $Set
 
 }, isa => InstanceOf['Rapi::Blog::Scaffold::Set'];
+
+
+# This exists to be able to provide access to the running Blog config, including within
+# templates, without the risk associated with providing direct access to the Rapi::Blog 
+# instance outright:
+has 'BlogCfg', is => 'ro', init_arg => undef, lazy => 1, default => sub {
+  my $self = shift;
+  
+  my @keys = grep {
+    my $Attr = $self->meta->get_attribute($_);
+    
+    !($_ =~ /^_/) # ignore attrs with private names (i.e. start with "_")
+    && ($Attr->reader||'') eq $_ # only consider attributes with normal accessor names
+    && $Attr->has_value($self) # and already have a value
+
+  } $self->meta->get_attribute_list;
+
+  # If any normal methods are desired in the future, add them to keys here
+  
+  my $cfg = { map { $_ => $self->$_ } @keys };
+
+  $cfg
+}, isa => HashRef;
 
 
 
@@ -395,6 +418,7 @@ sub _build_base_config {
       access_class => 'Rapi::Blog::Template::AccessStore',
       access_params => {
       
+        BlogCfg            => $self->BlogCfg,
         ScaffoldSet        => $self->ScaffoldSet,
         scaffold_cfg       => $self->scaffold_cfg,
         
@@ -418,7 +442,6 @@ sub _build_base_config {
       } 
     }
   };
-  
   
   if(my $faviconPath = $self->ScaffoldSet->first_config_value_filepath('favicon')) {
     $config->{RapidApp}{default_favicon_url} = $faviconPath;
