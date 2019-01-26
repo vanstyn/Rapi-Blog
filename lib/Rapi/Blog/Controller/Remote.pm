@@ -9,6 +9,7 @@ use warnings;
 
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
+use URI;
 
 # This is the general-purpse controller for handing domain-specific 
 # custom-code endpoint requests outside/separate of RapidApp
@@ -71,19 +72,51 @@ sub add_comment {
   return $c->res->redirect( $url, 303 );
 }
 
-sub changepw :Local :Args(0) {
+sub password_reset :Local :Args(0) {
   my ($self, $c, $arg) = @_;
   
-  my $User = $c->user->linkedRow;
+  # Non-posts silently redirect to the home page:
+  $c->req->method eq 'POST' or return $c->res->redirect( $c->mount_url );
   
-  # Redirect a non POST to the admin area
-  $c->req->method eq 'POST' or return $User
-    ? $c->res->redirect( $c->mount_url.'/adm/main/db/db_user/item/'.$User->id, 307 )
-    : $c->res->redirect( $c->mount_url.'/adm', 307 );
+  $c->ra_builder->enable_password_reset or return $self->error_response($c,
+    "Permission denied - password reset is not enabled."
+  );
   
+  Rapi::Blog::Util->get_User and return $self->error_response($c,
+    "Not allowing password reset for already logged in user"
+  );
+  
+  my $uri  = $c->req->uri;
+  my $ruri = URI->new( $c->req->referer );
+  
+  # Not really hard security, but since we do not expect to ever be accessed
+  # via direct browse or linked to from an external site, don't allow it:
+  $uri->host_port eq $ruri->host_port or return $self->error_response($c,
+    "Permission denied - bad referer"
+  );
+  
+  return $self->redirect_local_info_error($c,"This is a local info ERROR - username was '".$c->req->params->{username}."'");
  
-  # TDB
-  ...
+
+}
+
+sub redirect_local_info_error {
+  my ($self, $c, $err) = @_;
+  
+  # we don't currently want any local info to hang around at all, even for 
+  # other paths. Maybe this will be changed later, but right now I can't envision
+  # any use cases besides tight 2-request round trips
+  $c->session->{local_info} and delete $c->session->{local_info};
+  
+  my $uri  = $c->req->uri;
+  my $ruri = URI->new( $c->req->referer );
+  
+  # If this isn't a local referer just throw the error hard:
+  $uri->host_port eq $ruri->host_port or return $self->error_response($c,$err);
+  
+  # otherwise set the local_error and redirect back to the referer
+  $c->session->{local_info}{$ruri->path} = { error => 1, message => $err };
+  return $c->res->redirect( $ruri->path_query );
 
 }
 

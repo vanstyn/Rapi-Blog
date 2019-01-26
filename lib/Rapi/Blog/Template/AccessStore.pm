@@ -129,7 +129,27 @@ around 'get_template_vars' => sub {
     },
     
     # Expose this here so its available to non-priv templates:
-    mount_url => sub { $c->mount_url }
+    mount_url => sub { $c->mount_url },
+    
+    local_info => sub {
+      my $new     = shift;
+      
+      my $uri     = $c->req->uri or return undef;
+      my $session = $c->session or return undef;
+      my $err     = $session->{local_info}{$uri->path};
+      
+      if(defined $new) {
+        if(!$new || lc($new) eq 'clear') {
+          exists $session->{local_info}{$uri->path} and delete $session->{local_info}{$uri->path}
+        }
+        else {
+          $session->{local_info}{$uri->path} = $new
+        }
+      }
+
+      $err
+    }
+    
     
   };
   
