@@ -89,6 +89,7 @@ around 'get_template_vars' => sub {
     %{ $self->$orig(@args) },
     %{ $self->templateData($template) || {} },
     
+    BlogCfg         => $self->BlogCfg,
     scaffold        => $self->scaffold_cfg,
     list_posts      => sub { $self->Model->resultset('Post')     ->list_posts(@_)      },
     list_tags       => sub { $self->Model->resultset('Tag')      ->list_tags(@_)       },
