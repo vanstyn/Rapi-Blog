@@ -393,6 +393,7 @@ INSERT INTO [hit]
       [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
       [type] varchar(16) NOT NULL,
       [active] BOOLEAN NOT NULL DEFAULT 1,
+      [sealed] BOOLEAN NOT NULL DEFAULT 0,
       [create_ts] datetime NOT NULL,
       [expire_ts] datetime NOT NULL,
       [user_id] INTEGER,
@@ -412,6 +413,7 @@ INSERT INTO [hit]
     q~INSERT INTO [preauth_event_type] VALUES(2,'Invalid',   'Pre-Authorization Action exists but is invalid')~,
     q~INSERT INTO [preauth_event_type] VALUES(3,'Deactivate','Pre-Authorization Action deactivated')~,
     q~INSERT INTO [preauth_event_type] VALUES(4,'Executed',  'Pre-Authorization Action executed')~,
+    q~INSERT INTO [preauth_event_type] VALUES(5,'Sealed',    'Action sealed - can no longer be accessed with key, except by admins')~,
     
     q~CREATE TABLE [preauth_action_event] (
       [id]        INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -1368,6 +1370,12 @@ __PACKAGE__->config(
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
           },
+          sealed => {
+            header => 'sealed',
+            #width => 100,
+            #renderer => 'RA.ux.App.someJsFunc',
+            #profiles => [],
+          },
           create_ts => {
             header => 'create_ts',
             #width => 100,
@@ -1465,19 +1473,19 @@ __PACKAGE__->config(
             header => 'type_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           action_id => {
             header => 'action_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           hit_id => {
             header => 'hit_id',
             #width => 100,
             #renderer => 'RA.ux.App.someJsFunc',
-            profiles => [ 'hidden' ],
+            profiles => ['hidden'],
           },
           info => {
             header => 'info',

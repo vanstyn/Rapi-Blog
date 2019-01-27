@@ -172,6 +172,7 @@ CREATE TABLE [preauth_action] (
   [id] INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   [type] varchar(16) NOT NULL,
   [active] BOOLEAN NOT NULL DEFAULT 1,
+  [sealed] BOOLEAN NOT NULL DEFAULT 0,
   [create_ts] datetime NOT NULL,
   [expire_ts] datetime NOT NULL,
   [user_id] INTEGER,
@@ -192,6 +193,7 @@ INSERT INTO [preauth_event_type] VALUES(1,'Valid',     'Pre-Authorization Action
 INSERT INTO [preauth_event_type] VALUES(2,'Invalid',   'Pre-Authorization Action exists but is invalid');
 INSERT INTO [preauth_event_type] VALUES(3,'Deactivate','Pre-Authorization Action deactivated');
 INSERT INTO [preauth_event_type] VALUES(4,'Executed',  'Pre-Authorization Action executed');
+INSERT INTO [preauth_event_type] VALUES(5,'Sealed',    'Action sealed - can no longer be accessed with key, except by admins');
 
 
 DROP TABLE IF EXISTS [preauth_action_event];

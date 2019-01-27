@@ -20,6 +20,8 @@ __PACKAGE__->add_columns(
   { data_type => "varchar", is_foreign_key => 1, is_nullable => 0, size => 16 },
   "active",
   { data_type => "boolean", default_value => 1, is_nullable => 0 },
+  "sealed",
+  { data_type => "boolean", default_value => 0, is_nullable => 0 },
   "create_ts",
   { data_type => "datetime", is_nullable => 0 },
   "expire_ts",
@@ -58,8 +60,8 @@ __PACKAGE__->belongs_to(
 );
 
 
-# Created by DBIx::Class::Schema::Loader v0.07049 @ 2018-10-28 02:04:56
-# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:E2FlZX3VbC1RQIbYEE5pHA
+# Created by DBIx::Class::Schema::Loader v0.07049 @ 2019-01-27 12:50:16
+# DO NOT MODIFY THIS OR ANYTHING ABOVE! md5sum:43iysyBK1Y/m5ydH2fLefQ
 
 
 __PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');
