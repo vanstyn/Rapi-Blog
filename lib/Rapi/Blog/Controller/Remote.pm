@@ -11,6 +11,7 @@ use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 use URI;
 
+
 # This is the general-purpse controller for handing domain-specific 
 # custom-code endpoint requests outside/separate of RapidApp
 
@@ -75,6 +76,18 @@ sub add_comment {
 sub password_reset :Local :Args(0) {
   my ($self, $c, $arg) = @_;
   
+  ###########
+  # phase 2:
+  # handle the preauthed reset after the user clicked the link from phase 1
+  #
+  ## TBD
+  
+  
+  ###########
+  # phase 1:
+  # fresh request to start an preauth to reset a password
+  #
+  
   # Non-posts silently redirect to the home page:
   $c->req->method eq 'POST' or return $c->res->redirect( $c->mount_url );
   
@@ -98,21 +111,42 @@ sub password_reset :Local :Args(0) {
   
   my $Rs = $c->model('DB::User')->enabled;
   
-  my $User;
+  my $uid;
   if($supplied =~ /\@/) {
-    $User = $Rs->search_rs({ -or => [{'me.email' => $supplied},{'me.email' => lc($supplied)}]})
+    my $User = $Rs->search_rs({ -or => [{'me.email' => $supplied},{'me.email' => lc($supplied)}]})
       ->first or return $self->error_response($c,
         "No valid account with E-Mail address '$supplied'"
-      )
+      );
+    $uid = $User->get_column('id')
   }
   else {
-    $User = $Rs->search_rs({ -or => [{'me.username' => $supplied},{'me.username' => lc($supplied)}]})
+    my $User = $Rs->search_rs({ -or => [{'me.username' => $supplied},{'me.username' => lc($supplied)}]})
       ->first or return $self->error_response($c,
         "No valid account with username '$supplied'"
-      )
+      );
+    $uid = $User->get_column('id')
   }
   
-  # Real logic goes here
+  my $paRs = $c->model('DB::PreauthAction');
+  
+  my $key = $paRs->create_auth_key('password_reset', $uid, {
+      ttl => 15*60, # 15 minutes
+      action_data => { 
+        result_redirect_path => $c->req->uri->path # come back to us
+      }
+    }) or return $self->error_response($c,join ' ',
+      "Failed to create Pre-Authorization",'&ndash;',
+      "an unknown error occured.",
+      "Please contact your system administrator"
+    );
+    
+  my $Action = $paRs->lookup_key($key) or return $self->error_response($c,join ' ',
+    "Unknown error occured while creating Pre-Authorization",'&ndash;',
+    "please contact your system administrator"
+  );
+  
+  
+  # Real logic (send actual e-mail) goes here
   # ...
   
   
@@ -120,7 +154,20 @@ sub password_reset :Local :Args(0) {
   return $self->redirect_local_info_success($c, join ' ',
     "Password reset initiated",'&ndash;',
     "a password reset link has been E-Mailed to you.",
-    "For security, the reset link will only be valid for the next 15 minutes"
+    "For security, the reset link will only be valid for the next", $Action->ttl_minutes,"minutes",
+    
+    
+    "<br><br><br>","TEMP DEBUG DATA:","<br><br>",
+    "<pre>",join("\n   ",'',
+     "key: $key",
+     "ttl: " . $Action->ttl, '',
+     "now_ts: ".Rapi::Blog::Util->dt_to_ts(Rapi::Blog::Util->now_dt),
+     
+     
+     "columns: ". Dumper({ $Action->get_columns }),'','',
+     "action_data: ". Dumper($Action->action_data),'','',
+    
+    ),"</pre>"
   )
   
  
@@ -184,6 +231,20 @@ sub _redirect_local_info {
 }
 
 
+
+# phase 2:
+sub authorized_password_reset {
+  my $self = shift;
+  my $c = shift || RapidApp->active_request_context or die "Fatal: no active request";
+  
+  my $auth_key = $c->req->params->{auth_key} or die "Fatal: auth_key empty or not supplied";
+  
+  
+  
+  
+
+
+}
 
 
 

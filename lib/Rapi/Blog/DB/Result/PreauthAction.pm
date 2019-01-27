@@ -68,6 +68,10 @@ __PACKAGE__->load_components('+Rapi::Blog::DB::Component::SafeResult');
 
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
+use Scalar::Util qw(looks_like_number);
+
+sub _dtf { (shift)->result_source->schema->storage->datetime_parser }
+
 
 sub active_request_Hit {
   my ($self, $new) = @_;
@@ -99,11 +103,33 @@ sub evRsCmeth {
   $evRow
 }
 
-sub insert {
+sub _handle_insert_update_columns_arg {
   my $self = shift;
   my $columns = shift;
+  
+  if ($columns) {
+    if(exists $columns->{action_data}) {
+      $self->action_data( delete $columns->{action_data} );
+    }
+    if (exists $columns->{ttl}) {
+      die "Do not supply both 'expire_ts' and 'ttl' - one of the other" if (exists $columns->{expire_ts});
+      die "Do not supply both 'ttl_minutes' and 'ttl' - one of the other" if (exists $columns->{ttl_minutes});
+      $self->ttl( delete $columns->{ttl} );
+    }
+    if (exists $columns->{ttl_minutes}) {
+      die "Do not supply both 'expire_ts' and 'ttl_minutes' - one of the other" if (exists $columns->{expire_ts});
+      die "Do not supply both 'ttl' and 'ttl_minutes' - one of the other" if (exists $columns->{ttl});
+      $self->ttl_minutes( delete $columns->{ttl_minutes} );
+    }
+    
+    $self->set_inflated_columns($columns)
+  }
+}
 
-  $self->set_inflated_columns($columns) if $columns;
+
+sub insert {
+  my $self = shift;
+  $self->_handle_insert_update_columns_arg(shift);
   
   my $now_dt = Rapi::Blog::Util->now_dt;
 
@@ -117,6 +143,27 @@ sub insert {
   
   return $self;
 }
+
+sub update {
+  my $self = shift;
+  $self->_handle_insert_update_columns_arg(shift);
+  
+  $self->next::method;
+  
+  return $self;
+}
+
+
+our @virtuals = qw/ttl ttl_minutes action_data/;
+our %virtuals = map {$_=>1} @virtuals;
+
+sub store_column {
+my ($self, $col, $val) = @_;
+
+  $virtuals{$col} ? $self->$col($val) : $self->next::method($col, $val)
+}
+
+
 
 
 sub deactivate {
@@ -212,7 +259,114 @@ sub actor_execute {
 }
 
 
+sub seal {
+  my ($self, $info) = @_;
+  
+  $self->sealed and die "Already sealed!";
+  
+  $self->deactivate('Action was active but is being Sealed') if ($self->active);
+  
+  $self->create_event({ 
+    type_id => 5,     # Sealed
+    info    => $info
+  });
+  
+  $self->sealed(1);
+  $self->update;
+  
+  $self
+}
 
+
+sub _serialize_set_new_action_data {
+  my $self = shift;
+  my $data = shift or die "_serialize_new_action_data(): no data supplied";
+  (ref($data)||'') eq 'HASH' 
+    or die "_serialize_new_action_data(): invalid data supplied - must be a HashRef";
+  
+  my $json = encode_json_ascii($data) or die "unknown error serializing to json";
+  $self->json_data($json)
+}
+
+sub _deserialize_action_data {
+  my $self = shift;
+  my $json = $self->json_data or return {};
+  
+  my $data = decode_json_ascii($json) or die "unknown error occured deserializing json_data";
+  (ref($data)||'') eq 'HASH' or die "Bad action data - did not deserialize to a HashRef";
+  
+  $data
+}
+
+# emulate simple column-like accessor:
+sub action_data {
+  my $self = shift;
+  if(scalar(@_) > 0) {
+    my $new = shift;
+    $new = {} unless defined $new;
+    $self->_serialize_set_new_action_data($new);
+  }
+  $self->_deserialize_action_data
+}
+
+sub ttl {
+  my $self = shift;
+  my $now_dt = Rapi::Blog::Util->now_dt;
+  if(scalar(@_) > 0) {
+    my $new = shift;
+    die "ttl must be a whole number of seconds greater than 0" unless (
+      $new && ($new =~ /^\d+$/)
+    );
+    
+    $self->expire_ts( Rapi::Blog::Util->dt_to_ts(
+      $now_dt->clone->add( seconds => $new )
+    ))
+  }
+  
+  # just being cautious here because of past bad expierences fully trusting 
+  # the DateTime inflate/deflate across different versions and environments,
+  # and I know this is reliable across the widest range of scenarios when we
+  # don't want to consider time zones (since whatever it is, its the same in
+  # all the places this logic needs to consider:
+  my $expire_dt = Rapi::Blog::Util->ts_to_dt( $self->get_column('expire_ts') );
+  return $expire_dt->epoch - $now_dt->epoch;
+}
+
+
+sub ttl_minutes {
+  my $self = shift;
+  require POSIX;
+  if(scalar(@_) > 0) {
+    my $new = shift;
+    die "ttl_minutes must be a number greater than 0" unless (
+      $new && looks_like_number($new) && $new > 0
+    );
+    $self->ttl( POSIX::ceil($new) * 60 );
+  }
+  my $ttl = $self->ttl or return 0;
+  POSIX::ceil($ttl/60)
+}
+
+
+sub action_data_set {
+  my $self = shift;
+  my @kv_pairs = (ref($_[0]) eq 'HASH') ? %{ $_[0] } : @_; # <-- arg as hash or hashref
+  
+  my $n = scalar(@kv_pairs);
+  ($n == 0) and die "no key/values supplied";
+  ($n % 2 == 1) and die "Odd number of args - must be even key/values pairs (either LIST or HashRef)";
+  
+  my $data = $self->_deserialize_action_data;
+  my %new  = ( %$data, @kv_pairs );
+  
+  $self->_serialize_set_new_action_data(\%new)
+}
+
+sub action_data_get {
+  my $self = shift;
+  my $key = shift or die "No key supplied.";
+  $self->_deserialize_action_data->{$key}
+}
 
 
 # You can replace this text with custom code or comments, and it will be preserved on regeneration
