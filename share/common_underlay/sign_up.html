@@ -1,0 +1,53 @@
+[%- WRAPPER private/auth_wrapper.html 
+  title = 'Sign Up'
+-%]
+          
+<div class="cf" style="height:80px;">
+  <h2 class="lb_ribbon lb_blue">
+    <div style="padding-top:3px;">
+      <img 
+        src="[% mount_url %]/assets/rapidapp/misc/static/images/iconLoggedOut.png" 
+        style="vertical-align:middle;padding-bottom:5px;padding-right:9px;"
+      />
+      <span style="padding-right:11px;font-weight:bold;font-size:1.1em;">Sign Up</span>
+    </div>
+  </h2>
+  
+  <a href="[%- mount_url -%]/" class="right small sl_link">
+    <span>Home</span>
+  </a>
+
+
+</div>
+
+[% IF local_info.error %]
+  <div style="font-size:1.1em;font-weight:bold;color:red;padding:10px;">
+    <center>&nbsp;[% local_info(clear).message %]&nbsp;</center>
+  </div>
+[% END %]
+
+<div class="row m_cont">
+  <div class="eight columns centered">
+  
+    [% IF BlogCfg.enable_user_sign_up %]
+      <div class="l_pane">
+        
+        TBD...
+        <br><br>
+
+        
+      </div>
+    [% ELSE %]
+      <br>
+      <h5>User sign up is not enabled.</h5>
+      <br>
+      <h6>Contact your system administrator.</h6>
+      
+      <br><br><br><br>
+    
+    [% END %]
+    
+  </div>
+</div>
+            
+[% END %]

@@ -9,6 +9,7 @@ use warnings;
 
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
+use URI;
 
 # This is the general-purpse controller for handing domain-specific 
 # custom-code endpoint requests outside/separate of RapidApp
@@ -29,7 +30,7 @@ sub add_comment {
   # Ignore via generic redirect if its not a POST
   $c->req->method eq 'POST' or return $c->res->redirect( $c->mount_url.'/', 307 );
   
-  my $User = $c->user->linkedRow or return $self->error_response($c,
+  my $User = Rapi::Blog::Util->get_User or return $self->error_response($c,
     "Not logged in or unable to find current user"
   );
   
@@ -71,21 +72,118 @@ sub add_comment {
   return $c->res->redirect( $url, 303 );
 }
 
-sub changepw :Local :Args(0) {
+sub password_reset :Local :Args(0) {
   my ($self, $c, $arg) = @_;
   
-  my $User = $c->user->linkedRow;
+  # Non-posts silently redirect to the home page:
+  $c->req->method eq 'POST' or return $c->res->redirect( $c->mount_url );
   
-  # Redirect a non POST to the admin area
-  $c->req->method eq 'POST' or return $User
-    ? $c->res->redirect( $c->mount_url.'/adm/main/db/db_user/item/'.$User->id, 307 )
-    : $c->res->redirect( $c->mount_url.'/adm', 307 );
+  $c->ra_builder->enable_password_reset or return $self->error_response($c,
+    "Permission denied - password reset is not enabled."
+  );
+  
+  Rapi::Blog::Util->get_User and return $self->error_response($c,
+    "Not allowing password reset for already logged in user"
+  );
+  
+  # Only continue if we're properly using the 'local_info' API:
+  $self->_using_local_info or return $self->error_response($c,
+    "Invalid or malformed request - failed one or more 'local_info' API requirements"
+  );
+  
+  
+  my $supplied = $c->req->params->{username} or return $self->error_response($c,
+    "Must supply a username or E-Mail address"
+  );
+  
+  my $Rs = $c->model('DB::User')->enabled;
+  
+  my $User;
+  if($supplied =~ /\@/) {
+    $User = $Rs->search_rs({ -or => [{'me.email' => $supplied},{'me.email' => lc($supplied)}]})
+      ->first or return $self->error_response($c,
+        "No valid account with E-Mail address '$supplied'"
+      )
+  }
+  else {
+    $User = $Rs->search_rs({ -or => [{'me.username' => $supplied},{'me.username' => lc($supplied)}]})
+      ->first or return $self->error_response($c,
+        "No valid account with username '$supplied'"
+      )
+  }
+  
+  # Real logic goes here
+  # ...
+  
+  
+
+  return $self->redirect_local_info_success($c, join ' ',
+    "Password reset initiated",'&ndash;',
+    "a password reset link has been E-Mailed to you.",
+    "For security, the reset link will only be valid for the next 15 minutes"
+  )
   
  
-  # TDB
-  ...
 
 }
+
+
+sub _using_local_info {
+  my $self = shift;
+  my $c = shift || RapidApp->active_request_context or return 0;
+  
+  $c->stash->{_using_local_info} //=  
+    $c->req->params->{using}||'' eq 'local_info' && do {
+    
+      my $uri  = $c->req->uri;
+      my $ruri = $c->req->referer ? URI->new( $c->req->referer ) : undef;
+      
+      # Require referer to be one of our local pages - not really hard security, 
+      # but since we do not expect to ever be accessed via direct browse or 
+      # linked to from an external site, don't allow it:
+      $uri && $ruri && $uri->host_port eq $ruri->host_port
+    }
+}
+
+
+sub redirect_local_info_error {
+  my ($self, $c, $msg) = @_;
+  $self->_redirect_local_info($c, $msg, 0)
+}
+
+sub redirect_local_info_success {
+  my ($self, $c, $msg) = @_;
+  $self->_redirect_local_info($c, $msg, 1)
+}
+
+sub _redirect_local_info {
+  my ($self, $c, $msg, $result) = @_;
+  
+  # we don't currently want any local info to hang around at all, even for 
+  # other paths. Maybe this will be changed later, but right now I can't envision
+  # any use cases besides tight 2-request round trips
+  $c->session->{local_info} and delete $c->session->{local_info};
+  
+  my $uri  = $c->req->uri;
+  my $ruri = URI->new( $c->req->referer );
+  
+  # If this isn't a local referer just throw hard error:
+  $ruri && $uri->host_port eq $ruri->host_port or return $self->error_response($c,
+    "Error, bad referer - message: '$msg'"
+  );
+  
+  my $info = { message => $msg };
+  if(defined $result) {
+    $result ? $info->{success} = 1 : $info->{error} = 1
+  }
+  
+  # otherwise set the local_info and redirect back to the referer, trusting that
+  # it is a properly written template that knows to look for and use the local_info:
+  $c->session->{local_info}{$ruri->path} = $info;
+  return $c->res->redirect( $ruri->path_query );
+}
+
+
 
 
 
@@ -93,7 +191,12 @@ sub changepw :Local :Args(0) {
 sub error_response {
   my ($self, $c, $err) = @_;
   
-  die $err;
+  return $self->redirect_local_info_error($c,$err) if $self->_using_local_info($c);
+  
+  # hard errors make sure no leftover local_info:
+  $c->session->{local_info} and delete $c->session->{local_info};
+  
+  die $err
 }
 
 
