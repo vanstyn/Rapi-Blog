@@ -1,38 +1,58 @@
-package Rapi::Blog::PreAuth::Error;
+package Rapi::Blog::PreAuth::Actor::Error;
 use strict;
 use warnings;
 
 # ABSTRACT: Base error class for preauth Actors
 
 use Moo;
+extends 'Rapi::Blog::PreAuth::Actor';
+
 use Types::Standard qw(:all);
 
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 use Scalar::Util 'blessed';
 
+# just to override:
+has 'PreauthAction', is => 'ro', init_arg => undef, default => sub {undef};
+has 'ctx', is => 'ro', required => 0;
+
+
+sub BUILD {
+  my $self = shift;
+  $self->info or $self->info( $self->_default_error_info )
+}
+
 use overload '""' => 'stringify';
 
 sub stringify {
   my $self = shift;
-  $self->msg || join(' ','Unspecified',blessed($self),'error')
+  $self->info || $self->_default_error_info
 }
 
-has 'msg', is => 'ro', isa => Str, default => sub {''};
+sub _default_error_info {
+  my $self = shift;
+  join(' ','Unspecified',blessed($self),'error')
+}
 
-sub type {
+
+sub is_error { 1 }
+
+sub error_type {
   my $self = shift;
   my $class = blessed($self) or die "not a blessed instance";
   (split(/Rapi::Blog::PreAuth::Actor::Error::/,$class,2))[1];
 }
 
 sub throw {
-  my ($self, $msg) = @_;
-  my $p = {};
-  $p->{msg} = $msg if $msg;
-  die $self->new($p)
+  my $self = shift;
+  my $info = shift || $self->_default_error_info;
+  die $self->new({ info => $info })
 }
 
+
+sub execute      { die (shift) }
+sub call_execute { die (shift) }
 
 
 1;
@@ -42,7 +62,7 @@ __END__
 
 =head1 NAME
 
-Rapi::Blog::PreAuth::Error - Base error class
+Rapi::Blog::PreAuth::Action::Error - Base action error class
 
 
 =head1 DESCRIPTION

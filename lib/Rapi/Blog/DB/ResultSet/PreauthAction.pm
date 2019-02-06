@@ -8,9 +8,10 @@ extends 'DBIx::Class::ResultSet';
 
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
+use Scalar::Util 'blessed';
 
-use aliased 'Rapi::Blog::PreAuth::Error::NotFound';
-use aliased 'Rapi::Blog::PreAuth::Error::Invalid';
+use aliased 'Rapi::Blog::PreAuth::Actor::Error::NotFound';
+use aliased 'Rapi::Blog::PreAuth::Actor::Error::Invalid';
 
 use String::Random;
 use Digest::SHA1;
@@ -71,6 +72,12 @@ sub lookup_key_include_sealed {
 }
 
 
+sub _is_actor {
+  my ($self, $obj) = @_;
+  $obj && blessed($obj) && $obj->isa('Rapi::Blog::PreAuth::Actor')
+}
+
+
 # New: this is the common entrypoint for all client requests to 
 # authenticate and execute a pre-auth action:
 sub request_Actor {
@@ -78,6 +85,29 @@ sub request_Actor {
   my $c = shift || RapidApp->active_request_context or die "No active request";
   my $key = shift || $c->req->params->{key};
   
+  my $Actor;
+  
+  try {
+    $Actor = $self->_request_Actor($c,$key);
+  }
+  catch {
+    my $err = shift;
+    $self->_is_actor($err)
+      # If an exception was thrown, but it is an Actor, return it:
+      ? $Actor = $err
+      # otherwise, rethrow:
+      : die $err
+  };
+  
+  die "Unknown error occured" unless $self->_is_actor($Actor);
+  
+  return $Actor
+}
+
+
+sub _request_Actor {
+  my ($self, $c, $key) = @_;
+
   my $PreauthAction = $self->lookup_key($key) or NotFound->throw;
   
   my $Hit = $c
@@ -87,7 +117,6 @@ sub request_Actor {
   $PreauthAction->request_validate($Hit) or Invalid->throw;
   
   $PreauthAction->_new_actor_instance($c)
-  
 }
 
 

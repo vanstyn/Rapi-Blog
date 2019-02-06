@@ -30,7 +30,8 @@ has 'redirect_url',    is => 'rw', default => sub { '/' } ,   isa => Maybe[Str];
 
 sub req_params { (shift)->ctx->request->params }
 
-
+sub is_error   { 0 }
+sub error_type { '' }
 
 sub execute { ... }
 

@@ -126,13 +126,13 @@ sub password_reset :Local :Args(0) {
       );
     $uid = $User->get_column('id')
   }
-  
+
   my $paRs = $c->model('DB::PreauthAction');
   
   my $key = $paRs->create_auth_key('password_reset', $uid, {
       ttl => 15*60, # 15 minutes
       action_data => { 
-        result_redirect_path => $c->req->uri->path # come back to us
+        origin_referer => $c->req->referer # come back to us
       }
     }) or return $self->error_response($c,join ' ',
       "Failed to create Pre-Authorization",'&ndash;',
@@ -194,9 +194,13 @@ sub _password_reset_by_key {
   
   my $key = $c->req->params->{key} or die "no key param supplied";
   
-  my $paRs = $c->model('DB::PreauthAction');
+  my $Actor = $c
+    ->model('DB::PreauthAction')
+    ->request_Actor($c,$key);
   
-  my $Actor = $paRs->request_Actor($c,$key);
+  if($Actor->is_error) {
+    return $self->error_response($c,"$Actor");
+  }
   
   
   # phase 3
@@ -208,7 +212,8 @@ sub _password_reset_by_key {
   }
   else {
     # phase 2:
-     return $self->_redirect_local_info($c, { key => $key });
+    my $referer = $Actor->PreauthAction->action_data_get('origin_referer') or die "Missing origin_referer";
+    return $self->_local_info_dispatch($c,$referer,{ key => $key });
   }
   
 }
@@ -249,13 +254,7 @@ sub _redirect_local_info {
     $info = { message => $info };
   }
   my $msg = $info->{message} || '';
-  
-  
-  # we don't currently want any local info to hang around at all, even for 
-  # other paths. Maybe this will be changed later, but right now I can't envision
-  # any use cases besides tight 2-request round trips
-  $c->session->{local_info} and delete $c->session->{local_info};
-  
+
   my $uri  = $c->req->uri;
   my $ruri = URI->new( $c->req->referer );
   
@@ -270,8 +269,29 @@ sub _redirect_local_info {
   
   # otherwise set the local_info and redirect back to the referer, trusting that
   # it is a properly written template that knows to look for and use the local_info:
-  $c->session->{local_info}{$ruri->path} = $info;
-  return $c->res->redirect( $ruri->path_query );
+  return $self->_local_info_dispatch($c,$ruri,$info)
+}
+
+
+
+sub _local_info_dispatch {
+  my ($self, $c, $target, $info) = @_;
+  
+  # we don't currently want any local info to hang around at all, even for 
+  # other paths. Maybe this will be changed later, but right now I can't envision
+  # any use cases besides tight 2-request round trips
+  $c->session->{local_info} and delete $c->session->{local_info};
+  
+  my $uri = blessed($target) && $target->isa('URI') ? $target : do {
+    my $u = URI->new($target, $c->req->uri->scheme);
+    $u->host_port( $c->req->uri->host_port );
+    $u
+  };
+    
+  my $path = $uri->path;
+  
+  $c->session->{local_info}{$uri->path} = $info;
+  return $c->res->redirect( $uri->path_query );
 }
 
 
@@ -281,7 +301,12 @@ sub _redirect_local_info {
 sub error_response {
   my ($self, $c, $err) = @_;
   
-  return $self->redirect_local_info_error($c,$err) if $self->_using_local_info($c);
+  local $self->{_error_response_recurse} = $self->{_error_response_recurse} || 0;
+  
+  return $self->redirect_local_info_error($c,$err) if (
+    $self->{_error_response_recurse}++ < 1 
+    && $self->_using_local_info($c)
+  );
   
   # hard errors make sure no leftover local_info:
   $c->session->{local_info} and delete $c->session->{local_info};

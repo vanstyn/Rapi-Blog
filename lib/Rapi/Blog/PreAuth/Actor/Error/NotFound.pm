@@ -1,11 +1,11 @@
-package Rapi::Blog::PreAuth::Error::Invalid;
+package Rapi::Blog::PreAuth::Actor::Error::NotFound;
 use strict;
 use warnings;
 
-# ABSTRACT: Invalid error class for preauth Actors
+# ABSTRACT: Not found error class for preauth Actors
 
 use Moo;
-extends 'Rapi::Blog::PreAuth::Error';
+extends 'Rapi::Blog::PreAuth::Actor::Error';
 
 
 1;
@@ -15,7 +15,7 @@ __END__
 
 =head1 NAME
 
-Rapi::Blog::PreAuth::Error::Invalid - Invalid error class
+Rapi::Blog::PreAuth::Actor::Error::NotFound - Not found error class
 
 
 =head1 DESCRIPTION
