@@ -199,7 +199,9 @@ sub _password_reset_by_key {
     ->request_Actor($c,$key);
   
   if($Actor->is_error) {
-    return $self->error_response($c,"$Actor");
+    scream($Actor);
+    die $Actor->info;
+    #return $self->error_response($c,"$Actor");
   }
   
   

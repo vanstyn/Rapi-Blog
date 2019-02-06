@@ -48,6 +48,8 @@ sub call_execute {
     $ret = 0;
     $self->info( "$err" )
   };
+  
+  $self->post_execute;
 
   $ret
 }

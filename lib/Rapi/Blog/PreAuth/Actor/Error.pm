@@ -17,6 +17,10 @@ use Scalar::Util 'blessed';
 has 'PreauthAction', is => 'ro', init_arg => undef, default => sub {undef};
 has 'ctx', is => 'ro', required => 0;
 
+sub class_name {
+  my $self = shift;
+  blessed $self || $self;
+}
 
 sub BUILD {
   my $self = shift;
@@ -32,7 +36,8 @@ sub stringify {
 
 sub _default_error_info {
   my $self = shift;
-  join(' ','Unspecified',blessed($self),'error')
+  my $type = $self->error_type || $self->class_name;
+  "Actor: unspecified '$type' error\n"
 }
 
 
@@ -40,7 +45,7 @@ sub is_error { 1 }
 
 sub error_type {
   my $self = shift;
-  my $class = blessed($self) or die "not a blessed instance";
+  my $class = $self->class_name;
   (split(/Rapi::Blog::PreAuth::Actor::Error::/,$class,2))[1];
 }
 
