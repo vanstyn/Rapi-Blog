@@ -18,7 +18,6 @@ has 'PreauthAction',
   required => 1,
   isa => InstanceOf['Rapi::Blog::DB::Result::PreauthAction'];
 
-has 'not_final', is => 'rw', default => sub { 0 }  , isa => Bool;
 has 'info',      is => 'rw', default => sub { '' } , isa => Str; 
 
 # If and what template the controller should render after execution
@@ -32,7 +31,31 @@ has 'redirect_url',    is => 'rw', default => sub { '/' } ,   isa => Maybe[Str];
 sub req_params { (shift)->ctx->request->params }
 
 
+
 sub execute { ... }
+
+
+sub call_execute {
+  my $self = shift;
+  
+  my $ret = 0;
+  try {
+    $ret = $self->execute
+  }
+  catch {
+    my $err = shift;
+    $ret = 0;
+    $self->info( "$err" )
+  };
+
+  $ret
+}
+
+
+sub post_execute {
+  my $self = shift;
+  $self->PreauthAction->_record_executed( $self->info )
+}
 
 
 

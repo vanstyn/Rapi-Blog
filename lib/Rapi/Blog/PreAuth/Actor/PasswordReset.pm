@@ -12,29 +12,19 @@ use Rapi::Blog::Util;
 
 
 
-
 sub execute {
   my $self = shift;
   
   my $params = $self->req_params;
   
-  my $pw = $params->{new_password} or return $self->execute_prompt;
+  my $pw = $params->{new_password} or die "new_password not supplied.";
   
+  my $User = $self->PreauthAction->user or die "Failed to get user row.";
   
-  
-  
-  1
+  $User->update({ set_pw => $pw })
+
 }
 
-
-sub execute_prompt {
-  my $self = shift;
-
-  $self->not_final(1);
-
-
-  1
-}
 
 
 

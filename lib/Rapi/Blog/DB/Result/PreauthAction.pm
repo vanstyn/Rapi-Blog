@@ -221,42 +221,30 @@ sub request_validate {
 }
 
 
-sub actor_execute {
-  my ($self, $c, @args) = @_;
-  
-  $self->active or die "Action not active! cannot execute";
-  
-  my ($Actor, $info);
-  my $not_final = 0;
-  
-  $self->{_actor_execute_exception} = undef;
 
-  try {
-    $Actor = $self->type
-      ->actor_class
-      ->new( ctx => $c, PreauthAction => $self );
-      
-    $Actor->execute(@args) or die "Actor ->execute did not return true";
+sub _new_actor_instance {
+  my ($self, $c) = @_;
+  $self->type
+    ->actor_class
+    ->new( ctx => $c, PreauthAction => $self );
+}
 
-    $info      = $Actor->info;
-    $not_final = $Actor->not_final;
-    
-  } catch {
-    my $err = shift;
-    $self->{_actor_execute_exception} = $err;
-    $info = "Exception: $err";
-  };
-  
+
+
+# This is called automatically by the actor:
+sub _record_executed {
+  my ($self, $info) = @_;
+
   $self->create_event({ 
     type_id => 4,     # Executed
     info    => $info
   });
   
-  $self->deactivate('Executed') unless ($not_final);
-  
-  # Return the post-executed Actor object:
-  $Actor
+  $self->deactivate('Executed')
 }
+
+
+
 
 
 sub seal {

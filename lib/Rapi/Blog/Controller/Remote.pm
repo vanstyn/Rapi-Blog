@@ -74,13 +74,13 @@ sub add_comment {
 }
 
 sub password_reset :Local :Args(0) {
-  my ($self, $c, $arg) = @_;
+  my ($self, $c) = @_;
   
   ###########
   # phase 2:
   # handle the preauthed reset after the user clicked the link from phase 1
   #
-  ## TBD
+  $c->req->params->{key} and return $self->_password_reset_by_key($c);
   
   
   ###########
@@ -140,7 +140,7 @@ sub password_reset :Local :Args(0) {
       "Please contact your system administrator"
     );
     
-  my $Action = $paRs->lookup_key($key) or return $self->error_response($c,join ' ',
+  my $Preauth = $paRs->lookup_key($key) or return $self->error_response($c,join ' ',
     "Unknown error occured while creating Pre-Authorization",'&ndash;',
     "please contact your system administrator"
   );
@@ -149,29 +149,68 @@ sub password_reset :Local :Args(0) {
   # Real logic (send actual e-mail) goes here
   # ...
   
+
+  my $link_url = do {
+    my $uri  = $c->req->uri->clone;
+    $uri->query_form( $uri->query_form, key => $key );
+    $uri->as_string;
+  };
+  
+  
   
 
   return $self->redirect_local_info_success($c, join ' ',
+  
+
     "Password reset initiated",'&ndash;',
     "a password reset link has been E-Mailed to you.",
-    "For security, the reset link will only be valid for the next", $Action->ttl_minutes,"minutes",
+    "For security, the reset link will only be valid for the next", $Preauth->ttl_minutes,"minutes",
     
+    "<br><br><br>\n","<a href='$link_url'>$link_url</a>",
     
     "<br><br><br>","TEMP DEBUG DATA:","<br><br>",
     "<pre>",join("\n   ",'',
      "key: $key",
-     "ttl: " . $Action->ttl, '',
+     "ttl: " . $Preauth->ttl, '',
      "now_ts: ".Rapi::Blog::Util->dt_to_ts(Rapi::Blog::Util->now_dt),
      
      
-     "columns: ". Dumper({ $Action->get_columns }),'','',
-     "action_data: ". Dumper($Action->action_data),'','',
+     "columns: ". Dumper({ $Preauth->get_columns }),'','',
+     "action_data: ". Dumper($Preauth->action_data),'','',
     
     ),"</pre>"
   )
   
  
 
+}
+
+
+
+# password reset phase 2:
+sub _password_reset_by_key {
+  my $self = shift;
+  my $c = shift || RapidApp->active_request_context or return 0;
+  
+  my $key = $c->req->params->{key} or die "no key param supplied";
+  
+  my $paRs = $c->model('DB::PreauthAction');
+  
+  my $Actor = $paRs->request_Actor($c,$key);
+  
+  
+  # phase 3
+  if($c->req->params->{new_password}) {
+    $Actor->call_execute and return $self->_redirect_local_info($c, { finished => 1 });
+    
+    # TODO:
+    return $self->_redirect_local_info($c, { finished => 1, failed => 1 });
+  }
+  else {
+    # phase 2:
+     return $self->_redirect_local_info($c, { key => $key });
+  }
+  
 }
 
 
@@ -204,7 +243,13 @@ sub redirect_local_info_success {
 }
 
 sub _redirect_local_info {
-  my ($self, $c, $msg, $result) = @_;
+  my ($self, $c, $info, $result, $qs) = @_;
+  
+  unless((ref($info)||'') eq 'HASH') {
+    $info = { message => $info };
+  }
+  my $msg = $info->{message} || '';
+  
   
   # we don't currently want any local info to hang around at all, even for 
   # other paths. Maybe this will be changed later, but right now I can't envision
@@ -219,7 +264,6 @@ sub _redirect_local_info {
     "Error, bad referer - message: '$msg'"
   );
   
-  my $info = { message => $msg };
   if(defined $result) {
     $result ? $info->{success} = 1 : $info->{error} = 1
   }
@@ -230,21 +274,6 @@ sub _redirect_local_info {
   return $c->res->redirect( $ruri->path_query );
 }
 
-
-
-# phase 2:
-sub authorized_password_reset {
-  my $self = shift;
-  my $c = shift || RapidApp->active_request_context or die "Fatal: no active request";
-  
-  my $auth_key = $c->req->params->{auth_key} or die "Fatal: auth_key empty or not supplied";
-  
-  
-  
-  
-
-
-}
 
 
 

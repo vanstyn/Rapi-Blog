@@ -9,6 +9,9 @@ extends 'DBIx::Class::ResultSet';
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 
+use aliased 'Rapi::Blog::PreAuth::Error::NotFound';
+use aliased 'Rapi::Blog::PreAuth::Error::Invalid';
+
 use String::Random;
 use Digest::SHA1;
 
@@ -66,6 +69,27 @@ sub lookup_key_include_sealed {
   $self->_matches_key($key)
     ->first
 }
+
+
+# New: this is the common entrypoint for all client requests to 
+# authenticate and execute a pre-auth action:
+sub request_Actor {
+  my $self = shift;
+  my $c = shift || RapidApp->active_request_context or die "No active request";
+  my $key = shift || $c->req->params->{key};
+  
+  my $PreauthAction = $self->lookup_key($key) or NotFound->throw;
+  
+  my $Hit = $c
+    ->model('DB::Hit')
+    ->create_from_request({}, $c->request );
+    
+  $PreauthAction->request_validate($Hit) or Invalid->throw;
+  
+  $PreauthAction->_new_actor_instance($c)
+  
+}
+
 
 
 1;

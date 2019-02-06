@@ -15,29 +15,11 @@ use Rapi::Blog::Util;
 sub index :Path :Args(1) {
   my ($self, $c, $key) = @_;
   
-  my $PreauthAction = $c
+  my $Actor = $c
     ->model('DB::PreauthAction')
-    ->lookup_key($key) 
-  or return $self->_handle_not_found_key($c, $key);
-  
-  my $Hit = $c
-    ->model('DB::Hit')
-    ->create_from_request({}, $c->request );
+    ->request_Actor($c,$key);
     
-  $PreauthAction->request_validate($Hit) or return $self->_handle_invalid($c);
-  
-  my $Actor = $PreauthAction->actor_execute( $c );
-  
-  unless ($Actor) {
-    if(my $err = $PreauthAction->{_actor_execute_exception}) {
-      # TODO: handle this case properly, but for now just rethrow
-      die $err;
-    }
-    else {
-      die "unknown error occured attempting to execte action";
-    }
-  }
-
+  $Actor->call_execute;
   
   if (my $url = $Actor->redirect_url) {
     $url =~ s/^\///;
@@ -47,35 +29,6 @@ sub index :Path :Args(1) {
   my $tpl = $Actor->render_template or die "Error - Actor has neither redirect or render instructions, this is a bug";
   
   return $c->detach( '/rapidapp/template/view', [$tpl] );
-}
-
-
-sub _handle_invalid {
-  my ($self, $c) = @_;
-
-  # TBD
-  # ...
-
-  return $self->_response_plain($c, "Action is not valid");
-}
-
-
-
-sub _handle_not_found_key {
-  my ($self, $c, $key) = @_;
-
-  # TBD
-  # ...
-
-  return $self->_response_plain($c, "bad key '$key' -- Not found");
-}
-
-sub _response_plain {
-  my ($self, $c, $text) = @_;
-  
-  $c->res->body($text);
-  $c->res->content_type('text/plain');
-  $c->detach;
 }
 
 
