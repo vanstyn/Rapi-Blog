@@ -199,9 +199,9 @@ sub _password_reset_by_key {
     ->request_Actor($c,$key);
   
   if($Actor->is_error) {
-    scream($Actor);
-    die $Actor->info;
-    #return $self->error_response($c,"$Actor");
+    die $Actor;
+    #my $referer = '/forgot_password';
+    #return $self->_local_info_dispatch($c,$referer,{ error_only => $Actor->info });
   }
   
   

@@ -1,0 +1,32 @@
+[%- WRAPPER private/auth_wrapper.html 
+  title = 'Error'
+-%]
+          
+<div class="cf" style="height:80px;">
+  <h2 class="lb_ribbon lb_blue">
+    <div style="padding-top:3px;">
+      <img 
+        src="[% mount_url %]/assets/rapidapp/misc/static/images/cross.png" 
+        style="vertical-align:middle;padding-bottom:5px;padding-right:9px;"
+      />
+      <span style="padding-right:11px;font-weight:bold;font-size:1.1em;">Error</span>
+    </div>
+  </h2>
+  
+  <a href="[%- mount_url -%]/" class="right small sl_link">
+    <span>Home</span>
+  </a>
+
+
+</div>
+
+
+<div class="row m_cont">
+  <div class="eight columns centered">
+  
+    [% error %]
+
+  </div>
+</div>
+            
+[% END %]

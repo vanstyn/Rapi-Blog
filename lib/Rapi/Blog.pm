@@ -5,7 +5,7 @@ use warnings;
 
 # ABSTRACT: RapidApp-powered blog
 
-use RapidApp 1.3102_02;
+use RapidApp 1.3102_03;
 
 use Moose;
 extends 'RapidApp::Builder';
@@ -22,7 +22,7 @@ use YAML::XS 0.64 'LoadFile';
 use Rapi::Blog::Scaffold;
 use Rapi::Blog::Scaffold::Set;
 
-our $VERSION = 1.0200_07;
+our $VERSION = 1.0200_08;
 our $TITLE = "Rapi::Blog v" . $VERSION;
 
 has 'site_path',        is => 'ro', required => 1;
@@ -452,6 +452,10 @@ sub _build_base_config {
   
   if(my $loginTpl = $self->ScaffoldSet->first_config_value_file('login')) {
     $config->{'Plugin::RapidApp::AuthCore'}{login_template} = $loginTpl;
+  }
+  
+  if(my $errorTpl = $self->ScaffoldSet->first_config_value_file('error')) {
+    $config->{'RapidApp'}{error_template} = $errorTpl;
   }
   
   return $config
