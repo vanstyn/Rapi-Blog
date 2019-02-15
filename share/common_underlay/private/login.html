@@ -29,6 +29,13 @@
 
 </div>
 
+
+[% IF error_status %]
+  <div style="font-size:1.1em;font-weight:bold;color:red;padding:10px;">
+    <center>&nbsp;[% error_status %]&nbsp;</center>
+  </div>
+[% END %]
+
 <div class="row m_cont" style="padding-top:10px;">
   <div class="seven columns centered">
     <div class="l_pane">
