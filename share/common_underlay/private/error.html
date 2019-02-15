@@ -1,15 +1,17 @@
 [%- WRAPPER private/auth_wrapper.html 
   title = 'Error'
+  foundation_columns_class = 'ten'
+  no_login_logo_header = 1
 -%]
           
 <div class="cf" style="height:80px;">
   <h2 class="lb_ribbon lb_blue">
     <div style="padding-top:3px;">
       <img 
-        src="[% mount_url %]/assets/rapidapp/misc/static/images/cross.png" 
-        style="vertical-align:middle;padding-bottom:5px;padding-right:9px;"
+        src="[% mount_url %]/assets/local/misc/static/img/error-icon-48.png" 
+        style="vertical-align:middle;padding-bottom:5px;padding-right:30px;"
       />
-      <span style="padding-right:11px;font-weight:bold;font-size:1.1em;">Error</span>
+      <span style="padding-right:50px;font-weight:bold;font-size:1.9em;">Error</span>
     </div>
   </h2>
   
@@ -22,9 +24,18 @@
 
 
 <div class="row m_cont">
-  <div class="eight columns centered">
+  <div class="ten columns centered">
   
-    [% error %]
+  <h3>An error occurred:</h3>
+  
+  <br>
+  <pre>
+  [% error %]
+  </pre>
+  <br>
+  
+  
+    
 
   </div>
 </div>

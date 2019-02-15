@@ -1,6 +1,8 @@
 [%- DEFAULT 
   title = 'Rapi::Blog'
   rapidapp_footer_stamp = 0
+  foundation_columns_class = 'seven'
+  no_login_logo_header = 0
 -%]
 <!DOCTYPE html> 
 <html lang="en">
@@ -16,17 +18,22 @@
 
 <body class="ptrn_a grdnt_a">
 
+  [% IF ! no_login_logo_header %]
   <div style="padding-top:60px;"></div>
+  [% END %]
   <div class="container">
     <div class="row">
-      <div class="seven columns centered" style="position:relative;padding-top:0px;">
+      <div class="[% foundation_columns_class %] columns centered" style="position:relative;padding-top:0px;">
         <div class="login_box" >
           
+          [% IF ! no_login_logo_header %]
+
           <div class="login_logo" style="top:-115px;">
             [% IF login_logo_url %]
               <img src="[% mount_url %][% login_logo_url %]" alt="" />
             [% END %]
           </div>
+          [% END %]
           
           <div class="lb_content">
 
