@@ -1,6 +1,6 @@
 [%- DEFAULT 
   title = 'Rapi::Blog'
-  
+  rapidapp_footer_stamp = 0
 -%]
 <!DOCTYPE html> 
 <html lang="en">
@@ -19,8 +19,8 @@
   <div style="padding-top:60px;"></div>
   <div class="container">
     <div class="row">
-      <div class="eight columns centered" style="padding-top:0px;max-width:520px;">
-        <div class="login_box" style="max-width:500px;">
+      <div class="seven columns centered" style="position:relative;padding-top:0px;">
+        <div class="login_box" >
           
           <div class="login_logo" style="top:-115px;">
             [% IF login_logo_url %]
@@ -41,6 +41,7 @@
           </div> 
         </div>
 
+        [% IF rapidapp_footer_stamp %]
         <div style="position: absolute; bottom: 0px; width:100%;">
           <div style="text-align:center;padding-bottom:5px;height:100%;">
             <a target="_blank" href="http://www.rapidapp.info/">
@@ -57,6 +58,7 @@
             <span>[% ver_string %]</span>
           </div>
         </div>
+        [% END %]
         
       </div>
     </div>

@@ -1,5 +1,6 @@
 [%- WRAPPER private/auth_wrapper.html 
   title = 'Rapi::Blog login'
+  rapidapp_footer_stamp = 1
 -%]
 
 <div class="cf" style="height:80px;">
@@ -28,8 +29,8 @@
 
 </div>
 
-<div class="row m_cont">
-  <div class="eight columns centered">
+<div class="row m_cont" style="padding-top:10px;">
+  <div class="seven columns centered">
     <div class="l_pane">
       [% INCLUDE rapidapp/public/login_form.tt %]
     </div>
