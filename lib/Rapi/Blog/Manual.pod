@@ -440,6 +440,11 @@ the entire application which can be used to perform actions based on the query s
 (e.g. C<[% c.req.params.foo %]>, direct access to the database 
 (e.g. C<[% c.model('DB::Post').search_rs(...) %]>) or anything else which can be reached via the context.
 
+=head2 ensure_logged_out
+
+Whenever called, if a user is already logged in, they are logged out in the background. This can be
+placed on any pages or in any templates where ensuring a user is not logged in is desired, such as
+on sign up pages, or other screens where it doesn't make sense for a user to be logged in.
 
 =head1 AUTOMATIC DATABASE UPGRADES
 

@@ -79,7 +79,7 @@ sub templateData {
 # -----------------
 # Access class API:
 
-around 'get_template_vars' => sub {
+around '_get_default_template_vars' => sub {
   my ($orig,$self,@args) = @_;
   my $c = RapidApp->active_request_context;
   
@@ -159,6 +159,24 @@ around 'get_template_vars' => sub {
   
   return $vars
   
+};
+
+around '_get_admin_template_vars' => sub {
+  my ($orig,$self,@args) = @_;
+
+  return {
+    %{ $self->$orig(@args) },
+    
+    ensure_logged_out => sub {
+      if (Rapi::Blog::Util->get_User) {
+        RapidApp->active_request_context->logout
+      }
+      ''
+    }
+    
+    
+  };  
+
 };
 
 
