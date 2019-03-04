@@ -17,6 +17,9 @@ use Scalar::Util 'blessed';
 has 'PreauthAction', is => 'ro', init_arg => undef, default => sub {undef};
 has 'ctx', is => 'ro', required => 0;
 
+has 'title',    is => 'ro', isa => Maybe[Str], default => sub{undef};
+has 'subtitle', is => 'ro', isa => Maybe[Str], default => sub{undef};
+
 sub class_name {
   my $self = shift;
   blessed $self || $self;
@@ -50,9 +53,17 @@ sub error_type {
 }
 
 sub throw {
-  my $self = shift;
-  my $info = shift || $self->_default_error_info;
-  die $self->new({ info => $info })
+  my ($self,@args) = @_;
+  
+  # first argument can be a scalar/string (used as default 'info' option):
+  my $msg = (defined $args[0] && ! ref($args[0])) ? (shift @args) : undef;
+  
+  # and still allow additional arguments as key/vals:
+  my %opts = (ref($_[0]) eq 'HASH') ? %{ $_[0] } : @_; # <-- arg as hash or hashref
+  
+  $opts{info} ||= $msg || $self->_default_error_info;
+  
+  die $self->new(\%opts)
 }
 
 

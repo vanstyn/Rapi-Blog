@@ -1,5 +1,5 @@
 [%- WRAPPER private/auth_wrapper.html 
-  title = 'Error'
+  title = error.title || 'Error'
   foundation_columns_class = 'ten'
   no_login_logo_header = 1
 -%]
@@ -12,7 +12,12 @@
         style="vertical-align:middle;padding-bottom:5px;padding-right:30px;"
       />
       <span style="padding-right:50px;font-weight:bold;font-size:1.9em;">
-        ([% error_status_code || '5xx' %])&nbsp;Error</span>
+        [% IF error.title %]
+          [% error.title %]
+        [% ELSE %]
+          ([% error_status_code || '5xx' %])&nbsp;Error
+        [% END %]
+      </span>
     </div>
   </h2>
   
@@ -27,18 +32,15 @@
 <div class="row m_cont">
   <div class="ten columns centered">
   
-  <h3>An error occurred:</h3>
+  <h3>[% error.subtitle || 'An error occurred:' %]</h3>
   
   <br>
   <pre>
-  [% error %]
+  [% error.info || error || 'unknown error - no error message available' %]
   </pre>
   <br>
   
-  [% error_status_code %]
-  
-  
-    
+
 
   </div>
 </div>

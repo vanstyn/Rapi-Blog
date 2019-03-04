@@ -113,8 +113,13 @@ sub _request_Actor {
   my $Hit = $c
     ->model('DB::Hit')
     ->create_from_request({}, $c->request );
-    
-  $PreauthAction->request_validate($Hit) or Invalid->throw;
+  
+  # this is just for testing, not planning to stick with this content
+  $PreauthAction->request_validate($Hit) or Invalid->throw(
+    'This pre-authorization is no longer valid', 
+    title => 'Permission denied', 
+    subtitle => 'Pre-Authorization Invalid'
+  );
   
   $PreauthAction->_new_actor_instance($c)
 }
