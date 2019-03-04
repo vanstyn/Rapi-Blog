@@ -11,7 +11,8 @@
         src="[% mount_url %]/assets/local/misc/static/img/error-icon-48.png" 
         style="vertical-align:middle;padding-bottom:5px;padding-right:30px;"
       />
-      <span style="padding-right:50px;font-weight:bold;font-size:1.9em;">Error</span>
+      <span style="padding-right:50px;font-weight:bold;font-size:1.9em;">
+        ([% error_status_code || '5xx' %])&nbsp;Error</span>
     </div>
   </h2>
   
@@ -33,6 +34,8 @@
   [% error %]
   </pre>
   <br>
+  
+  [% error_status_code %]
   
   
     
