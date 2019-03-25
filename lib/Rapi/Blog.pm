@@ -5,7 +5,7 @@ use warnings;
 
 # ABSTRACT: RapidApp-powered blog
 
-use RapidApp 1.3102_04;
+use RapidApp 1.3103;
 
 use Moose;
 extends 'RapidApp::Builder';
@@ -77,6 +77,7 @@ has '+inject_components', default => sub {
 
   return [
     [ $model => 'Model::DB' ],
+    [ 'Rapi::Blog::Model::Mailer' => 'Model::Mailer' ],
     [ 'Rapi::Blog::Controller::Remote' => 'Controller::Remote' ],
     [ 'Rapi::Blog::Controller::Remote::PreauthAction' => 'Controller::Remote::PreauthAction' ]
   ]
