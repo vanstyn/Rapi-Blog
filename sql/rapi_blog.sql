@@ -165,6 +165,7 @@ CREATE TABLE [preauth_action_type] (
 );
 INSERT INTO [preauth_action_type] VALUES('enable_account','Enable a disabled user account');
 INSERT INTO [preauth_action_type] VALUES('password_reset','Change a user password');
+INSERT INTO [preauth_action_type] VALUES('email_login','Login via single-use, E-Mailed links');
 
 
 DROP TABLE IF EXISTS [preauth_action];

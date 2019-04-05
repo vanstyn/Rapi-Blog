@@ -14,6 +14,12 @@
     </div>
   </h2>
 
+  [% IF BlogCfg.enable_email_login %]
+    <a href="[%- mount_url -%]/email_login" class="right small sl_link">
+      <span>E-Mail Login</span>
+    </a>
+  [% END %]
+
   [% IF BlogCfg.enable_password_reset %]
     <a href="[%- mount_url -%]/forgot_password" class="right small sl_link">
       <span>Forgot Password</span>

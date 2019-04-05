@@ -33,6 +33,7 @@ has 'fallback_builtin_scaffold', is => 'ro', isa => Bool, default => sub {0};
 
 has 'enable_password_reset', is => 'ro', isa => Bool, default => sub {1};
 has 'enable_user_sign_up',   is => 'ro', isa => Bool, default => sub {1};
+has 'enable_email_login',    is => 'ro', isa => Bool, default => sub {1};
 
 has 'underlay_scaffolds', is => 'ro', isa => ArrayRef[Str], default => sub {[]};
 

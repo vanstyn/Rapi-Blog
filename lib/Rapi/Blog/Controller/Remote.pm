@@ -73,6 +73,95 @@ sub add_comment {
   return $c->res->redirect( $url, 303 );
 }
 
+
+
+sub email_login :Local :Args(0) {
+  my ($self, $c) = @_;
+  
+  ####### comment this out to test
+  die "email_login is experimental and this die line must be commented out in order to try it.";
+  ################################
+  
+  
+  # Non-posts silently redirect to the home page:
+  $c->req->method eq 'POST' or return $c->res->redirect( $c->mount_url );
+  
+  $c->ra_builder->enable_email_login or return $self->error_response($c,
+    "Permission denied - email login is not enabled."
+  );
+  
+  Rapi::Blog::Util->get_User and return $self->error_response($c,
+    "Not allowing E-Mail login for already logged in user"
+  );
+  
+  # Only continue if we're properly using the 'local_info' API:
+  $self->_using_local_info or return $self->error_response($c,
+    "Invalid or malformed request - failed one or more 'local_info' API requirements"
+  );
+  
+  my $email = $c->req->params->{email} or return $self->error_response($c,
+    "Must supply an E-Mail address associated with an account"
+  );
+  
+  ($email =~ /\@/) or return $self->error_response($c,
+    "Supplied E-Mail '$email' is invalid"
+  );
+  
+  my $Rs = $c->model('DB::User')->enabled;
+  
+  my $User = $Rs->search_rs({ -or => [{'me.email' => $email},{'me.email' => lc($email)}]})
+    ->first or return $self->error_response($c,
+      "No valid account with E-Mail address '$email'"
+    );
+  my $uid = $User->get_column('id');
+  
+
+  my $paRs = $c->model('DB::PreauthAction');
+  
+  my $key = $paRs->create_auth_key('email_login', $uid, {
+      ttl => 5*60, # 5 minutes
+    }) or return $self->error_response($c,join ' ',
+      "Failed to create Pre-Authorization",'&ndash;',
+      "an unknown error occured.",
+      "Please contact your system administrator"
+    );
+    
+  my $Preauth = $paRs->lookup_key($key) or return $self->error_response($c,join ' ',
+    "Unknown error occured while creating Pre-Authorization",'&ndash;',
+    "please contact your system administrator"
+  );
+  
+  
+  # Real logic (send actual e-mail) goes here
+  # ...
+  
+
+  my $link_url = do {
+    my $uri  = $c->req->uri->clone;
+    $uri->path( join('/',$c->mount_url,'remote', 'preauth_action', $key) );
+    $uri->query(undef);
+    $uri->fragment( undef );
+    $uri->as_string;
+  };
+  
+
+  return $self->redirect_local_info_success($c, join ' ',
+
+    "One-time direct login link we would have e-mailed...",
+    "For security, the reset link will only be valid for the next", $Preauth->ttl_minutes,"minutes",
+    
+    "<br><br><br>\n","<a href='$link_url'>$link_url</a>",
+
+  )
+  
+ 
+
+}
+
+
+
+
+
 sub password_reset :Local :Args(0) {
   my ($self, $c) = @_;
   
