@@ -1,4 +1,4 @@
-package Rapi::Blog::PreAuth::Actor::EmailLogin;
+package Rapi::Blog::PreAuth::Actor::Login;
 use strict;
 use warnings;
 
@@ -55,7 +55,7 @@ __END__
 
 =head1 NAME
 
-Rapi::Blog::PreAuth::Actor::EmailLogin - Handles email_login
+Rapi::Blog::PreAuth::Actor::Login - Single-use user login
 
 
 =head1 DESCRIPTION

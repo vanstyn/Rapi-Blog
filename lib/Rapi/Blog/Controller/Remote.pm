@@ -118,7 +118,7 @@ sub email_login :Local :Args(0) {
 
   my $paRs = $c->model('DB::PreauthAction');
   
-  my $key = $paRs->create_auth_key('email_login', $uid, {
+  my $key = $paRs->create_auth_key('login', $uid, {
       ttl => 5*60, # 5 minutes
     }) or return $self->error_response($c,join ' ',
       "Failed to create Pre-Authorization",'&ndash;',
