@@ -33,7 +33,7 @@ sub send {
   die "->send() only accepts arguments when called as a class method" if (scalar(keys %args) > 0);
 
   Email::Sender::Simple->send($self->email, { 
-    to        => $self->envelope_to, 
+    to        => $self->full_envelope_to,
     from      => $self->envelope_from,
     transport => $self->transport
   });
@@ -67,8 +67,18 @@ has 'body', is => 'ro', isa => Str, lazy => 1, default => sub {
 
 #has 'default_to',      is => 'ro', isa => Str, default => sub { 'unspecified-address@unspecified-domain.com' };
 #has 'default_from',    is => 'ro', isa => Str, default => sub { 'unspecified-address@unspecified-domain.com' };
-has 'default_to',      is => 'ro', isa => Str, default => sub { 'hvs@hvs.io' };
-has 'default_from',    is => 'ro', isa => Str, default => sub { 'henry@vanstyn.com' };
+
+has 'default_to', is => 'ro', lazy => 1, default => sub { 
+  'hvs@hvs.io' 
+}, isa => ArrayRef[InstanceOf['Email::Address']], coerce => \&_coerce_addresses;
+
+
+has 'default_from',    is => 'ro', default => sub { 
+  'henry@vanstyn.com' 
+}, isa => InstanceOf['Email::Address'], coerce => \&_coerce_first_addresses;
+
+
+
 has 'default_subject', is => 'ro', isa => Str, default => sub { '(no subject)' }; 
 has 'default_body',    is => 'ro', isa => Str, default => sub { '' }; 
 
@@ -78,25 +88,56 @@ has 'default_headers', is => 'ro', default => sub {[
 ]}, isa => ArrayRef;
 
 
-has 'to', is => 'ro', isa => Str, lazy => 1, default => sub {
+has 'from', is => 'ro', lazy => 1, default => sub {
+  my $self = shift;
+  $self->initialized ? $self->email->get_header('From') : $self->envelope_from
+}, isa => InstanceOf['Email::Address'], coerce => \&_coerce_first_addresses;
+
+has 'envelope_from', is => 'ro', lazy => 1, default => sub {
+  my $self = shift;
+  $self->initialized ? $self->email->get_header('From') : $self->default_from
+}, isa => InstanceOf['Email::Address'], coerce => \&_coerce_first_addresses;
+
+
+has 'to', is => 'ro', lazy => 1, default => sub {
   my $self = shift;
   $self->initialized ? $self->email->get_header('To') : $self->envelope_to
-};
+}, isa => ArrayRef[InstanceOf['Email::Address']], coerce => \&_coerce_addresses;
 
-has 'from', is => 'ro', isa => Str, lazy => 1, default => sub {
+
+has 'cc', is => 'ro', lazy => 1, default => sub {
   my $self = shift;
-  $self->initialized ? $self->email->get_header('From') : $self->envelope_from
-};
+  $self->initialized ? $self->email->get_header('CC') : $self->envelope_to
+}, isa => ArrayRef[InstanceOf['Email::Address']], coerce => \&_coerce_addresses;
 
-has 'envelope_to', is => 'ro', isa => Str, lazy => 1, default => sub {
+
+has 'bcc', is => 'ro', lazy => 1, 
+  default => sub { undef },
+  isa => Maybe[ArrayRef[InstanceOf['Email::Address']]], 
+  coerce => \&_coerce_addresses;
+
+
+has 'envelope_to', is => 'ro', lazy => 1, default => sub {
   my $self = shift;
   $self->initialized ? $self->email->get_header('To') : $self->default_to
-};
+}, isa => ArrayRef[InstanceOf['Email::Address']], coerce => \&_coerce_addresses;
 
-has 'envelope_from', is => 'ro', isa => Str, lazy => 1, default => sub {
+
+has 'full_envelope_to', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   my $self = shift;
-  $self->initialized ? $self->email->get_header('From') : $self->envelope_from
-};
+  my %seen = ();
+  [ grep { !$seen{lc($_->address)}++ } (@{$self->envelope_to},@{$self->to},@{$self->cc},@{$self->bcc}) ]
+}, isa => ArrayRef[InstanceOf['Email::Address']];
+
+
+sub _coerce_first_addresses { &_coerce_addresses(@_)->[0] };
+
+sub _coerce_addresses {
+  #shift(@_) if (($_[0] eq __PACKAGE__) || (blessed($_[0]) && $_[0]->isa(__PACKAGE__)));
+  my @list = (ref($_[0])||'' eq 'ARRAY') ? @{$_[0]} : @_;
+  return [ map { Email::Address->parse($_) } @list ];
+}
+
 
 has 'subject', is => 'ro', isa => Str, lazy => 1, default => sub {
   my $self = shift;
@@ -118,13 +159,16 @@ has 'email', is => 'ro', init_arg => undef, lazy => 1, default => sub {
 
   # If these attributes have been expressly set, those values take priority, override
   # any which are already set via being parsed out the the supplied message:
-  my @header_attrs = qw/to from subject/;
-  $self->meta->get_attribute($_)->has_value($self) and $email->set_header( $_ => $self->$_ ) for (@header_attrs);
+  my @header_attrs = qw/to from cc subject/;
+  for my $header (@header_attrs) {
+    next unless $self->meta->get_attribute($header)->has_value($self);
+    $email->set_header( ucfirst($header) => $self->_format_header_multival($self->$header) );
+  }
   
   # These are getting set again, however, the difference is that these apply to the 
   # default values vs user-defined values. User-defined values take priority, while 
   # parsed values take priory over the defaults
-  $email->get_header($_) or $email->set_header( $_ => $self->$_ ) for (@header_attrs);
+  $email->get_header($_) or $email->set_header( ucfirst($_) => $self->$_ ) for (@header_attrs);
   
   # Finally set additional default headers which haven't already been set:
   my %headers = @{$self->default_headers};
@@ -139,6 +183,14 @@ has 'email', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   return $email
   
 }, isa => InstanceOf['Email::Abstract'];
+
+
+sub _format_header_multival {
+  my ($self, $vals) = @_;
+  $vals = [$vals] unless (ref($vals)||'' eq 'ARRAY');
+  join(', ',map { blessed($_) && $_->can('format') ? $_->format : "$_" } @$vals)
+}
+
 
 
 
