@@ -152,6 +152,10 @@ has 'subject', is => 'ro', lazy => 1, default => sub {
   $self->exist_header->{subject} || $self->defult_subject
 }, isa => Str;
 
+has 'importance', is => 'ro', isa => Maybe[Enum[qw/Low Normal High/]], 
+  default => sub { undef }, coerce => sub { ucfirst(lc($_[0])) };
+
+
 
 sub _array_coerce {
   my $val = shift or return undef;
@@ -193,6 +197,17 @@ has 'email', is => 'ro', init_arg => undef, lazy => 1, default => sub {
       }
     }
   }
+  
+  if (my $importance = $self->importance) {
+    $email->set_header( Importance => $self->importance );
+    $email->set_header( 'X-Priority' => 
+      $self->importance eq 'High'   ? 1 : 
+      $self->importance eq 'Normal' ? 3 : 
+      $self->importance eq 'Low'    ? 5 : undef 
+    );
+  }
+  
+  
   
   # Finally set additional default headers which haven't already been set:
   my %headers = @{$self->default_headers};
