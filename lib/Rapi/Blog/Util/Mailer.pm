@@ -72,6 +72,7 @@ sub init {
 
 has 'message_file', is => 'ro', lazy => 1, default => sub { undef },
 isa => Maybe[InstanceOf['Path::Class::File']], coerce => sub {
+  return undef unless ($_[0]);
   my $File = file($_[0]);
   -f $File or die "message_file '$_[0]' not found or is not a regular file";
   $File
@@ -105,7 +106,7 @@ has 'default_to', is => 'ro', lazy => 1, default => sub {
 }, isa => ArrayRef[Str], coerce => \&_array_coerce;
 
 
-has 'default_from',    is => 'ro', isa => Str, default => sub { 'henry@vanstyn.com' }; 
+has 'default_from',    is => 'ro', isa => Str, default => sub { '"Rapi::Blog administrator" <no-reply@rapid.app>' }; 
 has 'default_subject', is => 'ro', isa => Str, default => sub { '(no subject)' }; 
 has 'default_body',    is => 'ro', isa => Str, default => sub { '' }; 
 
@@ -153,7 +154,7 @@ has 'subject', is => 'ro', lazy => 1, default => sub {
 }, isa => Str;
 
 has 'importance', is => 'ro', isa => Maybe[Enum[qw/Low Normal High/]], 
-  default => sub { undef }, coerce => sub { ucfirst(lc($_[0])) };
+  default => sub { undef }, coerce => sub { $_[0] ? ucfirst(lc($_[0])) : undef };
 
 
 

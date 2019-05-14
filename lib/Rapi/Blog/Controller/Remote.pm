@@ -79,7 +79,7 @@ sub email_login :Local :Args(0) {
   my ($self, $c) = @_;
   
   ####### comment this out to test
-  die "email_login is experimental and this die line must be commented out in order to try it.";
+  #die "email_login is experimental and this die line must be commented out in order to try it.";
   ################################
   
   
@@ -130,27 +130,34 @@ sub email_login :Local :Args(0) {
     "Unknown error occured while creating Pre-Authorization",'&ndash;',
     "please contact your system administrator"
   );
-  
-  
-  # Real logic (send actual e-mail) goes here
-  # ...
-  
 
+  
+  my $uri  = $c->req->uri->clone;
   my $link_url = do {
-    my $uri  = $c->req->uri->clone;
     $uri->path( join('/',$c->mount_url,'remote', 'preauth_action', $key) );
     $uri->query(undef);
     $uri->fragment( undef );
     $uri->as_string;
   };
   
+  
+  $c->model('Mailer')->send_mail({
+    to      => $User,
+    from    => '"Rapi::Blog ('.$uri->host_port.')" <no-reply@'.$uri->host.'>',
+    subject => 'One-time login link',
+    body    => join("",
+      "Here is your one-time login link. This can only be used one time and will expire in ",
+      $Preauth->ttl_minutes," minutes.\n\n$link_url\n\n"
+    )
+  });
+
+  
 
   return $self->redirect_local_info_success($c, join ' ',
 
-    "One-time direct login link we would have e-mailed...",
-    "For security, the reset link will only be valid for the next", $Preauth->ttl_minutes,"minutes",
-    
-    "<br><br><br>\n","<a href='$link_url'>$link_url</a>",
+    "One-time direct login link has been sent to the e-mail address on file for your account. Please check your e-mail.",
+    "<br><br>", "For security, the reset link will only work one time and will only be valid for the next", 
+    $Preauth->ttl_minutes,"minutes",
 
   )
   

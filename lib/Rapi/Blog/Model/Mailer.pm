@@ -11,78 +11,58 @@ use warnings;
 use RapidApp::Util qw(:all);
 
 require Module::Runtime;
-use Email::Sender::Transport;
-use Email::Sender::Transport::Sendmail;
-use Email::Sender::Simple;
-use Email::Simple;
 
+use Rapi::Blog::Util::Mailer;
 
 use Email::MIME::CreateHTML;
-use Email::Sender;
 
+before 'COMPONENT' => sub {
+  my $class = shift;
+  my $app_class = ref $_[0] || $_[0];
+  
+  my $cust_cnf = try{$app_class->config->{'Model::Mailer'}} || {};
+  
+  
+  $class->config(
+    
+    default_from => 'no-reply@rapi.io',
+    
+    # glabally override all mails to be sent to this address:
+    envelope_to => 'henry@vanstyn.com',
+    
+  
+  
+  
+    # Allow user-defined config overrides:
+    %$cust_cnf
+ );
+  
+  
+  
 
-has transport => (
-  does => 'Email::Sender::Transport',
-  is => 'ro',
-  lazy_build => 1,
-);
-
-sub _build_transport { 
-  Email::Sender::Transport::Sendmail->new 
-}
-
-
-# Perform some coersions, because these parameters come from the config file.
-around 'BUILDARGS' => sub {
-  my ($orig, $class, @args) = @_;
-  my $params = $class->$orig(@args);
-
-  # We allow the mail transport to be specified in the config file.
-  # This means we need to convert it from either a string or hash into the appropriate object.
-  $params->{transport} = $class->_resolve_transport($params->{transport});
-  delete $params->{transport} unless ($params->{transport});
-
-  return $params;
 };
 
-sub _resolve_transport {
+
+
+
+sub send_mail {
   my $self = shift;
-  my $cfg  = shift or return undef;
-  
-  return $cfg unless ((ref($cfg)||'') eq 'HASH');
-  my $class = $cfg->{class} ? delete $cfg->{class} : undef;
-  
-  if($class) {
-    Module::Runtime::require_module($class);
-    return $class->new($cfg)
+  my %opt = (ref($_[0]) eq 'HASH') ? %{ $_[0] } : @_; # <-- arg as hash or hashref
+
+  if(blessed($opt{to}) and $opt{to}->can('email')) {
+    my $User = $opt{to};
+    
+    my $email = $User->email or die "This user does not have an E-Mail address on file.";
+    $opt{to} = $User->full_name 
+      ? join('','"',$User->full_name,'" <',$User->email,'>')
+      : $User->email;
   }
   
-  return undef
+  
+  %opt = (%{$self->config},%opt);
+  
+  Rapi::Blog::Util::Mailer->send(\%opt)
 }
-
-
-sub send_email {
-  my $self = shift;
-  my $email = shift or die "send_email: no e-mail supplied to send!";
-  my %opts = (ref($_[0]) eq 'HASH') ? %{ $_[0] } : @_; # <-- arg as hash or hashref
-  
-  %opts = ( transport => $self->transport, %opts );
-  
-  if(my $reftype = ref($email)) {
-    $email = Email::Simple->create(%$email) if (!blessed($email) && $reftype eq 'HASH')
-  }
-  else {
-    $email = Email::Simple->new($email)
-  }
-
-  die "send_email: Bad email argument - unable to use or parse into an Email::Simple object"
-    unless(blessed($email) && $email->isa('Email::Simple'));
-
-  Email::Sender::Simple->try_to_send($email,\%opts);
-}
-
-
-
 
 
 
