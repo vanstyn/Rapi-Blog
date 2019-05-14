@@ -16,6 +16,7 @@ use Email::Sender::Transport::SMTP;
 use Email::Sender::Simple;
 use Email::Simple;
 use Email::Abstract;
+use Path::Class qw/file dir/;
 
 
 sub send {
@@ -69,6 +70,15 @@ sub init {
 }
 
 
+has 'message_file', is => 'ro', lazy => 1, default => sub { undef },
+isa => Maybe[InstanceOf['Path::Class::File']], coerce => sub {
+  my $File = file($_[0]);
+  -f $File or die "message_file '$_[0]' not found or is not a regular file";
+  $File
+},
+
+
+
 has 'transport', 
   is      => 'ro', 
   isa     => ConsumerOf['Email::Sender::Transport'],
@@ -76,7 +86,11 @@ has 'transport',
   default => sub { Email::Sender::Transport::Sendmail->new };
 
 
-has 'message', is => 'ro', default => sub {undef};
+has 'message', is => 'ro', lazy => 1, default => sub {
+  my $self = shift;
+  return scalar($self->message_file->slurp) if $self->message_file
+}, isa => Maybe[Str];
+
 has 'body', is => 'ro', isa => Str, lazy => 1, default => sub {
   my $self = shift;
   $self->email->body || $self->default_body
