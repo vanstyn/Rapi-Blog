@@ -390,13 +390,17 @@ sub signup :Local :Args(0) {
     $field_errs->{email}++;
   }
   
-  unless ($p->{full_name} && ($p->{full_name} =~ /\S/)) {
+  if (!$p->{full_name} || ($p->{full_name} =~ /^\s*$/)) {
     $field_errs->{full_name}++; 
     push @errs, "Full Name cannot be blank";
   }
-  if (($p->{full_name} =~ /^\s+/) || ($p->{full_name} =~ /\s+$/)) {
+  elsif (($p->{full_name} =~ /^\s+/) || ($p->{full_name} =~ /\s+$/)) {
     $field_errs->{full_name}++;
     push @errs, "Full Name cannot start or end with whitespace";
+  }
+  elsif ($self->_full_name_taken($c,$p->{full_name})) {
+    $field_errs->{full_name}++; 
+    push @errs, "Supplied Full Name is already in use";
   }
   
   my ($p1,$p2) = ($p->{password},$p->{confirm_password});
@@ -426,15 +430,17 @@ sub signup :Local :Args(0) {
   
   }
   else {
-    $self->error_response($c,join( ' ',
-      "No errors!! but no further code yet!")
-    );
+    my $NewUser = $c->model('DB::User')->create({
+      username  => $p->{username},
+      set_pw    => $p->{password},
+      full_name => $p->{full_name},
+      email     => $p->{email},
+      disabled  => 0,
+      comment   => 1
+    }) or die "unknown error creating new user";
+    
+    return $c->forward('/auth/login');
   }
-  
-  
-  
- 
-
 }
 
 
@@ -447,6 +453,15 @@ sub _username_taken {
   my @RS = ($c->model('DB::User'),$c->model('RapidApp::CoreSchema::User'));
   for my $Rs (@RS) {
     return 1 if ($Rs->search_rs({ 'me.username' => $username })->count > 0);
+  }
+  return 0
+}
+
+sub _full_name_taken {
+  my ($self, $c, $fn) = @_;
+  my @RS = ($c->model('DB::User'),$c->model('RapidApp::CoreSchema::User'));
+  for my $Rs (@RS) {
+    return 1 if ($Rs->search_rs({ 'me.full_name' => $fn })->count > 0);
   }
   return 0
 }

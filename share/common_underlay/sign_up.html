@@ -97,6 +97,7 @@
           id="password"  
           name="password" 
           class="oversize expand input-text"
+          value = "[% field_vals.password %]"
           [% IF field_errs.password %][% f_err_style %][% END %]
         />
         
@@ -106,6 +107,7 @@
           id="confirm_password"  
           name="confirm_password" 
           class="oversize expand input-text"
+          value = "[% field_vals.confirm_password %]"
           [% IF field_errs.confirm_password %][% f_err_style %][% END %]
         />
         
@@ -118,7 +120,7 @@
       <input 
         class="button small radius right black"
         type="submit"  
-        value="Submit" 
+        value="Create Account &amp; Login" 
       />
     </div>
 
