@@ -84,7 +84,17 @@ has 'transport',
   is      => 'ro', 
   isa     => ConsumerOf['Email::Sender::Transport'],
   lazy    => 1,
-  default => sub { Email::Sender::Transport::Sendmail->new };
+  #default => sub { Email::Sender::Transport::Sendmail->new };
+  default => sub { 
+    Email::Sender::Transport::SMTP->new(
+      host => 'smtp.sendgrid.net',
+      port => 587,
+      ssl => 'starttls',
+      sasl_username => 'vanstyn',
+      sasl_password => 'danger499'
+      
+    )
+  };
 
 
 has 'message', is => 'ro', lazy => 1, default => sub {

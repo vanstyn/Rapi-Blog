@@ -25,10 +25,10 @@ before 'COMPONENT' => sub {
   
   $class->config(
     
-    default_from => 'no-reply@rapi.io',
+    default_from => 'no-reply@tpf.rapid.app',
     
     # glabally override all mails to be sent to this address:
-    envelope_to => 'henry@vanstyn.com',
+    #envelope_to => 'henry@vanstyn.com',
     
   
   
