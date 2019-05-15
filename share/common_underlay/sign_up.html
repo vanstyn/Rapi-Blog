@@ -26,20 +26,106 @@
 
 </div>
 
+
+[% SET 
+  field_vals  = local_info.field_vals
+  field_errs  = local_info.field_errs
+  f_err_style = 'style="background-color:pink;"'
+%]
+
 [% IF local_info.error %]
   <div style="font-size:1.1em;font-weight:bold;color:red;padding:10px;">
     <center>&nbsp;[% local_info(clear).message %]&nbsp;</center>
   </div>
+  <br>
 [% END %]
+[% local_info(clear) %]
 
 <div class="row m_cont">
   <div class="eight columns centered">
   
     [% IF BlogCfg.enable_user_sign_up %]
       <div class="l_pane">
+      
+      
+      
+      
+
+    <form 
+      action="[% remote_action_path %]/signup?using=local_info" 
+      method="post" class="nice"
+    >
+
+    <div class="sepH_c">
+      <div class="elVal">
+        <label for="username">Desired username:</label>
+        <input autofocus
+          class="oversize expand input-text" 
+          type="text" 
+          id="username"  
+          name="username"
+          value = "[% field_vals.username %]"
+          [% IF field_errs.username %][% f_err_style %][% END %]
+        />
         
-        TBD...
+        <label for="email">E-Mail Address:</label>
+        <input
+          class="oversize expand input-text" 
+          type="text" 
+          id="email"  
+          name="email"
+          value = "[% field_vals.email %]"
+          [% IF field_errs.email %][% f_err_style %][% END %]
+        />
+        
+        <label for="full_name">Full Name:</label>
+        <input 
+          class="oversize expand input-text" 
+          type="text" 
+          id="full_name"  
+          name="full_name" 
+          value = "[% field_vals.full_name %]"
+          [% IF field_errs.full_name %][% f_err_style %][% END %]
+        />
+        
+
         <br><br>
+        
+        <label for="password">Password</label>
+        <input 
+          type="password" 
+          id="password"  
+          name="password" 
+          class="oversize expand input-text"
+          [% IF field_errs.password %][% f_err_style %][% END %]
+        />
+        
+        <label for="password">Confirm Password</label>
+        <input 
+          type="password" 
+          id="confirm_password"  
+          name="confirm_password" 
+          class="oversize expand input-text"
+          [% IF field_errs.confirm_password %][% f_err_style %][% END %]
+        />
+        
+        
+        
+      </div>
+    </div>
+
+    <div class="cf" style="padding-bottom:30px;">
+      <input 
+        class="button small radius right black"
+        type="submit"  
+        value="Submit" 
+      />
+    </div>
+
+  </form>
+
+
+
 
         
       </div>

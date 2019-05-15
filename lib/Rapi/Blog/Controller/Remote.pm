@@ -10,7 +10,7 @@ use warnings;
 use RapidApp::Util ':all';
 use Rapi::Blog::Util;
 use URI;
-
+use Email::Valid;
 
 # This is the general-purpse controller for handing domain-specific 
 # custom-code endpoint requests outside/separate of RapidApp
@@ -335,21 +335,138 @@ sub _using_local_info {
 }
 
 
+
+
+
+
+
+
+sub signup :Local :Args(0) {
+  my $self = shift;
+  my $c = shift || RapidApp->active_request_context or return 0;
+  
+  $c->session->{local_info} and delete $c->session->{local_info};
+  
+  # Non-posts silently redirect to the home page:
+  $c->req->method eq 'POST' or return $c->res->redirect( $c->mount_url );
+  
+  my @errs = ();
+  
+  my $uRs = $c->model('DB::User');
+  my $p = $c->req->params;
+  my $field_errs = {};
+  
+  if (my $username = $p->{username}) {
+    if ($username =~ /^[a-zA-Z0-9\.\-\_]+$/) {
+      if ($uRs->search_rs({ 'me.username' => $p->{username} })->count > 0) {
+        $field_errs->{username}++; 
+        push @errs, "Username already taken";
+      }
+    }
+    else {
+       push @errs, "usernames may only contain alpha characters and (-_.)";
+       $field_errs->{username}++; 
+    }
+  }
+  else {
+    push @errs, "Must supply a username";
+    $field_errs->{username}++;
+  }
+  
+  if (my $email = $p->{email}) {
+    if (Email::Valid->address($email)) {
+      if ($uRs->search_rs({ 'me.email' => $p->{email} })->count > 0) {
+        push @errs, "E-Mail already in use";
+        $field_errs->{email}++;
+      }
+    }
+    else {
+      push @errs, "Supplied E-Mail address is not valid";
+      $field_errs->{email}++;
+    }
+  }
+  else {
+    push @errs, "Must supply an E-Mail address";
+    $field_errs->{email}++;
+  }
+  
+  unless ($p->{full_name} && ($p->{full_name} =~ /\S/)) {
+    $field_errs->{full_name}++; 
+    push @errs, "Full Name cannot be blank";
+  }
+  if (($p->{full_name} =~ /^\s+/) || ($p->{full_name} =~ /\s+$/)) {
+    $field_errs->{full_name}++;
+    push @errs, "Full Name cannot start or end with whitespace";
+  }
+  
+  my ($p1,$p2) = ($p->{password},$p->{confirm_password});
+  if(length($p1) < 6) {
+    $field_errs->{password}++;
+    push @errs, "Passwords must be at least 6 characters long";
+  }
+  unless("$p1" eq "$p2") { 
+    $field_errs->{confirm_password}++; 
+    push @errs, "Passworrds do not match";
+  }
+  
+  my $extra = { field_vals => $p, field_errs => $field_errs };
+  
+  if(scalar(@errs) > 0) {
+    my $error_msg = join("\n",
+      '<ul style="list-style-type:disc;padding-left:20px;font-size:.9em;">',
+      (map { join('','<li>',$_,'</li>') } @errs),
+      '</ul>'
+    );
+    
+    $self->error_response($c,(join ' ',
+      '<div style="padding-left:75px;margin-top:-25px;margin-bottom:-20px;text-align:left;">',
+      '<div style="font-size:1.8em;padding-bottom:10px;">Errors:</div>',"\n",$error_msg,
+      '</div>'),$extra
+    );
+  
+  }
+  else {
+    $self->error_response($c,join( ' ',
+      "No errors!! but no further code yet!")
+    );
+  }
+  
+  
+  
+  
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 sub redirect_local_info_error {
-  my ($self, $c, $msg) = @_;
-  $self->_redirect_local_info($c, $msg, 0)
+  my ($self, $c, $msg, $extra) = @_;
+  $self->_redirect_local_info($c, $msg, 0, $extra)
 }
 
 sub redirect_local_info_success {
-  my ($self, $c, $msg) = @_;
-  $self->_redirect_local_info($c, $msg, 1)
+  my ($self, $c, $msg,$extra) = @_;
+  $self->_redirect_local_info($c, $msg, 1, $extra)
 }
 
 sub _redirect_local_info {
-  my ($self, $c, $info, $result, $qs) = @_;
+  my ($self, $c, $info, $result, $extra) = @_;
   
   unless((ref($info)||'') eq 'HASH') {
     $info = { message => $info };
+    %$info = (%$info,%$extra) if (ref($extra)||'' eq 'HASH');
   }
   my $msg = $info->{message} || '';
 
@@ -397,11 +514,11 @@ sub _local_info_dispatch {
 
 # placeholder for later
 sub error_response {
-  my ($self, $c, $err) = @_;
+  my ($self, $c, $err, $extra) = @_;
   
   local $self->{_error_response_recurse} = $self->{_error_response_recurse} || 0;
   
-  return $self->redirect_local_info_error($c,$err) if (
+  return $self->redirect_local_info_error($c,$err,$extra) if (
     $self->{_error_response_recurse}++ < 1 
     && $self->_using_local_info($c)
   );
