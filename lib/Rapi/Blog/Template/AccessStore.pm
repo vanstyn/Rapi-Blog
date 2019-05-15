@@ -199,7 +199,7 @@ has 'Model', is => 'ro', lazy => 1, default => sub {
 
 has 'internal_post_path', is => 'ro', isa => Str, required => 1;
 #has 'view_wrappers',      is => 'ro', isa => ArrayRef[HashRef], default => sub {[]};
-#has 'default_view_path',  is => 'ro', isa => Maybe[Str], default => sub {undef};
+has 'default_view_path',  is => 'ro', isa => Maybe[Str], default => sub {undef};
 #has 'preview_path',       is => 'ro', isa => Maybe[Str], default => sub {undef};
 
 

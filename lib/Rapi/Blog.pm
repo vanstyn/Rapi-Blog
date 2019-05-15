@@ -22,7 +22,7 @@ use YAML::XS 0.64 'LoadFile';
 use Rapi::Blog::Scaffold;
 use Rapi::Blog::Scaffold::Set;
 
-our $VERSION = 1.0200_09;
+our $VERSION = 1.0299;
 our $TITLE = "Rapi::Blog v" . $VERSION;
 
 has 'site_path',        is => 'ro', required => 1;
@@ -428,6 +428,7 @@ sub _build_base_config {
         scaffold_cfg       => $self->scaffold_cfg,
         
         internal_post_path => $self->scaffold_cfg->internal_post_path,
+        default_view_path  => $self->scaffold_cfg->default_view_path,
         
       
         #scaffold_dir  => $self->scaffold_dir,
