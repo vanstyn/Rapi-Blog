@@ -358,7 +358,7 @@ sub signup :Local :Args(0) {
   
   if (my $username = $p->{username}) {
     if ($username =~ /^[a-zA-Z0-9\.\-\_]+$/) {
-      if ($uRs->search_rs({ 'me.username' => $p->{username} })->count > 0) {
+      if ($self->_username_taken($c,$username)) {
         $field_errs->{username}++; 
         push @errs, "Username already taken";
       }
@@ -433,14 +433,23 @@ sub signup :Local :Args(0) {
   
   
   
-  
-
+ 
 
 }
 
 
 
 
+
+# For good measure we test both databases just in case:
+sub _username_taken {
+  my ($self, $c, $username) = @_;
+  my @RS = ($c->model('DB::User'),$c->model('RapidApp::CoreSchema::User'));
+  for my $Rs (@RS) {
+    return 1 if ($Rs->search_rs({ 'me.username' => $username })->count > 0);
+  }
+  return 0
+}
 
 
 
