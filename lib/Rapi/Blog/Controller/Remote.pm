@@ -131,27 +131,20 @@ sub email_login :Local :Args(0) {
     "please contact your system administrator"
   );
 
-  
-  my $uri  = $c->req->uri->clone;
-  my $link_url = do {
-    $uri->path( join('/',$c->mount_url,'remote', 'preauth_action', $key) );
-    $uri->query(undef);
-    $uri->fragment( undef );
-    $uri->as_string;
-  };
-  
+  my $link_url = join('/',
+    $c->req->env->{HTTP_ORIGIN},
+    $c->mount_url||(),'remote', 'preauth_action', $key
+  );
   
   $c->model('Mailer')->send_mail({
     to      => $User,
-    from    => '"Rapi::Blog ('.$uri->host_port.')" <no-reply@'.$uri->host.'>',
+    from    => '"Rapi::Blog ('.$c->req->env->{HTTP_ORIGIN}.')" <no-reply@'.$c->req->uri->host.'>',
     subject => 'One-time login link',
     body    => join("",
       "Here is your one-time login link. This can only be used one time and will expire in ",
       $Preauth->ttl_minutes," minutes.\n\n$link_url\n\n"
     )
   });
-
-  
 
   return $self->redirect_local_info_success($c, join ' ',
 
@@ -498,7 +491,7 @@ sub _redirect_local_info {
   my $ruri = URI->new( $c->req->referer );
   
   # If this isn't a local referer just throw hard error:
-  $ruri && $uri->host_port eq $ruri->host_port or return $self->error_response($c,
+  $ruri && $uri->host eq $ruri->host or return $self->error_response($c,
     "Error, bad referer - message: '$msg'"
   );
   
