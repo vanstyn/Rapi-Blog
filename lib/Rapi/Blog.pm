@@ -37,6 +37,8 @@ has 'enable_email_login',    is => 'ro', isa => Bool, default => sub {1};
 
 has 'underlay_scaffolds', is => 'ro', isa => ArrayRef[Str], default => sub {[]};
 
+has 'smtp_config', is => 'ro', isa => Maybe[HashRef], default => sub { undef };
+
 has '+base_appname', default => sub { 'Rapi::Blog::App' };
 has '+debug',        default => sub {1};
 
@@ -446,7 +448,12 @@ sub _build_base_config {
 
         get_Model => sub { $self->base_appname->model('DB') } 
       } 
+    },
+    
+    'Model::Mailer' => {
+      smtp_config => $self->smtp_config
     }
+    
   };
   
   if(my $faviconPath = $self->ScaffoldSet->first_config_value_filepath('favicon')) {
@@ -549,6 +556,17 @@ If set to true and the local scaffold directory doesn't exist, the default built
 'bootstrap-blog' will be used instead. Useful for testing and content-only scenarios.
 
 Defaults to false.
+
+=head2 smtp_config
+
+Optional HashRef of L<Email::Sender::Transport::SMTP> params which will be used by the app for
+sending E-Mails, such as password resets and other notifications. The options are passed directly
+to C<Email::Sender::Transport::SMTP->new()>. If the special param C<transport_class> is included,
+it will be used as the transport class instead of C<Email::Sender::Transport::SMTP>. If this is
+supplied, it should still be a valid L<Email::Sender::Transport> class.
+
+If this option is not supplied, E-Mails will be sent via the localhost using C<sendmail> via 
+the default L<Email::Sender::Transport::Sendmail> options.
 
 =head1 METHODS
 

@@ -19,6 +19,8 @@ use Email::Abstract;
 use Path::Class qw/file dir/;
 
 
+has 'smtp_config', is => 'ro', isa => Maybe[HashRef], default => sub { undef };
+
 sub send {
   my $self = shift;
   
@@ -84,18 +86,25 @@ has 'transport',
   is      => 'ro', 
   isa     => ConsumerOf['Email::Sender::Transport'],
   lazy    => 1,
-  #default => sub { Email::Sender::Transport::Sendmail->new };
-  default => sub { 
-    Email::Sender::Transport::SMTP->new(
-      host => 'smtp.sendgrid.net',
-      port => 587,
-      ssl => 'starttls',
-      sasl_username => 'vanstyn',
-      sasl_password => 'danger499'
+  default => sub {
+    my $self = shift;
+    
+    # If there is no custom smtp_config, we use the default Sendmail transport
+    # which relies of the sendmail binary to send mail from the localhost
+    return Email::Sender::Transport::Sendmail->new unless ($self->smtp_config);
+    
+    my $cfg = clone($self->smtp_config);
+    
+    # If there is a custom config, look for the special 'transport_class' option
+    # to override the default Email::Sender::Transport::SMTP. The rest of the 
+    # params are passed directly to the transport constructor ->new()
+    my $class = $cfg->{transport_class} 
+      ? delete $cfg->{transport_class}
+      : 'Email::Sender::Transport::SMTP';
       
-    )
+    $class->new($cfg)
   };
-
+  
 
 has 'message', is => 'ro', lazy => 1, default => sub {
   my $self = shift;
