@@ -35,20 +35,26 @@ sub send {
   # We're an already created object, we shouldn't see any arguments:
   die "->send() only accepts arguments when called as a class method" if (scalar(keys %args) > 0);
 
+  $self->_send
+}
 
-  #scream($self->email, { 
-  #  to        => $self->envelope_to,
-  #  from      => $self->envelope_from,
-  #  transport => $self->transport
-  #});
 
+sub _send {
+  my $self = shift;
+  
+  $self->sent and die "Already sent.";
+  
+  $self->envelope_to or die "Unable to send message - no recipient addresses were supplied or identified.";
+  
   Email::Sender::Simple->send($self->email, { 
     to        => $self->envelope_to,
     from      => $self->envelope_from,
     transport => $self->transport
   });
-
+  
+  $self->sent(1);
 }
+
 
 
 
@@ -120,9 +126,7 @@ has 'body', is => 'ro', isa => Str, lazy => 1, default => sub {
 #has 'default_to',      is => 'ro', isa => Str, default => sub { 'unspecified-address@unspecified-domain.com' };
 #has 'default_from',    is => 'ro', isa => Str, default => sub { 'unspecified-address@unspecified-domain.com' };
 
-has 'default_to', is => 'ro', lazy => 1, default => sub { 
-  'hvs@hvs.io' 
-}, isa => ArrayRef[Str], coerce => \&_array_coerce;
+has 'default_to', is => 'ro', default => sub { undef }, isa => Maybe[ArrayRef[Str]], coerce => \&_array_coerce;
 
 
 has 'default_from',    is => 'ro', isa => Str, default => sub { '"Rapi::Blog administrator" <no-reply@rapid.app>' }; 
@@ -144,7 +148,7 @@ has 'envelope_from', is => 'ro', lazy => 1, default => sub {
 has 'envelope_to', is => 'ro', lazy => 1, default => sub {
   my $self = shift;
   $self->init->identified_recipients;
-}, isa => ArrayRef[Str], coerce => \&_array_coerce;
+}, isa => Maybe[ArrayRef[Str]], coerce => \&_array_coerce;
 
 
 has 'from', is => 'ro', lazy => 1, default => sub {
@@ -184,6 +188,7 @@ sub _array_coerce {
 }
 
 has 'initialized',           is => 'rw', isa => Bool,          default => sub {0};
+has 'sent',                  is => 'rw', isa => Bool,          default => sub {0};
 has 'exist_header',          is => 'ro', isa => HashRef,       default => sub {{}};
 has 'identified_recipients', is => 'ro', isa => ArrayRef[Str], default => sub {[]};
 
@@ -237,10 +242,10 @@ has 'email', is => 'ro', init_arg => undef, lazy => 1, default => sub {
   $self->meta->get_attribute('body')->has_value($self) and $email->set_body( $self->body );
   $email->get_body or $email->set_body( $self->body );
   
-  push @addr_collect, $self->default_to unless (scalar(@addr_collect) > 0);
+  push @addr_collect, $self->default_to if (scalar(@addr_collect) == 0 && $self->default_to);
   
   @{$self->identified_recipients} = map { $self->_extract_addresses($_) } @addr_collect;
-  
+
   $self->initialized(1);
   
   return $email
