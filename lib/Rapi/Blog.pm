@@ -22,7 +22,7 @@ use YAML::XS 0.64 'LoadFile';
 use Rapi::Blog::Scaffold;
 use Rapi::Blog::Scaffold::Set;
 
-our $VERSION = 1.0299;
+our $VERSION = 1.0299_01;
 our $TITLE = "Rapi::Blog v" . $VERSION;
 
 has 'site_path',        is => 'ro', required => 1;
