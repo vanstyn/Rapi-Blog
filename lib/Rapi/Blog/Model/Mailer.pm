@@ -21,25 +21,12 @@ before 'COMPONENT' => sub {
   my $app_class = ref $_[0] || $_[0];
   
   my $cust_cnf = try{$app_class->config->{'Model::Mailer'}} || {};
-  
-  
+ 
   $class->config(
-    
-    default_from => 'no-reply@tpf.rapid.app',
-    
-    # glabally override all mails to be sent to this address:
-    #envelope_to => 'henry@vanstyn.com',
-    
-  
-  
-  
     # Allow user-defined config overrides:
     %$cust_cnf
  );
   
-  
-  
-
 };
 
 
