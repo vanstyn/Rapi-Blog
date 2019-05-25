@@ -197,10 +197,16 @@ has 'Model', is => 'ro', lazy => 1, default => sub {
 }, isa => Object;
 
 
-has 'internal_post_path', is => 'ro', isa => Str, required => 1;
-#has 'view_wrappers',      is => 'ro', isa => ArrayRef[HashRef], default => sub {[]};
-has 'default_view_path',  is => 'ro', isa => Maybe[Str], default => sub {undef};
-#has 'preview_path',       is => 'ro', isa => Maybe[Str], default => sub {undef};
+sub internal_post_path { (shift)->scaffold_cfg->internal_post_path }
+sub view_wrappers      { (shift)->scaffold_cfg->view_wrappers      }
+sub default_view_path  { (shift)->scaffold_cfg->default_view_path  }
+sub preview_path       { (shift)->scaffold_cfg->preview_path       }
+
+
+#has 'internal_post_path', is => 'ro', isa => Str, required => 1;
+##has 'view_wrappers',      is => 'ro', isa => ArrayRef[HashRef], default => sub {[]};
+#has 'default_view_path',  is => 'ro', isa => Maybe[Str], default => sub {undef};
+##has 'preview_path',       is => 'ro', isa => Maybe[Str], default => sub {undef};
 
 
 sub get_uid {

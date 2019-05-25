@@ -430,8 +430,8 @@ sub _build_base_config {
         ScaffoldSet        => $self->ScaffoldSet,
         scaffold_cfg       => $self->scaffold_cfg,
         
-        internal_post_path => $self->scaffold_cfg->internal_post_path,
-        default_view_path  => $self->scaffold_cfg->default_view_path,
+        #internal_post_path => $self->scaffold_cfg->internal_post_path,
+        #default_view_path  => $self->scaffold_cfg->default_view_path,
         
       
         #scaffold_dir  => $self->scaffold_dir,

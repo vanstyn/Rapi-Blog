@@ -20,6 +20,8 @@ has 'static_paths',       is => 'rw', isa => ArrayRef,          default => sub {
 has 'private_paths',      is => 'rw', isa => ArrayRef,          default => sub { [] };
 has 'default_ext',        is => 'rw', isa => Maybe[Str],        default => sub { 'html' };
 
+has 'preview_path', is => 'rw', lazy => 1, default => sub { (shift)->default_view_path }, isa => Maybe[Str];
+
 
 has '_supplied_params', is => 'ro', isa => HashRef, required => 1;
 around BUILDARGS => sub {
