@@ -103,16 +103,24 @@ sub email_login :Local :Args(0) {
     "Must supply an E-Mail address associated with an account"
   );
   
-  ($email =~ /\@/) or return $self->error_response($c,
-    "Supplied E-Mail '$email' is invalid"
-  );
-  
   my $Rs = $c->model('DB::User')->enabled;
   
-  my $User = $Rs->search_rs({ -or => [{'me.email' => $email},{'me.email' => lc($email)}]})
+  
+  my @or_list = ({'me.username' => $email},{'me.username' => lc($email)});
+  if($email =~ /\@/) {
+    # Don't bother searching by e-mail if we already know it cant be an e-mail
+    push @or_list, {'me.email'    => $email},{'me.email' => lc($email)};
+  }
+  
+  my $User = $Rs->search_rs({ -or => \@or_list })
     ->first or return $self->error_response($c,
-      "No valid account with E-Mail address '$email'"
+      "No valid account with username or E-Mail address '$email'"
     );
+    
+  $User->email or return $self->error_response($c,
+    "That account has no E-Mail address on file."
+  );  
+    
   my $uid = $User->get_column('id');
   
 
