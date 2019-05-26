@@ -64,7 +64,11 @@
         <!--
         <label for="remember" class="left"><input type="checkbox" id="remember"> Remember me</label>
         -->
-        <input type="submit" class="button small radius right black" value="Send one-time login link" />
+        <input 
+          type="submit" class="button small radius right black" 
+          value="Send one-time login link"
+          onclick="this.form.submit(); this.disabled = true;"
+        />
       </div>
     </form>
   
