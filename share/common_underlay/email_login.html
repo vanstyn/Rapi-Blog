@@ -40,33 +40,35 @@
     <div class="l_pane">
       
       
-      [% IF local_info.success %]
-        [% local_info(clear).message || 'Success - login link sent' %]
-        <br><br>
-      [% END %]
-      
-
-
-  <form action="[% remote_action_path %]/email_login?using=local_info" method="post" class="nice" id="l_form">
-
-    <input type="hidden" id="redirect" name="redirect" value="" />
+  [% IF local_info.success %]
+    [% local_info(clear).message || 'Success - login link sent' %]
+    <div style="padding-top:60px;"></div>
     
-    <div class="sepH_c">
-      <div class="elVal">
-        <label for="email">E-Mail Address</label>
-        <input autofocus type="text" id="email"  name="email" class="oversize expand input-text" />
+  [% ELSE %]
+
+    <form 
+      action="[% remote_action_path %]/email_login?using=local_info" 
+      method="post" class="nice" id="l_form"
+    >
+
+      <input type="hidden" id="redirect" name="redirect" value="" />
+      
+      <div class="sepH_c">
+        <div class="elVal">
+          <label for="email">E-Mail Address</label>
+          <input autofocus type="text" id="email"  name="email" class="oversize expand input-text" />
+        </div>
       </div>
-    </div>
 
-    <div class="cf" style="padding-bottom:30px;">
-      <!--
-      <label for="remember" class="left"><input type="checkbox" id="remember"> Remember me</label>
-      -->
-      <input type="submit" class="button small radius right black" value="Send one-time login link" />
-    </div>
-
-  </form>
+      <div class="cf" style="padding-bottom:30px;">
+        <!--
+        <label for="remember" class="left"><input type="checkbox" id="remember"> Remember me</label>
+        -->
+        <input type="submit" class="button small radius right black" value="Send one-time login link" />
+      </div>
+    </form>
   
+  [% END %]
   
     </div>
   </div>

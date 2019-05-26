@@ -148,8 +148,13 @@ sub email_login :Local :Args(0) {
 
   return $self->redirect_local_info_success($c, join ' ',
 
-    "One-time direct login link has been sent to the e-mail address on file for your account. Please check your e-mail.",
-    "<br><br>", "For security, the reset link will only work one time and will only be valid for the next", 
+    "A one-time, direct login link has been sent to the e-mail address on file for your account.",
+    "Please check your e-mail.",
+    "<br><br>",
+    "This link will allow you to log into your account without entering your password.",
+    "Once logged in, you can change your password, or anything else your account has access to do.",
+    "<br><br>",
+    "For security, the login link can only be used one time and will only be valid for the next", 
     $Preauth->ttl_minutes,"minutes",
 
   )
