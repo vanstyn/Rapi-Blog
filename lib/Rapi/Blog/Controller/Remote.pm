@@ -130,19 +130,28 @@ sub email_login :Local :Args(0) {
     "Unknown error occured while creating Pre-Authorization",'&ndash;',
     "please contact your system administrator"
   );
+  
+  # This is almost the same as $c->req->uri->host, but it includes the port if present:
+  my $host_friendly = (split(/\:\/\//,$c->req->env->{HTTP_ORIGIN},2))[1];
 
   my $link_url = join('/',
     $c->req->env->{HTTP_ORIGIN},
     $c->mount_url||(),'remote', 'preauth_action', $key
   );
   
+  my $title = try{Rapi::Blog::Util->get_scaffold_cfg->title} || $host_friendly;
+  
   $c->model('Mailer')->send_mail({
     to      => $User,
-    from    => '"Rapi::Blog ('.$c->req->env->{HTTP_ORIGIN}.')" <no-reply@'.$c->req->uri->host.'>',
-    subject => 'One-time login link',
+    from    => "$title <no-reply@".$c->req->uri->host.'>',
+    #from    => '"Rapi::Blog ('.$c->req->env->{HTTP_ORIGIN}.')" <no-reply@'.$c->req->uri->host.'>',
+    subject => "One-time login link ($host_friendly)",
     body    => join("",
-      "Here is your one-time login link. This can only be used one time and will expire in ",
-      $Preauth->ttl_minutes," minutes.\n\n$link_url\n\n"
+      "Here is your one-time, direct login link. This will log you into your $host_friendly ",
+      "account without having to enter your username and password.\n\n",
+      "This can only be used once and will expire in ",
+      $Preauth->ttl_minutes," minutes.\n\n$link_url\n\n",
+      "(if you did not request this link, you may disregard this message)"
     )
   });
 

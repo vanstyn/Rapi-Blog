@@ -57,4 +57,12 @@ sub get_User {
   return undef;
 }
 
+
+sub get_scaffold_cfg {
+  if(my $c = RapidApp->active_request_context) {
+    return try{$c->template_controller->Access->scaffold_cfg};
+  }
+  return undef;
+}
+
 1;
