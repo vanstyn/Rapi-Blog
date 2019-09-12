@@ -1,5 +1,8 @@
 Revision history for Rapi::Blog
 
+1.1001 2019-09-11
+    - Require RapidApp 1.3105 -- 1.3104 was a bad release on cpanZZ
+
 1.1000 2019-09-11
     - Finally rollup extensive unreleased changes into an offcial new release
       - Note: This is an official release, but due to the drawn out dev cycle,
