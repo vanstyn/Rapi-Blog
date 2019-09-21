@@ -12,3 +12,6 @@ requires 'RapidApp', 1.3104;
 requires 'YAML::XS', 0.65;
 requires 'DBIx::Class::Helpers', 2.033003;
 requires 'HTML::Strip', 2.10;
+requires 'IO::Socket::SSL', 2.066;
+requires 'MIME::Base64', 3.15;
+requires 'Authen::SASL', 2.16;
