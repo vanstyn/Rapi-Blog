@@ -126,6 +126,7 @@ sub recaptcha_verify {
   $req->header( 'Content-Type' => 'application/x-www-form-urlencoded' );
   $req->content( $content_payload );
 
+  $c->log->info('Validating reCAPTCHA: POST -> '.$url);
   my $res = $ua->request($req);
 
   if($res->is_success) {
@@ -137,6 +138,7 @@ sub recaptcha_verify {
     return $success ? 1 : 0
   }
   else {
+    $c->log->error('reCAPTCHA validation failed');
     return 0;
   }
 }

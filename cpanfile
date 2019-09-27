@@ -17,4 +17,5 @@ requires 'MIME::Base64', 3.15;
 requires 'Authen::SASL', 2.16;
 requires 'HTTP::Request::Common', 6.18;
 requires 'LWP::UserAgent', 6.39;
+requires 'LWP::Protocol::https', 6.07;
 requires 'Email::Sender', 1.300031;
