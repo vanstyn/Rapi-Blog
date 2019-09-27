@@ -15,3 +15,6 @@ requires 'HTML::Strip', 2.10;
 requires 'IO::Socket::SSL', 2.066;
 requires 'MIME::Base64', 3.15;
 requires 'Authen::SASL', 2.16;
+requires 'HTTP::Request::Common', 6.18;
+requires 'LWP::UserAgent', 6.39;
+requires 'Email::Sender', 1.300031;
