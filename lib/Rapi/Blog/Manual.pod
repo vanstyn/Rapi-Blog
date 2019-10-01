@@ -406,6 +406,14 @@ empty string C<''>.
 This is provided as a top-level variable so non-privileged templates can access it (since they do 
 not have access to the actual context object in C<[% c %]>.
 
+=head2 accessed_site
+
+The external URL actually being used to access the site (experimental). This is actually not as simple
+as it may seem, as different deployment setups can change the environment from which this info can be
+determined. The intent is to provide the same base URL that the client browser is currently using to
+access the site. This is useful when dynamically generating public links, and you do not want to have
+to know/hard-code the site's domain/URL.
+
 =head2 local_info
 
 Access to arbitrary data that is specific to both the current session as well as the current URL/path of
