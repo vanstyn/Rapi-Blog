@@ -30,6 +30,18 @@ before 'setup' => sub {
       { id => 0, username => '(system)', full_name => '[System Acount]', admin => 1 },
       { key => 'primary' }
     );
+    # Need to insert the default rows:
+    my @inserts = (
+      q~INSERT INTO [preauth_action_type] VALUES('enable_account','Enable a disabled user account')~,
+      q~INSERT INTO [preauth_action_type] VALUES('password_reset','Change a user password')~,
+      q~INSERT INTO [preauth_action_type] VALUES('login','Single-use login')~,
+      q~INSERT INTO [preauth_event_type] VALUES(1,'Valid',     'Pre-Authorization Action accessed and is valid')~,
+      q~INSERT INTO [preauth_event_type] VALUES(2,'Invalid',   'Pre-Authorization Action exists but is invalid')~,
+      q~INSERT INTO [preauth_event_type] VALUES(3,'Deactivate','Pre-Authorization Action deactivated')~,
+      q~INSERT INTO [preauth_event_type] VALUES(4,'Executed',  'Pre-Authorization Action executed')~,
+      q~INSERT INTO [preauth_event_type] VALUES(5,'Sealed',    'Action sealed - can no longer be accessed with key, except by admins')~
+    );
+    $db->storage->dbh->do($_) for (@inserts);
   }
   
   my ($DiffObj,$schemsum) = $self->_migrate_and_diff_deployed;
