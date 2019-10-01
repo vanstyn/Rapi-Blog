@@ -8,7 +8,7 @@
 # (See https://metacpan.org/pod/cpanfile)
 # --
 
-requires 'RapidApp', 1.3104;
+requires 'RapidApp', 1.3106;
 requires 'YAML::XS', 0.65;
 requires 'DBIx::Class::Helpers', 2.033003;
 requires 'HTML::Strip', 2.10;
