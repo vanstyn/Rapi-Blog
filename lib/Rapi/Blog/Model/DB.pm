@@ -622,7 +622,7 @@ __PACKAGE__->config(
               #profiles => [],
           },
           body => {
-            header => 'body',
+            header => 'Body',
             hidden => 1,
             width  => 400,
             #renderer => 'RA.ux.App.someJsFunc',
@@ -784,8 +784,9 @@ __PACKAGE__->config(
             #profiles => [],
           },
           post_categories => {
-            header => 'post_categories',
-            #width => 100,
+            header => 'Post/Category Links',
+            width => 180,
+            hidden => 1,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -810,8 +811,9 @@ __PACKAGE__->config(
             #profiles => [],
           },
           trk_section_posts => {
-            header => 'trk_section_posts',
-            #width => 100,
+            header => 'Track Section-Posts',
+            width => 180,
+            hidden => 1,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
@@ -1119,7 +1121,8 @@ __PACKAGE__->config(
             #profiles => [],
           },
           preauth_action_events => {
-            header => 'preauth_action_events',
+            header => 'Pre-Auth Events',
+            hidden => 1,
             #width => 100,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
@@ -1425,7 +1428,7 @@ __PACKAGE__->config(
             #profiles => [],
           },
           preauth_action_events => {
-            header => 'preauth_action_events',
+            header => 'Pre-Auth Events',
             #width => 100,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
@@ -1453,7 +1456,7 @@ __PACKAGE__->config(
             #profiles => [],
           },
           preauth_actions => {
-            header => 'preauth_actions',
+            header => 'Pre Authorizations',
             #width => 100,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
@@ -1552,7 +1555,7 @@ __PACKAGE__->config(
             #profiles => [],
           },
           preauth_action_events => {
-            header => 'preauth_action_events',
+            header => 'Pre-Auth Events',
             #width => 100,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
