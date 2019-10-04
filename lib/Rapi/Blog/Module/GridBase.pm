@@ -217,8 +217,8 @@ sub apply_permissions {
     }  
   }
   elsif($source_name eq 'User') {
-    my @limit_cols = qw/email admin author comment disabled set_pw preauth_actions/;
-    $self->apply_columns({ $_ => { no_column => 1 } }) for (@limit_cols);
+    my @deny_columns = qw/email admin author comment disabled set_pw preauth_actions/;
+    $self->apply_colspec_columns(\@deny_columns, no_column => 1);
   }
   else {
     # deny all changes unless otherwise specified:
