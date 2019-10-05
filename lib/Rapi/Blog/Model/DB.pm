@@ -482,6 +482,7 @@ __PACKAGE__->config(
     # The grid_class is used to automatically setup a module for each source in the
     # navtree with the grid_params for each source supplied as its options.
     grid_class  => 'Rapi::Blog::Module::GridBase',
+    menu_require_role => 'administrator',
     grid_params => {
       # The special '*defaults' key applies to all sources at once
       '*defaults' => {
@@ -507,7 +508,12 @@ __PACKAGE__->config(
       Hit => {
         updatable_colspec => undef,
         creatable_colspec => undef,
-      }
+        require_role => 'administrator'
+      },
+      PreauthAction      => { require_role => 'administrator' },
+      PreauthActionEvent => { require_role => 'administrator' },
+      PreauthActionType  => { require_role => 'administrator' },
+      PreauthEventType   => { require_role => 'administrator' },
     },
 
     # TableSpecs define extra RapidApp-specific metadata for each source
@@ -856,8 +862,8 @@ __PACKAGE__->config(
       },
       User => {
         display_column => 'username',
-        title          => 'Blog User',
-        title_multi    => 'Blog Users',
+        title          => 'User Account',
+        title_multi    => 'User Accounts',
         iconCls        => 'icon-user',
         multiIconCls   => 'icon-users',
         columns        => {
@@ -1565,7 +1571,7 @@ __PACKAGE__->config(
           },
           preauth_action_events => {
             header => 'Events',
-            width => 140,
+            width => 160,
             #sortable => 1,
             #renderer => 'RA.ux.App.someJsFunc',
             #profiles => [],
