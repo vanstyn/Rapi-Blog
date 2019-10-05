@@ -117,7 +117,7 @@ sub _rapi_blog_extra_navtree_nodes {
         {
           text    => 'User Sessions',
           iconCls => 'ra-icon-environment-network',
-          url     => '/adm/main/db/db_session',
+          url     => '/adm/main/db/rapidapp_coreschema_session',
           leaf    => \1 
         },
         {
