@@ -173,6 +173,8 @@ around '_get_default_template_vars' => sub {
           '"></div>'
         ) : ''
     },
+		
+		pRender => sub { Rapi::Blog::Util::pRender->new },
     
     
   };
