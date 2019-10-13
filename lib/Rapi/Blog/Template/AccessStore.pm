@@ -93,6 +93,7 @@ around '_get_default_template_vars' => sub {
     BlogCfg         => $self->BlogCfg,
     scaffold        => $self->scaffold_cfg,
     list_posts      => sub { $self->Model->resultset('Post')     ->list_posts(@_)      },
+    get_posts       => sub { $self->Model->resultset('Post')     ->get_posts(@_)       },
     list_tags       => sub { $self->Model->resultset('Tag')      ->list_tags(@_)       },
     list_categories => sub { $self->Model->resultset('Category') ->list_categories(@_) },
     list_sections   => sub { $self->Model->resultset('Section')  ->list_sections(@_)   },
