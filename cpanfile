@@ -19,3 +19,4 @@ requires 'HTTP::Request::Common', 6.18;
 requires 'LWP::UserAgent', 6.39;
 requires 'LWP::Protocol::https', 6.07;
 requires 'Email::Sender', 1.300031;
+requires 'Text::Markdown', 1.000031;

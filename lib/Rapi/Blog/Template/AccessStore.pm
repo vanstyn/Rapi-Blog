@@ -173,12 +173,27 @@ around '_get_default_template_vars' => sub {
           '"></div>'
         ) : ''
     },
-		
-		pRender => sub { Rapi::Blog::Util::pRender->new },
     
-    
+    ## All of these work the same:
+    # [% ppRender.TextMarkdown(content) %]
+    # [% ppRender('TextMarkdown',content) %]
+    # [% ppRender('Rapi::Blog::Template::Postprocessor::TextMarkdown',content) %]
+    # [% SET pRen = ppRender('TextMarkdown') %]
+    # [% pRen(content) %]
+    ppRender => sub {
+      if (scalar(@_) == 0) {
+        return Rapi::Blog::Util::ppRender->new
+      }
+      elsif(scalar(@_) == 1) {
+        my $pRen = Rapi::Blog::Util::ppRender->new( _post_processor => (shift) );
+        return sub { $pRen->_call_process(@_) }
+      }
+      else {
+        return Rapi::Blog::Util::ppRender->new->_call_process(@_)
+      }
+    }
   };
-  
+
   #if (my $Scaffold = $self->DispatchRule_for($template)->Scaffold) {
   #  $vars->{scaffold} = $Scaffold->config;
   #}
