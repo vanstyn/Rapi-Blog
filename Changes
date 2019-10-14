@@ -1,5 +1,11 @@
 Revision history for Rapi::Blog
 
+1.1200 2019-10-14
+    - Hit tracking properly handles proxied requests (VANSTYN)
+    - Added the 'get_posts' template directive (VANSTYN)
+    - Added the 'ppRender' template directive (VANSTYN)
+    - Added the 'TextMarkdown' post-processor class (VANSTYN)
+
 1.1100 2019-10-05
     - Require RapidApp 1.3200 (VANSTYN)
     - Fix bugs in changing usernames while logged in (VANSTYN)
