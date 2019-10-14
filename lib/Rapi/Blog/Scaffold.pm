@@ -109,12 +109,6 @@ sub resolve_ViewWrapper {
 
 
 
-
-sub owns_path {
-  my ($self, $path) = @_;
-  $self->owns_path_as($path) ? 1 : 0
-}
-
 sub _resolve_path_to_post {
   my ($self, $path) = @_;
   
