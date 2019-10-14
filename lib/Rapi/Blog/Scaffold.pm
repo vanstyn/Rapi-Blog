@@ -54,6 +54,7 @@ has 'config',
 
 
 sub static_paths       { (shift)->config->static_paths       }
+sub template_names     { (shift)->config->template_names     }
 sub private_paths      { (shift)->config->private_paths      }
 sub default_ext        { (shift)->config->default_ext        }
 sub view_wrappers      { (shift)->config->view_wrappers      }
@@ -122,6 +123,11 @@ sub _resolve_path_to_post {
 has '_static_path_regexp', is => 'ro', lazy => 1, default => sub {
   my $self = shift;
   return $self->_compile_path_list_regex(@{$self->static_paths});
+};
+
+has '_template_name_regexp', is => 'ro', lazy => 1, default => sub {
+  my $self = shift;
+  return $self->_compile_path_list_regex(@{$self->template_names});
 };
 
 has '_private_path_regexp', is => 'ro', lazy => 1, default => sub {
@@ -210,23 +216,16 @@ sub _is_static_path {
   $Regexp ? $template =~ $Regexp : 0
 }
 
+sub _is_valid_template_name {
+  my ($self, $name) = @_;
+  my $Regexp = $self->_template_name_regexp;
+  $Regexp ? $name =~ $Regexp : 0
+}
+
 sub _is_private_path {
   my ($self, $template) = @_;
   my $Regexp = $self->_private_path_regexp;
   $Regexp ? $template =~ $Regexp : 0
-}
-
-
-sub resolve_path {
-  my $self = shift;
-  my $path = shift or return undef;
-  
-  my $File = $self->resolve_file($path);
-  
-  # If not found, try once more by appending the default file extenson:
-  $File = $self->resolve_file(join('.',$path,$self->default_ext)) if (!$File && $self->default_ext);
-  
-  $File
 }
 
 
