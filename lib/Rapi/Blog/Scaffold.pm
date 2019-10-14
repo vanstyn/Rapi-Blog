@@ -7,6 +7,7 @@ use Rapi::Blog::Util;
 use Scalar::Util 'blessed';
 use List::Util;
 use String::Random;
+require Text::Glob;
 
 use Moo;
 use Types::Standard ':all';
@@ -128,33 +129,60 @@ has '_private_path_regexp', is => 'ro', lazy => 1, default => sub {
   return $self->_compile_path_list_regex(@{$self->private_paths});
 };
 
+
 sub _compile_path_list_regex {
+  my ($self, @paths) = @_;
+  my $reStr = $self->_get_path_list_regex_string(@paths);# or return undef;
+  qr/$reStr/
+}
+
+
+sub __re_always    { '(^.+$)'    } # Always matches
+sub __re_never     { '(?=a)[^a]' } # Never matches
+
+sub _glob_to_re_str {
+  my ($self,$glob) = @_;
+  
+  my $re = Text::Glob::glob_to_regex_string($glob);
+  
+  # unless the glob ends in a *, we do not 
+  # want to match past the end of the pattern
+  $glob =~ /\*$/ ? $re : $re.'$'
+}
+
+sub _get_path_list_regex_string {
   my ($self, @paths) = @_;
   return undef unless (scalar(@paths) > 0);
   
-  my @list = ();
+  my @gList  = ();
+  my @eqList = ();
   for my $path (@paths) {
     next if ($path eq ''); # empty string match nothing
-    push @list, '^.*$' and next if($path eq '/') ; # special handling for '/' -- match everything
+    
+    # Either * or / match everything. Bail out and return the match everything regex
+    return $self->__re_always if ($path eq '*' || $path eq '/');
 
     $path =~ s/^\///; # strip and ignore leading /
-    if ($path =~ /\/$/) {
-      # ends in slash, matches begining of the path
-      push @list, join('','^',$path);
-    }
-    else {
-      # does not end in slash, match as if it did AND the whole path
-      push @list, join('','^',$path,'/');
-      push @list, join('','^',$path,'$');
-    }
+    $path .= '*' if ($path =~ /\/$/); # append wildcard if we end in / we want to match everything that follows
+    
+    # Check for any glob pattern special characters:
+    $path =~ /[\*\?\[\]\{\}]/ ? push(@gList, $path) : push(@eqList,$path);
   }
   
-  return undef unless (scalar(@list) > 0);
+  local $Text::Glob::strict_leading_dot    = 0;
+  local $Text::Glob::strict_wildcard_slash = 0;
   
-  my $reStr = join('','(',join('|', @list ),')');
+  my @re_list = (
+    (map { $self->_glob_to_re_str($_) } @gList ),
+    (map { join('','^',quotemeta($_),'$') } @eqList )
+  );
   
-  return qr/$reStr/
+  my $reStr = join('','(',join('|', @re_list ),')');
+  
+  $reStr ? $reStr : $self->__re_never
 }
+
+
 
 
 has 'static_path_app', is => 'ro', lazy => 1, default => sub {
