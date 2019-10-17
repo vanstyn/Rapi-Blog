@@ -1,5 +1,8 @@
 Revision history for Rapi::Blog
 
+1.1301 2019-10-17
+    - Remove the no longer accessible "Pre-Auth" user profile link (VANSTYN)
+
 1.1300 2019-10-17
     - Added new scaffold config 'template_names' (VANSTYN)
     - The *_paths scaffold configs now accept glob wildcard patterns (VANSTYN)
