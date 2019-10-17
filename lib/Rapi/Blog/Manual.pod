@@ -104,12 +104,32 @@ List of path prefixes which are considered 'static' meaning no template processi
 those paths. You want to list asset/image dirs like 'css/', 'fonts/' etc in this param, which
 helps performance for paths which the system doesn't need to parse for template directives.
 
+New in v1.13 - in addition to prefixes and literal paths, standard glob wildcard patterns are also supported. 
+
+=head2 template_names
+
+New in v1.13.
+
+Works in conjunction with C<static_paths> but is inclusive rather than exclusive. If a set of 
+C<template_names> is defined, only scaffold templates which match will be treated as active/dynamic,
+the rest will be treated as static. Unlike C<static_paths> which apply to public, URL paths, the
+C<template_names> match the actual, post-translated name. 
+
+For instance, when a C<default_ext> is defined, as is typical and is usually 'html' the public 
+path C<'/list'> actually resolves to C<'/list.html'> and it is the latter which is considered by 
+the C<template_names> parameter. So, for instance, if you set C<'*.html'> as the only entry in 
+C<template_names>, it would mean that all files which do not end in .html will be static, but 
+C</list> would still render as an active template because its effective path is C</list.html> 
+which does match the rule.
+
 =head2 private_paths
 
 List of path prefixes which will not be served publicly, but will still be available internally
 to include, use as a wrapper, etc. Note that this option isn't really about security but about cleaning
 the public namespace of paths which are known not to be able to render as stand-alone pages in that
 context (like snippets, block directives, etc etc)
+
+New in v1.13, these also now support standard glob wildcards.
 
 =head2 landing_page
 
