@@ -21,3 +21,4 @@ requires 'LWP::Protocol::https', 6.07;
 requires 'Email::Sender', 1.300031;
 requires 'Text::Markdown', 1.000031;
 requires 'Text::Glob', 0.11;
+requires 'HTML::Scrubber', 0.19;
