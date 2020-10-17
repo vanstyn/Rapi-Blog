@@ -23,7 +23,7 @@ use HTML::Scrubber;
 use Rapi::Blog::Scaffold;
 use Rapi::Blog::Scaffold::Set;
 
-our $VERSION = '1.1301_03';
+our $VERSION = '1.1400';
 our $TITLE = "Rapi::Blog v" . $VERSION;
 
 has 'site_path',        is => 'ro', required => 1;
