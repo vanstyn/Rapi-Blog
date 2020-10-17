@@ -221,8 +221,10 @@ sub insert {
   
   $self->set_inflated_columns($columns) if $columns;
   
+  $self->_sanitize_body;
+  
   $self->_set_column_defaults('insert');
-
+  
   $self->next::method;
   
   $self->_update_tags;
@@ -240,11 +242,18 @@ sub update {
   
   $self->updater_id( $uid );
   
+  $self->_sanitize_body if ($self->is_column_changed('body'));
+  
   $self->_set_column_defaults('update');
   
   $self->_update_tags if ($self->is_column_changed('body'));
   
   $self->next::method;
+}
+
+sub _sanitize_body {
+  my $self = shift;
+  $self->body( Rapi::Blog::Util->sanitize_input( $self->body ) )
 }
 
 sub delete {
