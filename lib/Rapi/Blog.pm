@@ -5,7 +5,7 @@ use warnings;
 
 # ABSTRACT: RapidApp-powered blog
 
-use RapidApp 1.3200;
+use RapidApp 1.3301;
 
 use Moose;
 extends 'RapidApp::Builder';
